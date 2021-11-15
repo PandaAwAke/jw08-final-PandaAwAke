@@ -3,7 +3,6 @@ package com.pandaawake.gourdgame;
 import com.pandaawake.Config;
 import com.pandaawake.gamemap.GameMap;
 import com.pandaawake.gamemap.Scene;
-import com.pandaawake.renderer.RenderCommand;
 import com.pandaawake.sprites.CalabashPlayer;
 import com.pandaawake.utils.Direction;
 
@@ -19,8 +18,6 @@ public class GameApp {
         }
         return globalGameApp;
     }
-
-    private RenderCommand renderer = null;
 
     private GameMap gameMap;
     private Scene scene;
@@ -38,14 +35,6 @@ public class GameApp {
 
     }
 
-    /**
-     * Renderer should be set before rendering
-     * @param renderer
-     */
-    public void setRenderer(RenderCommand renderer) {
-        this.renderer = renderer;
-    }
-
     public Scene getScene() {
         return scene;
     }
@@ -57,10 +46,7 @@ public class GameApp {
     }
 
     public void OnRender() {
-        if (renderer == null) {
-            throw new NullPointerException("Renderer is not set in GameApp!");
-        }
-        renderer.draw(scene);
+        scene.OnRender();
     }
 
     public void OnKeyPressed(KeyEvent e) {

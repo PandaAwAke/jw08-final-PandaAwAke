@@ -7,7 +7,7 @@ public class CalabashPlayer extends Player {
 
     public CalabashPlayer(Scene scene) {
         super(scene, 1, 1);
-        setTileTexture(UtilFunctions.PositionInTilesToChar(7, 0));
+        setTileTexture(UtilFunctions.PositionInTilesToIndex(7, 0));
 
     }
 

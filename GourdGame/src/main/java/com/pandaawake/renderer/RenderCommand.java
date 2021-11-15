@@ -2,34 +2,46 @@ package com.pandaawake.renderer;
 
 import com.pandaawake.Config;
 import com.pandaawake.gamemap.GameMap;
-import com.pandaawake.gamemap.Scene;
+import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
+import com.pandaawake.utils.FloatPair;
 import com.pandaawake.utils.UtilFunctions;
 
 public class RenderCommand {
 
-    private Renderer terminal;
+    private static Renderer renderer;
 
-    public RenderCommand(Renderer terminal) {
-        this.terminal = terminal;
+    public static void Init() {
+        Renderer.Init(AsciiFontTile.GAME_32_32);
+        renderer = Renderer.getRenderer();
     }
 
-    public void draw(Scene scene) {
-        GameMap gameMap = scene.getGameMap();
-        for (int x = 0; x < scene.getGameMap().getWidth(); x++) {
-            for (int y = 0; y < scene.getGameMap().getHeight(); y++) {
-                // Drawing tiles here, sprites will be drawn in AsciiPanel
+    public static void drawSprite(Sprite sprite) {
+        renderer.addRepaintTilePositions(sprite.getRenderingBox());
+        for (int y = 0; y < sprite.getSpriteHeight(); y++) {
+            for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
+                int indexInsideSprite = y * sprite.getSpriteHeight() + x;
+                FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
+                int glyphIndex = sprite.getGlyphs().get(indexInsideSprite);
+                renderer.addAdditionalTile(tilePosition, glyphIndex);
+                // TODO: Distinguish Rendering area and Collision area
+
+            }
+        }
+    }
+
+    public static void drawGameMap(GameMap gameMap) {
+        for (int x = 0; x < gameMap.getWidth(); x++) {
+            for (int y = 0; y < gameMap.getHeight(); y++) {
                 Tile<Thing> tile = gameMap.getTile(x, y);
                 Thing thing = tile.getThing();
                 if (thing == null) {
-                    terminal.write(UtilFunctions.PositionInTilesToChar(Config.EmptyTileX, Config.EmptyTileY), x, y);
+                    renderer.setTile(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), x, y);
                 } else {
                     int glyphIndex = thing.getTiles().indexOf(tile);
-                    terminal.write(thing.getGlyphs().get(glyphIndex), x, y);
+                    renderer.setTile(thing.getGlyphs().get(glyphIndex), x, y);
                 }
-
-                // TODO: Migrate sprites' rendering here
             }
         }
     }

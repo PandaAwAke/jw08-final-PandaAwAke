@@ -4,7 +4,6 @@ import com.pandaawake.Config;
 
 import javax.swing.JFrame;
 
-import com.pandaawake.renderer.AsciiFontTile;
 import com.pandaawake.renderer.Renderer;
 import com.pandaawake.renderer.RenderCommand;
 
@@ -21,22 +20,15 @@ public class Application {
     }
 
     private final GameApp gameApp;
-
-    private final Renderer terminal;
-    private final RenderCommand renderer;
     private MainWindow window;
-
 
     private Application() {
         gameApp = GameApp.getGameApp();
-        terminal = new Renderer(Config.MapWidth, Config.MapHeight, AsciiFontTile.GAME_32_32, gameApp.getScene());
-        renderer = new RenderCommand(terminal);
+        RenderCommand.Init();
     }
 
     public void run() {
-        gameApp.setRenderer(renderer);
-
-        window = new MainWindow(terminal, this);
+        window = new MainWindow(Renderer.getRenderer(), this);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 

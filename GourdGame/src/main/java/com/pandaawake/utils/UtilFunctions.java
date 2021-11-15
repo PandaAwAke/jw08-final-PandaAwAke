@@ -4,8 +4,8 @@ import com.pandaawake.Config;
 
 public class UtilFunctions {
 
-    public static char PositionInTilesToChar(int x, int y) {
-        return (char)(y * Config.TileFileSize + x);
+    public static int PositionInTilesToIndex(int x, int y) {
+        return y * Config.TileFileWidth + x;
     }
 
 

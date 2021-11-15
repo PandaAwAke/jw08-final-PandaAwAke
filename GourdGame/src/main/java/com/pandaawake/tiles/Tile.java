@@ -1,5 +1,7 @@
 package com.pandaawake.tiles;
 
+import com.pandaawake.utils.IntPair;
+
 public class Tile<T extends Thing> {
 
     private T thing;
@@ -20,6 +22,10 @@ public class Tile<T extends Thing> {
 
     public void setyPos(int yPos) {
         this.yPos = yPos;
+    }
+
+    public IntPair getIntPair() {
+        return new IntPair(xPos, yPos);
     }
 
     public Tile() {

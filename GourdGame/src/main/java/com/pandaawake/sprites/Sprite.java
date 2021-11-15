@@ -1,13 +1,12 @@
 package com.pandaawake.sprites;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.pandaawake.Config;
 import com.pandaawake.gamemap.Scene;
 import com.pandaawake.renderer.TileTexture;
-import com.pandaawake.tiles.Thing;
-import com.pandaawake.tiles.Tile;
+import com.pandaawake.utils.IntPair;
 
 public class Sprite extends TileTexture {
     /**
@@ -75,30 +74,30 @@ public class Sprite extends TileTexture {
 
 
     // Collision box
-    public Set<Tile<Thing>> getCollisionBox() {
+    public Set<IntPair> getCollisionBox() {
         int left = (int) Math.round(Math.floor(posX));
         int right = (int) Math.round(Math.ceil(posX)) + spriteWidth - 1;
         int top = (int) Math.round(Math.floor(posY));
         int bottom = (int) Math.round(Math.ceil(posY)) + spriteHeight - 1;
-        Set<Tile<Thing>> collisionBox = new HashSet<>();
+        Set<IntPair> collisionBox = new TreeSet<>();
         for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
             for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
-                collisionBox.add(scene.getGameMap().getTile(x, y));
+                collisionBox.add(scene.getGameMap().getTile(x, y).getIntPair());
             }
         }
         return collisionBox;
     }
 
     // Rendering box
-    public Set<Tile<Thing>> getRenderingBox() {
+    public Set<IntPair> getRenderingBox() {
         int left = (int) Math.round(Math.floor(posX));
         int right = (int) Math.round(Math.ceil(posX)) + spriteRenderWidth - 1;
         int top = (int) Math.round(Math.floor(posY));
         int bottom = (int) Math.round(Math.ceil(posY)) + spriteRenderHeight - 1;
-        Set<Tile<Thing>> renderingBox = new HashSet<>();
+        Set<IntPair> renderingBox = new TreeSet<>();
         for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
             for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
-                renderingBox.add(scene.getGameMap().getTile(x, y));
+                renderingBox.add(scene.getGameMap().getTile(x, y).getIntPair());
             }
         }
         return renderingBox;

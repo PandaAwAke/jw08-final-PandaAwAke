@@ -32,7 +32,7 @@ public class Thing extends TileTexture {
     }
 
     @Override
-    public ArrayList<Character> getGlyphs() {
+    public ArrayList<Integer> getGlyphs() {
         if (glyphs != null && glyphs.size() != tiles.size()) {
             throw new IllegalStateException("Glyphs' size does not equal to the tiles' size!");
         }

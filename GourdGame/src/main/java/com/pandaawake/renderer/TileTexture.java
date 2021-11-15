@@ -3,22 +3,22 @@ package com.pandaawake.renderer;
 import java.util.ArrayList;
 
 public class TileTexture {
-    /** If texture is 2*3, and its chars are:
+    /** If texture is 2*3, and its ints are:
      * 1 2
      * 3 4
      * 5 6
-     * Then glyphs should be <1, 3, 5, 2, 4, 6>.
+     * Then glyphs should be <1, 2, 3, 4, 5, 6>.
      *
      */
-    protected ArrayList<Character> glyphs;    // Every char inside is a tile's glyph
-    public void setTileTexture(ArrayList<Character> glyphs) {
+    protected ArrayList<Integer> glyphs;    // Every int inside is a tile's glyph
+    public void setTileTexture(ArrayList<Integer> glyphs) {
         this.glyphs = glyphs;
     }
-    public void setTileTexture(char glyph) {
+    public void setTileTexture(int glyph) {
         glyphs = new ArrayList<>();
         glyphs.add(glyph);
     }
-    public ArrayList<Character> getGlyphs() {
+    public ArrayList<Integer> getGlyphs() {
         if (glyphs == null) {
             throw new NullPointerException("Glyphs is null!");
         }

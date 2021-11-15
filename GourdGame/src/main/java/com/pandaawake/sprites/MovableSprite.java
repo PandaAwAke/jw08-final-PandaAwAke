@@ -3,13 +3,13 @@ package com.pandaawake.sprites;
 import com.pandaawake.gamemap.GameMap;
 import com.pandaawake.gamemap.Scene;
 import com.pandaawake.utils.Direction;
-import com.pandaawake.utils.TwoTuple;
+import com.pandaawake.utils.Pair;
 
 public class MovableSprite extends Sprite {
 
     protected float movingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
-    protected TwoTuple<Float, Float> targetDeltaPos = new TwoTuple<>(0.0f, 0.0f);
-    protected TwoTuple<Integer, Integer> targetPos = new TwoTuple<>(0, 0);
+    protected Pair<Float, Float> targetDeltaPos = new Pair<>(0.0f, 0.0f);
+    protected Pair<Integer, Integer> targetPos = new Pair<>(0, 0);
     protected float movingTime = 0.0f;      // How many seconds have this sprite been moving
 
 
@@ -31,7 +31,7 @@ public class MovableSprite extends Sprite {
         this.movingSpeed = movingSpeed;
     }
 
-    private TwoTuple<Integer, Integer> tryMove(Direction direction) {
+    private Pair<Integer, Integer> tryMove(Direction direction) {
         int newX = Math.round(posX), newY = Math.round(posY);
         switch (direction) {
             case left:
@@ -47,14 +47,14 @@ public class MovableSprite extends Sprite {
                 newY += 1;
                 break;
         }
-        return new TwoTuple<Integer, Integer>(newX, newY);
+        return new Pair<Integer, Integer>(newX, newY);
     }
 
     public boolean doMove(Direction direction) {
         if (status != Status.Ok) {
             return false;
         }
-        TwoTuple<Integer, Integer> newPosition = tryMove(direction);
+        Pair<Integer, Integer> newPosition = tryMove(direction);
         if (canStay(newPosition.first, newPosition.second)) {
             status = Status.Moving;
             targetDeltaPos.first = newPosition.first - posX;

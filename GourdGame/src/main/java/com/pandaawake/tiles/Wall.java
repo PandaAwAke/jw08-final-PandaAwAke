@@ -6,7 +6,7 @@ public class Wall extends Thing {
 
     public Wall() {
         super(true);
-        setTileTexture(UtilFunctions.PositionInTilesToChar(13, 7));
+        setTileTexture(UtilFunctions.PositionInTilesToIndex(13, 7));
     }
 
 }

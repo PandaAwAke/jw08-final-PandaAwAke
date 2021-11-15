@@ -9,14 +9,14 @@ import java.awt.event.KeyListener;
 
 public class MainWindow extends JFrame implements KeyListener {
     
-    private Renderer terminal;
+    private Renderer renderer;
     private Application app;
 
-    public MainWindow(Renderer terminal, Application app) {
+    public MainWindow(Renderer renderer, Application app) {
         super();
-        this.terminal = terminal;
+        this.renderer = renderer;
         this.app = app;
-        add(terminal);
+        add(renderer);
         pack();
         addKeyListener(this);
         repaint();
@@ -24,7 +24,7 @@ public class MainWindow extends JFrame implements KeyListener {
     
     @Override
     public void repaint() {
-        terminal.clear();
+        renderer.clear();
         app.OnRender();
         super.repaint();
     }

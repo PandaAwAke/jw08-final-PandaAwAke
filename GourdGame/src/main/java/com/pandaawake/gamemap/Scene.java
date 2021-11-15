@@ -1,5 +1,6 @@
 package com.pandaawake.gamemap;
 
+import com.pandaawake.renderer.RenderCommand;
 import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
@@ -99,6 +100,13 @@ public class Scene {
 
 
     // ---------------------- Functions ----------------------
+    public void OnRender() {
+        for (Sprite sprite : sprites) {
+            RenderCommand.drawSprite(sprite);
+        }
+        RenderCommand.drawGameMap(gameMap);
+    }
+
     public void OnUpdate(float timestep) {
         for (Thing thing : things) {
             thing.OnUpdate(timestep);
