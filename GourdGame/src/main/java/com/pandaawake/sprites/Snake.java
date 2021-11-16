@@ -23,7 +23,7 @@ public class Snake extends MovableSprite implements HasBomb {
 
     @Override
     public boolean OnExplode(Bomb bomb) {
-        if (bomb.getOwner() == this) {
+        if (bomb.getOwner() instanceof Snake) {
             return false;
         }
         lives -= 1;

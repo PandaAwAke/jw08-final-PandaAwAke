@@ -34,7 +34,7 @@ public class Config {
     public static final float TimeBeforeExploding = 3.0f;   // The time(seconds) before a bomb explodes
     public static final int HumanPlayerBombs = 2;       // Maximum bombs a human player can set in the scene
     public static final int ComputerPlayerBombs = 2;    // Maximum bombs a computer player can set in the scene
-    public static final int HumanPlayerLives = 2;
+    public static final int HumanPlayerLives = 3;
     public static final int ComputerPlayerLives = 2;
     public static final float HumanPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     public static final float ComputerPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
