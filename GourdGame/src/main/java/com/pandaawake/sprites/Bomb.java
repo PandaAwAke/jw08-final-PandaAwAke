@@ -14,6 +14,7 @@ public class Bomb extends Sprite {
     private static final float TimeBeforeExploding = Config.TimeBeforeExploding;
     private float elapsedTime = 0.0f;
     private HasBomb owner;
+    private boolean explodeImmediately = false; // For scene to control
 
     /**
      * Bomb is a 3x3 destroyer!
@@ -31,15 +32,20 @@ public class Bomb extends Sprite {
         return owner;
     }
 
+    public void setExplodeImmediately() {
+        explodeImmediately = true;
+    }
+
+
     @Override
     public void OnUpdate(float timestep) {
         elapsedTime += timestep;
-        if (elapsedTime >= TimeBeforeExploding) {
+        if (elapsedTime >= TimeBeforeExploding || explodeImmediately) {
             // Exploded!
-            int left = (int) Math.round(posX) - 1;
-            int right = left + 2;
-            int top = (int) Math.round(posY) - 1;
-            int bottom = top + 2;
+            int left = (int) Math.round(posX) - Config.BombExtendedRadius;
+            int right = left + 2 * Config.BombExtendedRadius;
+            int top = (int) Math.round(posY) - Config.BombExtendedRadius;
+            int bottom = top + 2 * Config.BombExtendedRadius;
 
             Set<Sprite> spritesToRemove = new HashSet<>();
 
@@ -48,6 +54,7 @@ public class Bomb extends Sprite {
                 for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
                     // Remove things which were exploded
                     Thing thing = scene.getGameMap().getTile(x, y).getThing();
+                    scene.addRepaintThing(thing);
                     if (thing.OnExplode()) {
                         scene.removeThing(thing);
                     }
@@ -61,17 +68,22 @@ public class Bomb extends Sprite {
                             if (sprite.OnExplode(this)) {
                                 spritesToRemove.add(sprite);
                             }
+
+                            // Explode bombs nearby
+                            if (sprite instanceof Bomb) {
+                                ((Bomb) sprite).setExplodeImmediately();
+                            }
                         }
                     }
                 }
             }
-            // Remove myself
+            // Remove myself from scene
             spritesToRemove.add(this);
             for (Sprite sprite : spritesToRemove) {
                 scene.removeSprite(sprite);
             }
 
-            owner.bombDestroyed();
+            owner.bombDestroyed(this);
         }
 
     }

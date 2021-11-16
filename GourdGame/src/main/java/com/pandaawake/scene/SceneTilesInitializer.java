@@ -2,7 +2,6 @@ package com.pandaawake.scene;
 
 import com.pandaawake.Config;
 import com.pandaawake.sprites.MovableSprite;
-import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.*;
 import com.pandaawake.utils.IntPair;
 
@@ -13,26 +12,28 @@ public class SceneTilesInitializer {
     private static final char KIND_FLOOR = '1';
     private static final char KIND_WALL = '2';
     private static final char KIND_TREE = '3';
+    private static final char KIND_TWICE_BREAKABLE_WALL = '4';
 
     /**
      * 1: Floor
      * 2: Wall
      * 3: Tree
+     * 4: TwiceBreakableWall
      */
     private final String[] tileMap = {
             "222222222222222",
             "113321131121111",
             "121222212222121",
-            "123111111111321",
+            "124111111111421",
             "122122232221221",
-            "133123111121333",
-            "122121111321221",
-            "221133111311122",
-            "122123111321221",
+            "133123113321333",
+            "122121444321221",
+            "221133444311122",
+            "122123444321221",
             "111133313121131",
             "122122212221223",
             "321111111111123",
-            "223232212222321",
+            "224232212222421",
             "111321113321311",
             "222222222222222"
     };
@@ -72,6 +73,8 @@ public class SceneTilesInitializer {
                 return new Wall();
             case KIND_TREE:
                 return new Tree();
+            case KIND_TWICE_BREAKABLE_WALL:
+                return new TwiceBreakableWall();
             default:
                 return new Floor();
         }

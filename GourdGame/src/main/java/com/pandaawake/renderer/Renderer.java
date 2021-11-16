@@ -5,9 +5,7 @@ import com.pandaawake.utils.FloatPair;
 import com.pandaawake.utils.IntPair;
 import com.pandaawake.utils.UtilFunctions;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +55,8 @@ public class Renderer extends JPanel {
     private ArrayList<FloatPair> additionalTilePositions;
     private ArrayList<Integer> additionalTileGlyphs;
 
+    private int scoreboardLeft, scoreboardTop;
+
     /**
      * Class constructor specifying the width and height in gamemap and the
      * tile font
@@ -90,10 +90,18 @@ public class Renderer extends JPanel {
         repaintTilePositions = new TreeSet<>();
         additionalTilePositions = new ArrayList<>();
         additionalTileGlyphs = new ArrayList<>();
+    }
 
+    public void Init() {
         // Set Clear Color First
         offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-        offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth, heightInTiles * tileHeight);
+        offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth + Config.ScoreBoardWidth, heightInTiles * tileHeight);
+
+        // Init scoreboard
+        offscreenGraphics.setFont(Config.ScoreboardTextFont);
+
+        scoreboardLeft = widthInTiles * tileWidth;
+        scoreboardTop = 0;
     }
 
     /**
@@ -121,7 +129,7 @@ public class Renderer extends JPanel {
         this.tileWidth = fonttile.getWidth();
         this.terminalFontFile = fonttile.getFontFilename();
 
-        Dimension panelSize = new Dimension(tileWidth * widthInTiles, tileHeight * heightInTiles);
+        Dimension panelSize = new Dimension(tileWidth * widthInTiles + Config.ScoreBoardWidth, tileHeight * heightInTiles);
         setPreferredSize(panelSize);
 
         glyphs = new BufferedImage[Config.TileFileWidth * Config.TileFileHeight];
@@ -159,20 +167,6 @@ public class Renderer extends JPanel {
      */
     public void clear() {
         clear(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), 0, 0, widthInTiles, heightInTiles);
-    }
-
-    /**
-     * Clear the entire screen with the specified tile and whatever the default
-     * foreground and background colors are.
-     * 
-     * @param glyphIndex the tile to write
-     * @return this for convenient chaining of method calls
-     */
-    public void clear(int glyphIndex) {
-        if (glyphIndex < 0 || glyphIndex >= glyphs.length)
-            throw new IllegalArgumentException(
-                    "tile " + glyphIndex + " must be within range [0," + glyphs.length + "].");
-        clear(glyphIndex, 0, 0, widthInTiles, heightInTiles);
     }
 
     /**
@@ -259,6 +253,37 @@ public class Renderer extends JPanel {
         this.additionalTilePositions.add(position);
         this.additionalTileGlyphs.add(glyphIndex);
     }
+
+
+    public void clearScoreboard() {
+        offscreenGraphics.setColor(Config.DefaultBackgroundColor);
+        offscreenGraphics.fillRect(scoreboardLeft, scoreboardTop, Config.ScoreBoardWidth, heightInTiles * tileHeight);
+    }
+
+    /**
+     * This function draws some string in scoreboard.
+     * @param startX x in scoreboard
+     * @param startY y in scoreboard
+     * @param string string to draw
+     */
+    public void drawScoreboardString(int startX, int startY, String string) {
+        offscreenGraphics.setColor(Config.FontColor);
+        offscreenGraphics.drawString(string, scoreboardLeft + startX, scoreboardTop + startY);
+    }
+
+    /**
+     * This function draws some string in scoreboard.
+     * @param startX x in scoreboard
+     * @param startY y in scoreboard
+     * @param glyphIndex tile index to draw
+     */
+    public void drawScoreboardTile(int startX, int startY, int glyphIndex) {
+        BufferedImage img = glyphs[glyphIndex];
+        int leftPixel = scoreboardLeft + startX;
+        int topPixel = scoreboardTop + startY;
+        offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+    }
+
 
 
     @Override

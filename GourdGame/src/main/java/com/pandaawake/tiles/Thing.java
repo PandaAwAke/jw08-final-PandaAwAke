@@ -25,7 +25,7 @@ public class Thing extends TileTexture {
         this.blocking = blocking;   // Will this thing blocks the player?
     }
 
-    private final boolean blocking;
+    protected boolean blocking;
 
     public boolean isBlocking() {
         return this.blocking;

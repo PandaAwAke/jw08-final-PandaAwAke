@@ -1,4 +1,4 @@
-package com.pandaawake.gourdgame;
+package com.pandaawake.player;
 
 import com.pandaawake.core.Application;
 import com.pandaawake.scene.Scene;
@@ -22,7 +22,6 @@ public class HumanPlayer implements Player {
         return calabash;
     }
 
-    @Override
     public void tryMove() {
 
     }
@@ -30,9 +29,7 @@ public class HumanPlayer implements Player {
     @Override
     public void setBomb() {
         if (calabash.getStatus() == MovableSprite.Status.Ok) {
-            if (calabash.setBomb()) {
-                scene.addSprite(new Bomb(scene, calabash, calabash.getX(), calabash.getY()));
-            }
+            calabash.setNewBomb();
         }
     }
 
@@ -78,6 +75,13 @@ public class HumanPlayer implements Player {
                 calabash.doMove(Direction.down);
                 break;
             case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_NUMPAD0:
+                for (Bomb bomb : calabash.getBombs()) {
+                    bomb.setExplodeImmediately();
+                }
+                break;
+            case KeyEvent.VK_J:
+            case KeyEvent.VK_NUMPAD1:
                 setBomb();
                 break;
         }

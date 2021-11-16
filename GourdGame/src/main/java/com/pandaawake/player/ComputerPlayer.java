@@ -1,4 +1,4 @@
-package com.pandaawake.gourdgame;
+package com.pandaawake.player;
 
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
@@ -49,7 +49,6 @@ public class ComputerPlayer implements Player {
         }
     }
 
-    @Override
     public void tryMove() {
         if (UtilFunctions.getRandomResultByProbability(Config.ChangeDirectionProbability)) {
             direction = directions[random.nextInt(4)];
@@ -60,9 +59,7 @@ public class ComputerPlayer implements Player {
     @Override
     public void setBomb() {
         if (snake.getStatus() == MovableSprite.Status.Ok) {
-            if (snake.setBomb()) {
-                scene.addSprite(new Bomb(scene, snake, snake.getX(), snake.getY()));
-            }
+            snake.setNewBomb();
         }
     }
 

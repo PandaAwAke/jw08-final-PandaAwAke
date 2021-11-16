@@ -1,13 +1,9 @@
-package com.pandaawake.gourdgame;
-
-import com.pandaawake.sprites.MovableSprite;
-import com.pandaawake.utils.Direction;
+package com.pandaawake.player;
 
 import java.awt.event.KeyEvent;
 
 public interface Player {
 
-    public void tryMove();
     public void setBomb();
 
     // ---------------------- Callback Functions ----------------------

@@ -18,6 +18,7 @@ public class RenderCommand {
     public static void Init() {
         Renderer.Init(Config.TilesFont);
         renderer = Renderer.getRenderer();
+        renderer.Init();
     }
 
     public static void drawSprite(Sprite sprite) {
@@ -51,6 +52,31 @@ public class RenderCommand {
 
     public static void repaintArea(Set<IntPair> area) {
         renderer.addRepaintTilePositions(area);
+    }
+
+
+    public static void clearScoreboard() {
+        renderer.clearScoreboard();
+    }
+
+    /**
+     * This function draws some string in scoreboard.
+     * @param startX x in scoreboard
+     * @param startY y in scoreboard
+     * @param string string to draw
+     */
+    public static void drawScoreboardString(int startX, int startY, String string) {
+        renderer.drawScoreboardString(startX, startY, string);
+    }
+
+    /**
+     * This function draws some string in scoreboard.
+     * @param startX x in scoreboard
+     * @param startY y in scoreboard
+     * @param glyphIndex tile index to draw
+     */
+    public static void drawScoreboardTile(int startX, int startY, int glyphIndex) {
+        renderer.drawScoreboardTile(startX, startY, glyphIndex);
     }
 
 }

@@ -39,22 +39,25 @@ public class Scene {
      */
     Set<Pair<Thing, ArrayList<Tile<Thing>>>> thingsToAdd = new HashSet<>();
     Set<Thing> thingsToRemove = new HashSet<>();
+    Set<Thing> thingsToRepaint = new HashSet<>();
     Set<Sprite> spritesToAdd = new HashSet<>();
     Set<Sprite> spritesToRemove = new HashSet<>();
     Set<IntPair> positionsToRepaint = new TreeSet<>();
     // ---------------------- Things ----------------------
     public boolean addThing(Thing thing, ArrayList<Tile<Thing>> tiles) {
-        // Check every tile, avoiding conflict things
-        if (things.contains(thing)) {
-            return false;
-        }
-        for (Tile<Thing> tile : tiles) {
-            if (tile.getThing() != null) {
+        synchronized (this) {
+            // Check every tile, avoiding conflict things
+            if (things.contains(thing)) {
                 return false;
             }
+            for (Tile<Thing> tile : tiles) {
+                if (tile.getThing() != null) {
+                    return false;
+                }
+            }
+            thingsToAdd.add(new Pair<>(thing, tiles));
+            return true;
         }
-        thingsToAdd.add(new Pair<>(thing, tiles));
-        return true;
     }
 
     public boolean addThing(Thing thing, Tile<Thing> tile) {
@@ -67,22 +70,32 @@ public class Scene {
         return addThing(thing, thing.getTiles());
     }
 
+    public boolean addRepaintThing(Thing thing) {
+        synchronized (this) {
+            return thingsToRepaint.add(thing);
+        }
+    }
+
     public Set<Thing> getThings() {
         return things;
     }
 
     public boolean removeThing(Thing thing) {
-        if (!things.contains(thing)) {
-            return false;
+        synchronized (this) {
+            if (!things.contains(thing)) {
+                return false;
+            }
+            thingsToRemove.add(thing);
+            return true;
         }
-        thingsToRemove.add(thing);
-        return true;
     }
 
 
     // ---------------------- Sprites ----------------------
     public boolean addSprite(Sprite sprite) {
-        return spritesToAdd.add(sprite);
+        synchronized (this) {
+            return spritesToAdd.add(sprite);
+        }
     }
 
     public Set<Sprite> getSprites() {
@@ -90,7 +103,9 @@ public class Scene {
     }
 
     public boolean removeSprite(Sprite sprite) {
-        return spritesToRemove.add(sprite);
+        synchronized (this) {
+            return spritesToRemove.add(sprite);
+        }
     }
 
 
@@ -105,37 +120,39 @@ public class Scene {
      * @param y
      * @return
      */
-    public synchronized boolean spriteCanMoveTo(MovableSprite sprite, int x, int y) {
-        if (sprite.getStatus() == MovableSprite.Status.Moving) {
-            return false;
-        }
-        if (!gameMap.insideMap(x, y)) {
-            return false;
-        }
-        if (gameMap.getTile(x, y).getThing() != null && gameMap.getTile(x, y).getThing().isBlocking()) {
-            return false;
-        }
-
-        if (!sprite.isBlocking()) {
-            return true;
-        }
-        // Consider other sprites, get their collision boxes first
-        Set<IntPair> unreachablePositions = new TreeSet<>();
-        for (Sprite otherSprite : sprites) {
-            if (sprite == otherSprite) {
-                continue;
-            }
-            if (!otherSprite.isBlocking()) {
-                continue;
-            }
-            unreachablePositions.addAll(otherSprite.getCollisionBox());
-        }
-        for (IntPair position : sprite.tryToMoveCollisionBox(x, y)) {
-            if (unreachablePositions.contains(position)) {
+    public boolean spriteCanMoveTo(MovableSprite sprite, int x, int y) {
+        synchronized (this) {
+            if (sprite.getStatus() == MovableSprite.Status.Moving) {
                 return false;
             }
+            if (!gameMap.insideMap(x, y)) {
+                return false;
+            }
+            if (gameMap.getTile(x, y).getThing() != null && gameMap.getTile(x, y).getThing().isBlocking()) {
+                return false;
+            }
+
+            if (!sprite.isBlocking()) {
+                return true;
+            }
+            // Consider other sprites, get their collision boxes first
+            Set<IntPair> unreachablePositions = new TreeSet<>();
+            for (Sprite otherSprite : sprites) {
+                if (sprite == otherSprite) {
+                    continue;
+                }
+                if (!otherSprite.isBlocking()) {
+                    continue;
+                }
+                unreachablePositions.addAll(otherSprite.getCollisionBox());
+            }
+            for (IntPair position : sprite.tryToMoveCollisionBox(x, y)) {
+                if (unreachablePositions.contains(position)) {
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
     }
 
 
@@ -183,42 +200,50 @@ public class Scene {
     }
 
     public void OnUpdate(float timestep) {
-        for (Thing thing : things) {
-            thing.OnUpdate(timestep);
-        }
-        for (Sprite sprite : sprites) {
-            sprite.OnUpdate(timestep);
-        }
-
-        for (Pair<Thing, ArrayList<Tile<Thing>>> thingAndTiles : thingsToAdd) {
-            Thing thing = thingAndTiles.first;
-            ArrayList<Tile<Thing>> tiles = thingAndTiles.second;
-            for (Tile<Thing> tile : tiles) {
-                thing.addTile(tile);
+        synchronized (this) {
+            for (Thing thing : things) {
+                thing.OnUpdate(timestep);
             }
-            things.add(thing);
-        }
-        for (Thing thing : thingsToRemove) {
-            for (Tile<Thing> tile : thing.getTiles()) {
-                positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
-                Floor floor = new Floor();
-                floor.addTile(tile);
-                addThing(floor);
+            for (Sprite sprite : sprites) {
+                sprite.OnUpdate(timestep);
             }
-            thing.getTiles().clear();
-        }
-        for (Sprite sprite : spritesToRemove) {
-            positionsToRepaint.addAll(sprite.getRenderingBox());
-        }
 
-        things.removeAll(thingsToRemove);
-        sprites.addAll(spritesToAdd);
-        sprites.removeAll(spritesToRemove);
+            for (Pair<Thing, ArrayList<Tile<Thing>>> thingAndTiles : thingsToAdd) {
+                Thing thing = thingAndTiles.first;
+                ArrayList<Tile<Thing>> tiles = thingAndTiles.second;
+                for (Tile<Thing> tile : tiles) {
+                    thing.addTile(tile);
+                }
+                things.add(thing);
+            }
+            for (Thing thing : thingsToRemove) {
+                for (Tile<Thing> tile : thing.getTiles()) {
+                    positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
+                    Floor floor = new Floor();
+                    floor.addTile(tile);
+                    addThing(floor);
+                }
+                thing.getTiles().clear();
+            }
+            for (Thing thing : thingsToRepaint) {
+                for (Tile<Thing> tile : thing.getTiles()) {
+                    positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
+                }
+            }
+            for (Sprite sprite : spritesToRemove) {
+                positionsToRepaint.addAll(sprite.getRenderingBox());
+            }
 
-        thingsToAdd.clear();
-        thingsToRemove.clear();
-        spritesToAdd.clear();
-        spritesToRemove.clear();
+            things.removeAll(thingsToRemove);
+            sprites.addAll(spritesToAdd);
+            sprites.removeAll(spritesToRemove);
+
+            thingsToAdd.clear();
+            thingsToRemove.clear();
+            thingsToRepaint.clear();
+            spritesToAdd.clear();
+            spritesToRemove.clear();
+        }
     }
 
 }
