@@ -22,6 +22,7 @@ public class Config {
     // Core settings
     public static final int MaxFrameRate = 60;
     public static final int ScoreBoardWidth = 150;
+    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05";
 
     // Game settings
     //      - AI settings

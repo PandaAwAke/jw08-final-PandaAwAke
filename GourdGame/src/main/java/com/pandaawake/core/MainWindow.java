@@ -2,6 +2,7 @@ package com.pandaawake.core;
 
 import javax.swing.JFrame;
 
+import com.pandaawake.Config;
 import com.pandaawake.renderer.Renderer;
 
 import java.awt.event.KeyEvent;
@@ -13,7 +14,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private Application app;
 
     public MainWindow(Renderer renderer, Application app) {
-        super("葫芦娃弹弹堂 By Ma Yingshuo, Java Hw05");
+        super(Config.WindowTitle);
         this.renderer = renderer;
         this.app = app;
         add(renderer);

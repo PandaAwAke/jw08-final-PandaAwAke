@@ -106,7 +106,7 @@ public class GameApp {
         int playerLives = mainPlayer.getCalabash().getLives();
         RenderCommand.drawScoreboardString(25, 250, "HP: " + String.valueOf(playerLives));
         for (int i = 0; i < playerLives; i++) {
-            RenderCommand.drawScoreboardTile(25 + Config.TileSize * i, 150,
+            RenderCommand.drawScoreboardTile(0 + Config.TileSize * i, 150,
                     mainPlayer.getCalabash().getGlyphs().get(0));
         }
     }
