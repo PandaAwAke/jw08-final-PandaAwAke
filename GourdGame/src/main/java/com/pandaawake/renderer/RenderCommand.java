@@ -1,19 +1,22 @@
 package com.pandaawake.renderer;
 
 import com.pandaawake.Config;
-import com.pandaawake.gamemap.GameMap;
+import com.pandaawake.scene.GameMap;
 import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
 import com.pandaawake.utils.FloatPair;
+import com.pandaawake.utils.IntPair;
 import com.pandaawake.utils.UtilFunctions;
+
+import java.util.Set;
 
 public class RenderCommand {
 
     private static Renderer renderer;
 
     public static void Init() {
-        Renderer.Init(AsciiFontTile.GAME_32_32);
+        Renderer.Init(Config.TilesFont);
         renderer = Renderer.getRenderer();
     }
 
@@ -44,6 +47,10 @@ public class RenderCommand {
                 }
             }
         }
+    }
+
+    public static void repaintArea(Set<IntPair> area) {
+        renderer.addRepaintTilePositions(area);
     }
 
 }

@@ -4,8 +4,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.pandaawake.Config;
-import com.pandaawake.gamemap.Scene;
+import com.pandaawake.scene.Scene;
 import com.pandaawake.renderer.TileTexture;
+import com.pandaawake.utils.FloatPair;
 import com.pandaawake.utils.IntPair;
 
 public class Sprite extends TileTexture {
@@ -18,29 +19,28 @@ public class Sprite extends TileTexture {
     protected Scene scene;
     protected int spriteWidth, spriteHeight;                // Use for collision box
     protected int spriteRenderWidth, spriteRenderHeight;    // Use for rendering
-    protected Status status = Status.Ok;                    // The sprite's status
-
-    public enum Status {
-        Ok, Moving
-    }
-
+    protected boolean blocking;
 
 
     // TODO: Distinguish Rendering area and Collision area
-    public Sprite(Scene scene, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
+    public Sprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
+        this.blocking = blocking;
         this.scene = scene;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.spriteRenderWidth = spriteRenderWidth;
         this.spriteRenderHeight = spriteRenderHeight;
-        this.posX = 0;
-        this.posY = 0;
+        this.posX = -1.0f;
+        this.posY = -1.0f;
     }
 
-    public Sprite(Scene scene, int spriteWidth, int spriteHeight) {
-        this(scene, spriteWidth, spriteHeight, spriteWidth, spriteHeight);
+    public Sprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
+        this(blocking, scene, spriteWidth, spriteHeight, spriteWidth, spriteHeight);
     }
 
+    public boolean isBlocking() {
+        return blocking;
+    }
 
 
     public Scene getScene() {
@@ -53,10 +53,17 @@ public class Sprite extends TileTexture {
     public float getY() {
         return posY;
     }
+    public FloatPair getPos() {
+        return new FloatPair(posX, posY);
+    }
     public void setX(float x) {
         posX = x;
     }
     public void setY(float y) {
+        posY = y;
+    }
+    public void setPos(float x, float y) {
+        posX = x;
         posY = y;
     }
     public int getSpriteWidth() {
@@ -82,7 +89,7 @@ public class Sprite extends TileTexture {
         Set<IntPair> collisionBox = new TreeSet<>();
         for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
             for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
-                collisionBox.add(scene.getGameMap().getTile(x, y).getIntPair());
+                collisionBox.add(new IntPair(x, y));
             }
         }
         return collisionBox;
@@ -97,14 +104,17 @@ public class Sprite extends TileTexture {
         Set<IntPair> renderingBox = new TreeSet<>();
         for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
             for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
-                renderingBox.add(scene.getGameMap().getTile(x, y).getIntPair());
+                renderingBox.add(new IntPair(x, y));
             }
         }
         return renderingBox;
     }
 
 
-    public void OnUpdate(float timestep) {
-        
+    public void OnUpdate(float timestep) {}
+
+    public boolean OnExplode(Bomb bomb) {
+        return false;
     }
+
 }

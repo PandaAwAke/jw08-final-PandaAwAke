@@ -8,7 +8,7 @@ public class IntPair extends Pair<Integer, Integer> implements Comparable<IntPai
 
     @Override
     public int compareTo(IntPair o) {
-        if (this.first == o.first) {
+        if (this.first.equals(o.first)) {
             return this.second.compareTo(o.second);
         } else {
             return this.first.compareTo(o.first);

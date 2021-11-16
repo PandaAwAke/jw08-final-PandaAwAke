@@ -1,13 +1,17 @@
 package com.pandaawake.gourdgame;
 
 import com.pandaawake.Config;
-import com.pandaawake.gamemap.GameMap;
-import com.pandaawake.gamemap.Scene;
-import com.pandaawake.sprites.CalabashPlayer;
+import com.pandaawake.core.Application;
+import com.pandaawake.scene.*;
+import com.pandaawake.sprites.*;
 import com.pandaawake.utils.Direction;
+import com.pandaawake.utils.IntPair;
 
 
+import javax.swing.*;
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameApp {
 
@@ -19,30 +23,77 @@ public class GameApp {
         return globalGameApp;
     }
 
+
     private GameMap gameMap;
     private Scene scene;
-    private CalabashPlayer calabashPlayer;
-
+    private SceneTilesInitializer sceneTilesInitializer;
+    private Set<Player> players;
 
     private GameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
         scene = new Scene(gameMap);
-        calabashPlayer = new CalabashPlayer(scene);
+        players = new HashSet<>();
 
-        calabashPlayer.setX(1);
-        calabashPlayer.setY(1);
-        this.scene.addSprite(calabashPlayer);
+        sceneTilesInitializer = new SceneTilesInitializer(scene);
+        sceneTilesInitializer.initializeTiles();
+        initializeSprites();
+        initializeHumanPlayers();
+        initializeComputerPlayers();
+    }
+
+
+    private void initializeHumanPlayers() {
+        Calabash humanCalabash = new Calabash(scene);
+        IntPair position = new IntPair(0, 1);
+        //IntPair position = sceneTilesInitializer.getASpriteEntryPositionRandomly(humanCalabash);
+        humanCalabash.setPos(position.first, position.second);
+        scene.addSprite(humanCalabash);
+
+        HumanPlayer humanPlayer = new HumanPlayer(scene, humanCalabash);
+        players.add(humanPlayer);
+    }
+
+    private void initializeSprites() {
 
     }
 
-    public Scene getScene() {
-        return scene;
+    private void initializeComputerPlayers() {
+        for (int i = 0; i < 3; i++) {
+            Snake computerSnake = new Snake(scene);
+            ComputerPlayer computerSnakePlayer;
+            IntPair position;
+            //IntPair position = sceneTilesInitializer.getASpriteEntryPositionRandomly(computerSnake);
+            if (i == 0) {
+                position = new IntPair(0, 13);
+                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.up);
+            } else if (i == 1) {
+                position = new IntPair(15, 13);
+                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.up);
+            } else {
+                position = new IntPair(15, 1);
+                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down);
+            }
+            computerSnake.setPos(position.first, position.second);
+            scene.addSprite(computerSnake);
+
+            players.add(computerSnakePlayer);
+
+            // Create threads and let's go!
+            ComputerPlayer.ComputerPlayerThread thread = new ComputerPlayer.ComputerPlayerThread(computerSnakePlayer);
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
+
+
+    // ---------------------- Callback Functions ----------------------
     public void OnUpdate(float timestep) {
-        // TODO: Update all
         scene.OnUpdate(timestep);
-        
+
+        for (Player player : players) {
+            player.OnUpdate(timestep);
+        }
     }
 
     public void OnRender() {
@@ -50,28 +101,8 @@ public class GameApp {
     }
 
     public void OnKeyPressed(KeyEvent e) {
-        Direction direction = null;
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_A:
-            case KeyEvent.VK_LEFT:
-                direction = Direction.left;
-                break;
-            case KeyEvent.VK_W:
-            case KeyEvent.VK_UP:
-                direction = Direction.up;
-                break;
-            case KeyEvent.VK_D:
-            case KeyEvent.VK_RIGHT:
-                direction = Direction.right;
-                break;
-            case KeyEvent.VK_S:
-            case KeyEvent.VK_DOWN:
-                direction = Direction.down;
-                break;
-        }
-
-        if (direction != null) {
-            calabashPlayer.doMove(direction);
+        for (Player player : players) {
+            player.OnKeyPressed(e);
         }
     }
     

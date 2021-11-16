@@ -60,9 +60,7 @@ public class Renderer extends JPanel {
     /**
      * Class constructor specifying the width and height in gamemap and the
      * tile font
-     * 
-     * @param width
-     * @param height
+     *
      * @param tilefont   if passing null, standard font CP437_9x16 will be used
      */
     public Renderer(AsciiFontTile tilefont) {
@@ -85,7 +83,7 @@ public class Renderer extends JPanel {
         tiles = new int[widthInTiles][heightInTiles];
 
         if (tilefont == null) {
-            tilefont = AsciiFontTile.CP437_9x16;
+            throw new IllegalArgumentException("Tilefont is null!");
         }
         setAsciiFontTile(tilefont);
 

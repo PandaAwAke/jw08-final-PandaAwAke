@@ -11,16 +11,7 @@ import com.pandaawake.Config;
  */
 public class AsciiFontTile {
 
-    public static final AsciiFontTile CP437_8x8 = new AsciiFontTile("src/main/resources/cp437_8x8.png", 8, 8);
-    public static final AsciiFontTile CP437_10x10 = new AsciiFontTile("src/main/resources/cp437_10x10.png", 10, 10);
-    public static final AsciiFontTile CP437_12x12 = new AsciiFontTile("src/main/resources/cp437_12x12.png", 12, 12);
-    public static final AsciiFontTile CP437_16x16 = new AsciiFontTile("src/main/resources/cp437_16x16.png", 16, 16);
-    public static final AsciiFontTile CP437_9x16 = new AsciiFontTile("src/main/resources/cp437_9x16.png", 9, 16);
-    public static final AsciiFontTile DRAKE_10x10 = new AsciiFontTile("src/main/resources/drake_10x10.png", 10, 10);
-    public static final AsciiFontTile TAFFER_10x10 = new AsciiFontTile("src/main/resources/taffer_10x10.png", 10, 10);
-    public static final AsciiFontTile QBICFEET_10x10 = new AsciiFontTile("src/main/resources/qbicfeet_10x10.png", 10, 10);
-    public static final AsciiFontTile TALRYTH_15_15 = new AsciiFontTile("src/main/resources/talryth_square_15x15.png", 15, 15);
-    public static final AsciiFontTile GAME_32_32 = new AsciiFontTile(Config.TileFilepath, 32, 32);
+    public static final AsciiFontTile GAME_FONT_TILE = new AsciiFontTile(Config.TileFilepath, Config.TileSize, Config.TileSize);
 
     private String fontFilename;
 

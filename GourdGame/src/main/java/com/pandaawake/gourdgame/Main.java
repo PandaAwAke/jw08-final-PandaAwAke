@@ -1,5 +1,7 @@
 package com.pandaawake.gourdgame;
 
+import com.pandaawake.core.Application;
+
 public class Main {
 
     public Main() {}

@@ -39,6 +39,14 @@ public class Thing extends TileTexture {
         return super.getGlyphs();
     }
 
+    /**
+     * This function decides whether this thing is destroyed by the bomb
+     * @return true if this thing is destroyed by the bomb
+     */
+    public boolean OnExplode() {
+        return false;
+    }
+
     public void OnUpdate(float timestep) {
         
     }

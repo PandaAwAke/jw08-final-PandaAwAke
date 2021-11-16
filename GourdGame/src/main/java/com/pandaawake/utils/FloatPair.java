@@ -5,10 +5,13 @@ public class FloatPair extends Pair<Float, Float> implements Comparable<FloatPai
     public FloatPair(Float first, Float second) {
         super(first, second);
     }
+    public FloatPair(IntPair intPair) {
+        super(intPair.first.floatValue(), intPair.second.floatValue());
+    }
 
     @Override
     public int compareTo(FloatPair o) {
-        if (this.first == o.first) {
+        if (this.first.equals(o.first)) {
             return this.second.compareTo(o.second);
         } else {
             return this.first.compareTo(o.first);

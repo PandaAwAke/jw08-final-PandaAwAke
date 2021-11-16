@@ -6,7 +6,7 @@ public class Floor extends Thing {
 
     public Floor() {
         super(false);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(5, 12));
+        setTileTexture(UtilFunctions.PositionInTilesToIndex(7, 9));
     }
 
 }
