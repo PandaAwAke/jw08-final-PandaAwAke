@@ -18,7 +18,7 @@ public class RenderCommand {
     public static void Init() {
         Renderer.Init(Config.TilesFont);
         renderer = Renderer.getRenderer();
-        renderer.Init();
+        
     }
 
     public static void drawSprite(Sprite sprite) {
@@ -41,10 +41,10 @@ public class RenderCommand {
                 Tile<Thing> tile = gameMap.getTile(x, y);
                 Thing thing = tile.getThing();
                 if (thing == null) {
-                    renderer.setTile(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), x, y);
+                    renderer.setTexture(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), x, y);
                 } else {
                     int glyphIndex = thing.getTiles().indexOf(tile);
-                    renderer.setTile(thing.getGlyphs().get(glyphIndex), x, y);
+                    renderer.setTexture(thing.getGlyphs().get(glyphIndex), x, y);
                 }
             }
         }

@@ -3,18 +3,14 @@ package com.pandaawake.renderer;
 import com.pandaawake.Config;
 import com.pandaawake.utils.FloatPair;
 import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.UtilFunctions;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 /**
@@ -25,8 +21,9 @@ import javax.swing.JPanel;
 public class Renderer extends JPanel {
 
     private static Renderer globalRenderer = null;
-    public static void Init(AsciiFontTile tilefont) {
-        globalRenderer = new Renderer(tilefont);
+    public static void Init(Texture emptyTexture) {
+        globalRenderer = new Renderer(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
+        globalRenderer.Init();
     }
     public static Renderer getRenderer() {
         if (globalRenderer == null) {
@@ -41,51 +38,55 @@ public class Renderer extends JPanel {
     private int heightInTiles;
     private int tileWidth = Config.TileFileWidth;
     private int tileHeight = Config.TileFileHeight;
-    private String terminalFontFile = Config.TileFilepath;
-    private AsciiFontTile fonttile;
-    private BufferedImage glyphSprite;
 
-    private BufferedImage[] glyphs;
-    private int[][] tiles;
-    private int[][] oldTiles;
+    private Texture[][] tiles;
+    private Texture[][] oldTiles;
+    private Texture emptyTexture;
+    private int scoreboardWidth;
+    private int scoreboardLeft, scoreboardTop;
 
     // Before every rendering, set this variable to clear tiles inside.
     private Set<IntPair> repaintTilePositions;
     // Additional things to render
     private ArrayList<FloatPair> additionalTilePositions;
-    private ArrayList<Integer> additionalTileGlyphs;
+    private ArrayList<Texture> additionalTileGlyphs;
 
-    private int scoreboardLeft, scoreboardTop;
 
     /**
      * Class constructor specifying the width and height in gamemap and the
      * tile font
      *
-     * @param tilefont   if passing null, standard font CP437_9x16 will be used
+     * @param 
      */
-    public Renderer(AsciiFontTile tilefont) {
+    public Renderer(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
         super();
-
-        int width = Config.MapWidth;
-        int height = Config.MapHeight;
-
-        if (width < 1) {
-            throw new IllegalArgumentException("width " + width + " must be greater than 0.");
+        if (emptyTexture == null) {
+            throw new IllegalArgumentException("emptyTexture cannot be null!");
+        }
+        if (widthInTiles < 1) {
+            throw new IllegalArgumentException("width " + widthInTiles + " must be greater than 0.");
+        }
+        if (heightInTiles < 1) {
+            throw new IllegalArgumentException("height " + heightInTiles + " must be greater than 0.");
         }
 
-        if (height < 1) {
-            throw new IllegalArgumentException("height " + height + " must be greater than 0.");
-        }
-
-        widthInTiles = width;
-        heightInTiles = height;
-
-        tiles = new int[widthInTiles][heightInTiles];
-
-        if (tilefont == null) {
-            throw new IllegalArgumentException("Tilefont is null!");
-        }
-        setAsciiFontTile(tilefont);
+        this.widthInTiles = widthInTiles;
+        this.heightInTiles = heightInTiles;
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+        this.emptyTexture = emptyTexture;
+        this.scoreboardWidth = scoreboardWidth;
+        this.scoreboardLeft = widthInTiles * tileWidth;
+        this.scoreboardTop = 0;
+        
+        Dimension panelSize = new Dimension(tileWidth * widthInTiles + scoreboardWidth, tileHeight * heightInTiles);
+        setPreferredSize(panelSize);
+        
+        offscreenBuffer = new BufferedImage(panelSize.width, panelSize.height, BufferedImage.TYPE_INT_RGB);
+        offscreenGraphics = offscreenBuffer.getGraphics();
+        
+        tiles = new Texture[widthInTiles][heightInTiles];
+        oldTiles = new Texture[widthInTiles][heightInTiles];
 
         repaintTilePositions = new TreeSet<>();
         additionalTilePositions = new ArrayList<>();
@@ -99,65 +100,6 @@ public class Renderer extends JPanel {
 
         // Init scoreboard
         offscreenGraphics.setFont(Config.ScoreboardTextFont);
-
-        scoreboardLeft = widthInTiles * tileWidth;
-        scoreboardTop = 0;
-    }
-
-    /**
-     * Gets the currently selected font
-     * 
-     * @return
-     */
-    public AsciiFontTile getAsciiFontTile() {
-        return fonttile;
-    }
-    /**
-     * Sets the used font. It is advisable to make sure the parent component is
-     * properly sized after setting the font as the panel dimensions will most
-     * likely change
-     * 
-     * @param fonttile
-     */
-    public void setAsciiFontTile(AsciiFontTile fonttile) {
-        if (this.fonttile == fonttile) {
-            return;
-        }
-        this.fonttile = fonttile;
-
-        this.tileHeight = fonttile.getHeight();
-        this.tileWidth = fonttile.getWidth();
-        this.terminalFontFile = fonttile.getFontFilename();
-
-        Dimension panelSize = new Dimension(tileWidth * widthInTiles + Config.ScoreBoardWidth, tileHeight * heightInTiles);
-        setPreferredSize(panelSize);
-
-        glyphs = new BufferedImage[Config.TileFileWidth * Config.TileFileHeight];
-
-        offscreenBuffer = new BufferedImage(panelSize.width, panelSize.height, BufferedImage.TYPE_INT_RGB);
-        offscreenGraphics = offscreenBuffer.getGraphics();
-
-        loadGlyphs();
-
-        oldTiles = new int[widthInTiles][heightInTiles];
-
-    }
-
-    private void loadGlyphs() {
-        try {
-            glyphSprite = ImageIO.read(new File(terminalFontFile));
-        } catch (IOException e) {
-            System.err.println("loadGlyphs(): " + e.getMessage());
-        }
-
-        for (int i = 0; i < Config.TileFileWidth * Config.TileFileHeight; i++) {
-            int sx = (i % Config.TileFileWidth) * tileWidth;
-            int sy = (i / Config.TileFileWidth) * tileHeight;
-
-            glyphs[i] = new BufferedImage(tileWidth, tileHeight, BufferedImage.TYPE_INT_ARGB);
-            glyphs[i].getGraphics().drawImage(glyphSprite, 0, 0, tileWidth, tileHeight, sx, sy, sx + tileWidth,
-                    sy + tileHeight, null);
-        }
     }
 
     /**
@@ -166,7 +108,7 @@ public class Renderer extends JPanel {
      * @return this for convenient chaining of method calls
      */
     public void clear() {
-        clear(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), 0, 0, widthInTiles, heightInTiles);
+        clear(emptyTexture, 0, 0, widthInTiles, heightInTiles);
     }
 
     /**
@@ -174,18 +116,14 @@ public class Renderer extends JPanel {
      * default foreground and background colors are. The cursor position will not be
      * modified.
      * 
-     * @param glyphIndex the tile to write
+     * @param texture   the texture to clear
      * @param x         the distance from the left to begin writing from
      * @param y         the distance from the top to begin writing from
      * @param width     the height of the section to clear
      * @param height    the width of the section to clear
      * @return this for convenient chaining of method calls
      */
-    public void clear(int glyphIndex, int x, int y, int width, int height) {
-        if (glyphIndex < 0 || glyphIndex >= glyphs.length)
-            throw new IllegalArgumentException(
-                    "tile " + glyphIndex + " must be within range [0," + glyphs.length + "].");
-
+    public void clear(Texture texture, int x, int y, int width, int height) {
         if (x < 0 || x >= widthInTiles)
             throw new IllegalArgumentException("x " + x + " must be within range [0," + widthInTiles + ")");
 
@@ -207,7 +145,7 @@ public class Renderer extends JPanel {
                     "y + height " + (y + height) + " must be less than " + (heightInTiles + 1) + ".");
         for (int xo = x; xo < x + width; xo++) {
             for (int yo = y; yo < y + height; yo++) {
-                setTile(glyphIndex, xo, yo);
+                setTexture(texture, xo, yo);
             }
         }
     }
@@ -216,23 +154,19 @@ public class Renderer extends JPanel {
      * Write a tile to the specified position. This updates the cursor's
      * position.
      *
-     * @param glyphIndex the tile to write
+     * @param texture   the tile to write
      * @param x         the distance from the left to begin writing from
      * @param y         the distance from the top to begin writing from
      * @return this for convenient chaining of method calls
      */
-    public void setTile(int glyphIndex, int x, int y) {
-        if (glyphIndex < 0 || glyphIndex >= glyphs.length)
-            throw new IllegalArgumentException(
-                    "tile " + glyphIndex + " must be within range [0," + glyphs.length + "].");
-
+    public void setTexture(Texture texture, int x, int y) {
         if (x < 0 || x >= widthInTiles)
             throw new IllegalArgumentException("x " + x + " must be within range [0," + widthInTiles + ")");
 
         if (y < 0 || y >= heightInTiles)
             throw new IllegalArgumentException("y " + y + " must be within range [0," + heightInTiles + ")");
 
-        tiles[x][y] = glyphIndex;
+        tiles[x][y] = texture;
     }
 
     /**
@@ -247,17 +181,17 @@ public class Renderer extends JPanel {
      * This function is used for set some additional render tiles.
      * They should be set before every rendering.
      * @param position
-     * @param glyphIndex
+     * @param texture
      */
-    public void addAdditionalTile(FloatPair position, int glyphIndex) {
+    public void addAdditionalTile(FloatPair position, Texture texture) {
         this.additionalTilePositions.add(position);
-        this.additionalTileGlyphs.add(glyphIndex);
+        this.additionalTileGlyphs.add(texture);
     }
 
 
     public void clearScoreboard() {
         offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-        offscreenGraphics.fillRect(scoreboardLeft, scoreboardTop, Config.ScoreBoardWidth, heightInTiles * tileHeight);
+        offscreenGraphics.fillRect(scoreboardLeft, scoreboardTop, scoreboardWidth, heightInTiles * tileHeight);
     }
 
     /**
@@ -275,13 +209,12 @@ public class Renderer extends JPanel {
      * This function draws some string in scoreboard.
      * @param startX x in scoreboard
      * @param startY y in scoreboard
-     * @param glyphIndex tile index to draw
+     * @param texture texture to draw
      */
-    public void drawScoreboardTile(int startX, int startY, int glyphIndex) {
-        BufferedImage img = glyphs[glyphIndex];
+    public void drawScoreboardTile(int startX, int startY, Texture texture) {
         int leftPixel = scoreboardLeft + startX;
         int topPixel = scoreboardTop + startY;
-        offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+        offscreenGraphics.drawImage(texture.getImage(), leftPixel, topPixel, null);
     }
 
 
@@ -299,22 +232,28 @@ public class Renderer extends JPanel {
         // Repaint specified positions
         for (IntPair pos : repaintTilePositions) {
             int x = pos.first, y = pos.second;
-            BufferedImage img = glyphs[tiles[x][y]];
             offscreenGraphics.setColor(Config.DefaultBackgroundColor);
             offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-            offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
+
+            if (tiles[x][y] != null) {
+                BufferedImage img = tiles[x][y].getImage();
+                offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
+            }
         }
         this.repaintTilePositions.clear();
 
         // Drawing tiles
         for (int x = 0; x < widthInTiles; x++) {
             for (int y = 0; y < heightInTiles; y++) {
-                if (oldTiles[x][y] == tiles[x][y])
+                if (oldTiles[x][y] == tiles[x][y]) {
                     continue;
-                BufferedImage img = glyphs[tiles[x][y]];
-                offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-                offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-                offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
+                }
+                if (tiles[x][y] != null) {
+                    offscreenGraphics.setColor(Config.DefaultBackgroundColor);
+                    offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+                    BufferedImage img = tiles[x][y].getImage();
+                    offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
+                }
                 oldTiles[x][y] = tiles[x][y];
             }
         }
@@ -322,11 +261,13 @@ public class Renderer extends JPanel {
         // Drawing additional tiles
         for (int i = 0; i < additionalTileGlyphs.size(); i++) {
             FloatPair position = additionalTilePositions.get(i);
-            int glyphIndex = additionalTileGlyphs.get(i);
-            BufferedImage img = glyphs[glyphIndex];
-            int leftPixel = Math.round(position.first * tileWidth);
-            int topPixel = Math.round(position.second * tileHeight);
-            offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+            Texture texture = additionalTileGlyphs.get(i);
+            if (texture != null) {
+                BufferedImage img = texture.getImage();
+                int leftPixel = Math.round(position.first * tileWidth);
+                int topPixel = Math.round(position.second * tileHeight);
+                offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+            }
         }
         additionalTileGlyphs.clear();
         additionalTilePositions.clear();

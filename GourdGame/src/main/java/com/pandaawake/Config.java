@@ -2,11 +2,11 @@ package com.pandaawake;
 
 import java.awt.*;
 
-import com.pandaawake.renderer.AsciiFontTile;
+import com.pandaawake.renderer.TileFile;
 
 public class Config {
     // Tile settings
-    public static final AsciiFontTile TilesFont = AsciiFontTile.GAME_FONT_TILE;
+    public static final TileFile TilesFont = TileFile.GAME_FONT_TILE;
     public static final int TileSize = 50;      // A tile's size
     public static final int TileFileWidth = 16;  // File: 16*16 tiles
     public static final int TileFileHeight = 16;  // File: 16*16 tiles

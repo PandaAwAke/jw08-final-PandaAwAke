@@ -7,25 +7,25 @@ public class TileTexture {
      * 1 2
      * 3 4
      * 5 6
-     * Then glyphs should be <1, 2, 3, 4, 5, 6>.
+     * Then textures should be <1, 2, 3, 4, 5, 6>.
      *
      */
-    protected ArrayList<Integer> glyphs;    // Every int inside is a tile's glyph
-    public void setTileTexture(ArrayList<Integer> glyphs) {
-        this.glyphs = glyphs;
+    protected ArrayList<Texture> textures;
+    public void setTileTexture(ArrayList<Texture> textures) {
+        this.textures = textures;
     }
-    public void setTileTexture(int glyph) {
-        glyphs = new ArrayList<>();
-        glyphs.add(glyph);
+    public void setTileTexture(Texture texture) {
+        textures = new ArrayList<>();
+        textures.add(texture);
     }
-    public ArrayList<Integer> getGlyphs() {
-        if (glyphs == null) {
-            throw new NullPointerException("Glyphs is null!");
+    public ArrayList<Texture> getGlyphs() {
+        if (textures == null) {
+            throw new NullPointerException("textures is null!");
         }
-        if (glyphs.size() == 0) {
-            throw new IllegalStateException("Glyphs is empty! setTileTexture before rendering!");
+        if (textures.size() == 0) {
+            throw new IllegalStateException("textures is empty! setTileTexture before rendering!");
         }
-        return glyphs;
+        return textures;
     }
 
 }
