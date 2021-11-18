@@ -1,12 +1,13 @@
 package com.pandaawake.tiles;
 
+import com.pandaawake.Config;
 import com.pandaawake.utils.UtilFunctions;
 
 public class Tree extends Thing {
 
     public Tree() {
         super(true);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(7, 10));
+        tileTextures.setTileTexture(Config.TileParser.getTile(7, 10));
     }
 
     @Override

@@ -6,14 +6,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class TileParser {
+public class TileFileParser {
     
     private String filename;
     private int tileWidth, tileHeight;
     private int fileWidthInTiles, fileHeightInTiles;
     private Texture[] textures;
+    private Texture emptyTexture;
 
-    public TileParser(String filename, int tileWidth, int tileHeight, int fileWidthInTiles, int fileHeightInTiles) {
+    public TileFileParser(String filename, int tileWidth, int tileHeight, int fileWidthInTiles, int fileHeightInTiles, int emptyTextureX, int emptyTextureY) {
         this.filename = filename;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
@@ -22,6 +23,8 @@ public class TileParser {
         textures = new Texture[fileWidthInTiles * fileHeightInTiles];
 
         loadTileFile();
+
+        emptyTexture = getTile(emptyTextureX, emptyTextureY);
     }
 
     public Texture getTile(int x, int y) {
@@ -30,6 +33,10 @@ public class TileParser {
         }
         int index = x + y * fileWidthInTiles;
         return textures[index];
+    }
+
+    public Texture getEmptyTexture() {
+        return emptyTexture;
     }
 
     private void loadTileFile() {

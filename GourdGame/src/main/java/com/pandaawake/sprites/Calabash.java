@@ -14,7 +14,7 @@ public class Calabash extends MovableSprite implements HasBomb {
 
     public Calabash(Scene scene) {
         super(true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(6, 8));
+        tileTextures.setTileTexture(Config.TileParser.getTile(6, 8));
     }
 
     public int getLives() {

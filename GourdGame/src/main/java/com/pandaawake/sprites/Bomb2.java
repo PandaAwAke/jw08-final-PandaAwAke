@@ -1,5 +1,6 @@
 package com.pandaawake.sprites;
 
+import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.utils.UtilFunctions;
 
@@ -16,6 +17,6 @@ public class Bomb2 extends Bomb {
      */
     public Bomb2(Scene scene, HasBomb owner, float posX, float posY) {
         super(scene, owner, posX, posY);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(6, 6));
+        tileTextures.setTileTexture(Config.TileParser.getTile(6, 6));
     }
 }

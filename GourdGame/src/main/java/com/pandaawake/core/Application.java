@@ -58,6 +58,10 @@ public class Application {
             case KeyEvent.VK_ESCAPE:
                 setPause(!getPause());
                 return;
+            case KeyEvent.VK_F5:
+                gameApp.resetAll();
+                setPause(false);
+                return;
         }
         if (pause) {
             return;

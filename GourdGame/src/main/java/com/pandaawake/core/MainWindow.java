@@ -25,7 +25,6 @@ public class MainWindow extends JFrame implements KeyListener {
     
     @Override
     public void repaint() {
-        renderer.clear();
         app.OnRender();
         super.repaint();
     }

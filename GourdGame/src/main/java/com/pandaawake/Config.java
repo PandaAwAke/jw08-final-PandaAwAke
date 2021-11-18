@@ -1,19 +1,21 @@
 package com.pandaawake;
 
+import com.pandaawake.renderer.TileFileParser;
+
 import java.awt.*;
 
-import com.pandaawake.renderer.TileFile;
-
 public class Config {
+    // Global settings
+    public static final String Version = "1.1";
+
     // Tile settings
-    public static final TileFile TilesFont = TileFile.GAME_FONT_TILE;
     public static final int TileSize = 50;      // A tile's size
-    public static final int TileFileWidth = 16;  // File: 16*16 tiles
-    public static final int TileFileHeight = 16;  // File: 16*16 tiles
-    public static final int EmptyTileX = 0;     // Empty tile's coordinate X in the tiles file
-    public static final int EmptyTileY = 0;     // Empty tile's coordinate Y in the tiles file
-    public static final String TileFilepath = "src/main/resources/tiles.png";
     public static final Color DefaultBackgroundColor = Color.WHITE;
+
+    // Tile File settings
+    public static final String TileFilepath = "src/main/resources/tiles.png";
+    public static final TileFileParser TileParser = new TileFileParser(TileFilepath, 50, 50, 16, 16, 0, 0);
+
 
     // Map settings
     public static final int MapWidth = 15;
@@ -22,7 +24,7 @@ public class Config {
     // Core settings
     public static final int MaxFrameRate = 60;
     public static final int ScoreBoardWidth = 150;
-    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05";
+    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05" + Version;
 
     // Game settings
     //      - AI settings

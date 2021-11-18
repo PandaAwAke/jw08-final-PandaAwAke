@@ -14,7 +14,7 @@ public class Snake extends MovableSprite implements HasBomb {
 
     public Snake(Scene scene) {
         super(true, scene, Config.ComputerPlayerMovingSpeed, 1, 1);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(6, 9));
+        tileTextures.setTileTexture(Config.TileParser.getTile(6, 9));
     }
 
     public int getLives() {

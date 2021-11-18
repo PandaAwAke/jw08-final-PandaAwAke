@@ -1,12 +1,13 @@
 package com.pandaawake.tiles;
 
-import com.pandaawake.utils.UtilFunctions;
+import com.pandaawake.Config;
+import com.pandaawake.renderer.TileTextures;
 
 public class Floor extends Thing {
 
     public Floor() {
         super(false);
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(7, 9));
+        tileTextures.setTileTexture(Config.TileParser.getTile(7, 9));
     }
 
 }

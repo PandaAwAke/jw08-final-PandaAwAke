@@ -2,12 +2,15 @@ package com.pandaawake.tiles;
 
 import java.util.ArrayList;
 
-import com.pandaawake.renderer.TileTexture;
+import com.pandaawake.renderer.Texture;
+import com.pandaawake.renderer.TileTextures;
 
-public class Thing extends TileTexture {
+public class Thing {
 
     // Do not use Set, because array can maintain a sequence
     protected ArrayList<Tile<Thing>> tiles;
+    protected boolean blocking;
+    protected TileTextures tileTextures;
 
     public void addTile(Tile<Thing> tile) {
         if (!tiles.contains(tile)) {
@@ -23,20 +26,19 @@ public class Thing extends TileTexture {
     public Thing(boolean blocking) {
         tiles = new ArrayList<>();
         this.blocking = blocking;   // Will this thing blocks the player?
+        this.tileTextures = new TileTextures();
     }
-
-    protected boolean blocking;
 
     public boolean isBlocking() {
         return this.blocking;
     }
 
-    @Override
-    public ArrayList<Integer> getGlyphs() {
-        if (glyphs != null && glyphs.size() != tiles.size()) {
-            throw new IllegalStateException("Glyphs' size does not equal to the tiles' size!");
+
+    public ArrayList<Texture> getTextures() {
+        if (tileTextures.getTextures() != null && tileTextures.getTextures().size() != tiles.size()) {
+            throw new IllegalStateException("Textures' size does not equal to the tiles' size!");
         }
-        return super.getGlyphs();
+        return tileTextures.getTextures();
     }
 
     /**

@@ -43,5 +43,17 @@ public class GameMap {
     public int getHeight() {
         return height;
     }
+
+
+
+    public void resetAll() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                tiles[x][y].setxPos(x);
+                tiles[x][y].setyPos(y);
+                tiles[x][y].setThing(null);
+            }
+        }
+    }
     
 }

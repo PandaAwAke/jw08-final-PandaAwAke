@@ -88,6 +88,25 @@ public class GameApp {
         }
     }
 
+
+    public void resetAll() {
+        RenderCommand.clear();
+        gameMap.resetAll();
+        scene.resetAll();
+
+        // Reset players
+        for (Player player : players) {
+            if (player instanceof ComputerPlayer) {
+                ((ComputerPlayer) player).setRunning(false);
+            }
+        }
+        players.clear();
+        sceneTilesInitializer.initializeTiles();
+        initializeSprites();
+        initializeHumanPlayers();
+        initializeComputerPlayers();
+    }
+
     // ---------------------- Callback Functions ----------------------
     public void OnUpdate(float timestep) {
         scene.OnUpdate(timestep);
@@ -107,11 +126,15 @@ public class GameApp {
         RenderCommand.drawScoreboardString(25, 250, "HP: " + String.valueOf(playerLives));
         for (int i = 0; i < playerLives; i++) {
             RenderCommand.drawScoreboardTile(0 + Config.TileSize * i, 150,
-                    mainPlayer.getCalabash().getGlyphs().get(0));
+                    mainPlayer.getCalabash().getTextures().get(0));
         }
     }
 
     public void OnKeyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_F5) {
+            resetAll();
+            return;
+        }
         for (Player player : players) {
             player.OnKeyPressed(e);
         }

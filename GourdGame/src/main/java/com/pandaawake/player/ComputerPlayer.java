@@ -21,11 +21,25 @@ public class ComputerPlayer implements Player {
     private float elapsedTime = 0.0f;
     private Direction direction;
 
+    private boolean running = true;
+
     public ComputerPlayer(Scene scene, Snake snake, Direction defaultDirection) {
         random = new Random();
         this.scene = scene;
         this.snake = snake;
         this.direction = defaultDirection;
+    }
+
+    public void setRunning(boolean running) {
+        synchronized (this) {
+            this.running = running;
+        }
+    }
+
+    public boolean getRunning() {
+        synchronized (this) {
+            return running;
+        }
     }
 
     @Override
@@ -80,7 +94,7 @@ public class ComputerPlayer implements Player {
 
         @Override
         public void run() {
-            while (true) {
+            while (player.getRunning()) {
                 if (oldTime == 0) {
                     oldTime = System.currentTimeMillis();
                 }

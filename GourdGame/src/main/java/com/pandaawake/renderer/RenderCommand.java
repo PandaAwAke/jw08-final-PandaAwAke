@@ -14,21 +14,23 @@ import java.util.Set;
 public class RenderCommand {
 
     private static Renderer renderer;
+    private static Texture emptyTexture;
 
     public static void Init() {
-        Renderer.Init(Config.TilesFont);
+        emptyTexture = Config.TileParser.getEmptyTexture();
+
+        Renderer.Init(emptyTexture);
         renderer = Renderer.getRenderer();
-        
     }
 
     public static void drawSprite(Sprite sprite) {
         renderer.addRepaintTilePositions(sprite.getRenderingBox());
-        for (int y = 0; y < sprite.getSpriteHeight(); y++) {
+        for (int y = 0; y < sprite.getSpriteRenderHeight(); y++) {
             for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
-                int indexInsideSprite = y * sprite.getSpriteHeight() + x;
+                int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
                 FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
-                int glyphIndex = sprite.getGlyphs().get(indexInsideSprite);
-                renderer.addAdditionalTile(tilePosition, glyphIndex);
+                Texture texture = sprite.getTextures().get(indexInsideSprite);
+                renderer.addAdditionalTile(tilePosition, texture);
                 // TODO: Distinguish Rendering area and Collision area
 
             }
@@ -41,18 +43,23 @@ public class RenderCommand {
                 Tile<Thing> tile = gameMap.getTile(x, y);
                 Thing thing = tile.getThing();
                 if (thing == null) {
-                    renderer.setTexture(UtilFunctions.PositionInTilesToIndex(Config.EmptyTileX, Config.EmptyTileY), x, y);
+                    renderer.setTexture(emptyTexture, x, y);
                 } else {
                     int glyphIndex = thing.getTiles().indexOf(tile);
-                    renderer.setTexture(thing.getGlyphs().get(glyphIndex), x, y);
+                    renderer.setTexture(thing.getTextures().get(glyphIndex), x, y);
                 }
             }
         }
     }
 
-    public static void repaintArea(Set<IntPair> area) {
-        renderer.addRepaintTilePositions(area);
+    public static void repaintPosition(Set<IntPair> position) {
+        renderer.addRepaintTilePositions(position);
     }
+
+    public static void clear() {
+        renderer.clear();
+    }
+
 
 
     public static void clearScoreboard() {
@@ -71,12 +78,12 @@ public class RenderCommand {
 
     /**
      * This function draws some string in scoreboard.
-     * @param startX x in scoreboard
-     * @param startY y in scoreboard
-     * @param glyphIndex tile index to draw
+     * @param startX    x in scoreboard
+     * @param startY    y in scoreboard
+     * @param texture   texture to draw
      */
-    public static void drawScoreboardTile(int startX, int startY, int glyphIndex) {
-        renderer.drawScoreboardTile(startX, startY, glyphIndex);
+    public static void drawScoreboardTile(int startX, int startY, Texture texture) {
+        renderer.drawScoreboardTile(startX, startY, texture);
     }
 
 }

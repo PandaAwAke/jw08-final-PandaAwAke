@@ -6,11 +6,9 @@ import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Floor;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
-import com.pandaawake.utils.Direction;
 import com.pandaawake.utils.IntPair;
 import com.pandaawake.utils.Pair;
 
-import java.awt.event.KeyEvent;
 import java.util.*;
 
 public class Scene {
@@ -155,47 +153,65 @@ public class Scene {
         }
     }
 
+    /**
+     * Reset the entire scene.
+     */
+    public void resetAll() {
+        synchronized (this) {
+            things.clear();
+            sprites.clear();
+
+            thingsToAdd.clear();
+            thingsToRemove.clear();
+            thingsToRepaint.clear();
+            spritesToAdd.clear();
+            spritesToRemove.clear();
+            positionsToRepaint.clear();
+        }
+    }
 
 
     // ---------------------- Callback Functions ----------------------
     public void OnRender() {
-        /**
-         * Render sprites
-         * This will decide the sequence of rendering
-         */
-        Set<Sprite> spritesToRender = new TreeSet<>(new Comparator<Sprite>() {
-            @Override
-            public int compare(Sprite o1, Sprite o2) {
-                if (o1 == o2) {
-                    return 0;
-                }
-                if (o1.getY() == o2.getY()) {
-                    if (o1.getX() == o2.getX()) {
-                        if (!o1.isBlocking()) {
-                            return -1;
+        synchronized (this) {
+            /*
+             * Render sprites
+             * This will decide the sequence of rendering
+             */
+            Set<Sprite> spritesToRender = new TreeSet<>(new Comparator<Sprite>() {
+                @Override
+                public int compare(Sprite o1, Sprite o2) {
+                    if (o1 == o2) {
+                        return 0;
+                    }
+                    if (o1.getY() == o2.getY()) {
+                        if (o1.getX() == o2.getX()) {
+                            if (!o1.isBlocking()) {
+                                return -1;
+                            } else {
+                                return 1;
+                            }
                         } else {
-                            return 1;
+                            return Float.compare(o1.getX(), o2.getX());
                         }
                     } else {
-                        return Float.compare(o1.getX(), o2.getX());
+                        return Float.compare(o1.getY(), o2.getY());
                     }
-                } else {
-                    return Float.compare(o1.getY(), o2.getY());
                 }
+            });
+            spritesToRender.addAll(sprites);
+            for (Sprite sprite : spritesToRender) {
+                RenderCommand.drawSprite(sprite);
             }
-        });
-        spritesToRender.addAll(sprites);
-        for (Sprite sprite : spritesToRender) {
-            RenderCommand.drawSprite(sprite);
-        }
 
-        // Render GameMap
-        RenderCommand.drawGameMap(gameMap);
+            // Render GameMap
+            RenderCommand.drawGameMap(gameMap);
 
-        // Repaint area
-        if (positionsToRepaint.size() > 0) {
-            RenderCommand.repaintArea(positionsToRepaint);
-            positionsToRepaint.clear();
+            // Repaint area
+            if (positionsToRepaint.size() > 0) {
+                RenderCommand.repaintPosition(positionsToRepaint);
+                positionsToRepaint.clear();
+            }
         }
     }
 

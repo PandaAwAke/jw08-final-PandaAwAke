@@ -1,15 +1,17 @@
 package com.pandaawake.sprites;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.pandaawake.Config;
+import com.pandaawake.renderer.Texture;
 import com.pandaawake.scene.Scene;
-import com.pandaawake.renderer.TileTexture;
+import com.pandaawake.renderer.TileTextures;
 import com.pandaawake.utils.FloatPair;
 import com.pandaawake.utils.IntPair;
 
-public class Sprite extends TileTexture {
+public class Sprite {
     /**
      * Sprite is a movable/interactive thing in the scene.
      * The rendering of the sprite should not cover the rendering of tiles.
@@ -20,6 +22,7 @@ public class Sprite extends TileTexture {
     protected int spriteWidth, spriteHeight;                // Use for collision box
     protected int spriteRenderWidth, spriteRenderHeight;    // Use for rendering
     protected boolean blocking;
+    protected TileTextures tileTextures;
 
 
     // TODO: Distinguish Rendering area and Collision area
@@ -32,10 +35,15 @@ public class Sprite extends TileTexture {
         this.spriteRenderHeight = spriteRenderHeight;
         this.posX = -1.0f;
         this.posY = -1.0f;
+        this.tileTextures = new TileTextures();
     }
 
     public Sprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
         this(blocking, scene, spriteWidth, spriteHeight, spriteWidth, spriteHeight);
+    }
+
+    public ArrayList<Texture> getTextures() {
+        return tileTextures.getTextures();
     }
 
     public boolean isBlocking() {

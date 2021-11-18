@@ -2,7 +2,7 @@ package com.pandaawake.renderer;
 
 import java.util.ArrayList;
 
-public class TileTexture {
+public class TileTextures {
     /** If texture is 2*3, and its ints are:
      * 1 2
      * 3 4
@@ -18,12 +18,12 @@ public class TileTexture {
         textures = new ArrayList<>();
         textures.add(texture);
     }
-    public ArrayList<Texture> getGlyphs() {
+    public ArrayList<Texture> getTextures() {
         if (textures == null) {
-            throw new NullPointerException("textures is null!");
+            throw new NullPointerException("Textures is null!");
         }
         if (textures.size() == 0) {
-            throw new IllegalStateException("textures is empty! setTileTexture before rendering!");
+            throw new IllegalStateException("Textures is empty! setTileTexture before rendering!");
         }
         return textures;
     }

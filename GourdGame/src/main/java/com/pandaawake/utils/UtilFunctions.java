@@ -8,9 +8,6 @@ public class UtilFunctions {
 
     private static Random random = new Random();
 
-    public static int PositionInTilesToIndex(int x, int y) {
-        return y * Config.TileFileWidth + x;
-    }
     public static boolean getRandomResultByProbability(float probability) {
         int number = random.nextInt(65536);
         if (number <= probability * 65535) {

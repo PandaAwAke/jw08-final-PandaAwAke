@@ -26,7 +26,7 @@ public class Bomb extends Sprite {
         this.posX = posX;
         this.posY = posY;
         this.owner = owner;
-        setTileTexture(UtilFunctions.PositionInTilesToIndex(7, 8));
+        tileTextures.setTileTexture(Config.TileParser.getTile(7, 8));
     }
 
     public HasBomb getOwner() {
