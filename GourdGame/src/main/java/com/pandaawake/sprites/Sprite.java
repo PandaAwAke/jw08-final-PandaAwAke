@@ -5,11 +5,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.pandaawake.Config;
-import com.pandaawake.renderer.Texture;
+import com.mandas.tiled2d.renderer.Texture;
 import com.pandaawake.scene.Scene;
-import com.pandaawake.renderer.TileTextures;
-import com.pandaawake.utils.FloatPair;
-import com.pandaawake.utils.IntPair;
+import com.mandas.tiled2d.renderer.TileTextures;
+import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 public class Sprite {
     /**

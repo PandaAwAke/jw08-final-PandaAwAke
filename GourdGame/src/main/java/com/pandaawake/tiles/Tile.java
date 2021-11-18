@@ -1,6 +1,6 @@
 package com.pandaawake.tiles;
 
-import com.pandaawake.utils.IntPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 public class Tile<T extends Thing> {
 

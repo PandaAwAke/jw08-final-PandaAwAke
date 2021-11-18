@@ -3,8 +3,7 @@ package com.pandaawake.sprites;
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.tiles.Thing;
-import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.UtilFunctions;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.util.HashSet;
 import java.util.Set;

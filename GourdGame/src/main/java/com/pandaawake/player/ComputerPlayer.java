@@ -2,7 +2,6 @@ package com.pandaawake.player;
 
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
-import com.pandaawake.sprites.Bomb;
 import com.pandaawake.sprites.MovableSprite;
 import com.pandaawake.sprites.Snake;
 import com.pandaawake.utils.Direction;
@@ -104,7 +103,7 @@ public class ComputerPlayer implements Player {
                     oldTime = time;
                 }
                 try {
-                    Thread.sleep(Math.round(1000.0f / Config.MaxFrameRate));
+                    Thread.sleep(Math.round(1000.0f / com.mandas.tiled2d.Config.MaxFrameRate));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

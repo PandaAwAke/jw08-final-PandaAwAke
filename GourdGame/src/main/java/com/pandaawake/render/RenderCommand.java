@@ -1,13 +1,14 @@
-package com.pandaawake.renderer;
+package com.pandaawake.render;
 
+import com.mandas.tiled2d.renderer.Renderer;
+import com.mandas.tiled2d.renderer.Texture;
 import com.pandaawake.Config;
 import com.pandaawake.scene.GameMap;
 import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
-import com.pandaawake.utils.FloatPair;
-import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.UtilFunctions;
+import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.util.Set;
 

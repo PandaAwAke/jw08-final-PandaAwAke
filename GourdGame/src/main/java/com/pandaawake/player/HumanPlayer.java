@@ -1,6 +1,7 @@
 package com.pandaawake.player;
 
-import com.pandaawake.core.Application;
+import com.mandas.tiled2d.core.Application;
+import com.pandaawake.gourdgame.GameApp;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.sprites.*;
 import com.pandaawake.utils.Direction;
@@ -37,7 +38,7 @@ public class HumanPlayer implements Player {
     public void OnUpdate(float timestep) {
         if (!scene.getSprites().contains(calabash)) {
             // Game over
-            Application.getApplication().setPause(true);
+            GameApp.getGameApp().setPause(true);
             JOptionPane.showMessageDialog(null, "游戏结束！你输了！");
         } else {
             boolean NoSnakes = true;
@@ -49,7 +50,7 @@ public class HumanPlayer implements Player {
             }
             if (NoSnakes) {
                 // Game over
-                Application.getApplication().setPause(true);
+                GameApp.getGameApp().setPause(true);
                 JOptionPane.showMessageDialog(null, "游戏结束！恭喜你赢了！");
             }
         }

@@ -2,8 +2,8 @@ package com.pandaawake.tiles;
 
 import java.util.ArrayList;
 
-import com.pandaawake.renderer.Texture;
-import com.pandaawake.renderer.TileTextures;
+import com.mandas.tiled2d.renderer.Texture;
+import com.mandas.tiled2d.renderer.TileTextures;
 
 public class Thing {
 

@@ -1,4 +1,4 @@
-package com.pandaawake.utils;
+package com.mandas.tiled2d.utils;
 
 public class FloatPair extends Pair<Float, Float> implements Comparable<FloatPair> {
 

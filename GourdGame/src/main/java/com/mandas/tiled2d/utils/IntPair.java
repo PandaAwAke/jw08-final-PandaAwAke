@@ -1,4 +1,4 @@
-package com.pandaawake.utils;
+package com.mandas.tiled2d.utils;
 
 public class IntPair extends Pair<Integer, Integer> implements Comparable<IntPair> {
 

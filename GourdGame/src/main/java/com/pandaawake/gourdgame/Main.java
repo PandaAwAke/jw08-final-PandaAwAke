@@ -1,14 +1,17 @@
 package com.pandaawake.gourdgame;
 
-import com.pandaawake.core.Application;
+import com.mandas.tiled2d.core.Application;
+import com.pandaawake.Config;
 
 public class Main {
 
     public Main() {}
 
     public static void main(String[] args) {
-        Application app = Application.getApplication();
-        app.run();
+        GameApp gameApp = GameApp.getGameApp();
+        Application application = new Application(gameApp, Config.WindowTitle);
+
+        application.createWindowAndRun();
     }
 
 }

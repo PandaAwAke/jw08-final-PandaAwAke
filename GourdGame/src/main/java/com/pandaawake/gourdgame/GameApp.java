@@ -1,20 +1,22 @@
 package com.pandaawake.gourdgame;
 
+import com.mandas.tiled2d.core.Application;
+import com.mandas.tiled2d.core.GameApplication;
 import com.pandaawake.Config;
 import com.pandaawake.player.ComputerPlayer;
 import com.pandaawake.player.HumanPlayer;
 import com.pandaawake.player.Player;
-import com.pandaawake.renderer.RenderCommand;
+import com.pandaawake.render.RenderCommand;
 import com.pandaawake.scene.*;
 import com.pandaawake.sprites.*;
 import com.pandaawake.utils.Direction;
-import com.pandaawake.utils.IntPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GameApp {
+public class GameApp implements GameApplication {
 
     private static GameApp globalGameApp = null;
 
@@ -31,6 +33,14 @@ public class GameApp {
     private Set<Player> players;
     private HumanPlayer mainPlayer;
 
+    public boolean pause = false;
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+    public boolean getPause() {
+        return pause;
+    }
+
     private GameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
         scene = new Scene(gameMap);
@@ -41,6 +51,8 @@ public class GameApp {
         initializeSprites();
         initializeHumanPlayers();
         initializeComputerPlayers();
+
+        RenderCommand.Init();
     }
 
     private void initializeHumanPlayers() {
@@ -109,6 +121,9 @@ public class GameApp {
 
     // ---------------------- Callback Functions ----------------------
     public void OnUpdate(float timestep) {
+        if (pause) {
+            return;
+        }
         scene.OnUpdate(timestep);
 
         for (Player player : players) {
@@ -131,8 +146,16 @@ public class GameApp {
     }
 
     public void OnKeyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            setPause(!getPause());
+            return;
+        }
+        if (pause) {
+            return;
+        }
         if (e.getKeyCode() == KeyEvent.VK_F5) {
             resetAll();
+            pause = false;
             return;
         }
         for (Player player : players) {

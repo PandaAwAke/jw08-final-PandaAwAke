@@ -1,9 +1,9 @@
-package com.pandaawake.renderer;
+package com.mandas.tiled2d.renderer;
 
-import com.pandaawake.Config;
-import com.pandaawake.utils.FloatPair;
-import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.Pair;
+import com.mandas.tiled2d.Config;
+import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,7 +23,7 @@ public class Renderer extends JPanel {
 
     private static Renderer globalRenderer = null;
     public static void Init(Texture emptyTexture) {
-        globalRenderer = new Renderer(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
+        globalRenderer = new Renderer(com.pandaawake.Config.MapWidth, com.pandaawake.Config.MapHeight, com.pandaawake.Config.TileSize, com.pandaawake.Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
         globalRenderer.Init();
     }
     public static Renderer getRenderer() {
@@ -92,12 +92,14 @@ public class Renderer extends JPanel {
     }
 
     public void Init() {
-        // Set Clear Color First
-        offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-        offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth + Config.ScoreBoardWidth, heightInTiles * tileHeight);
+        synchronized (this) {
+            // Set Clear Color First
+            offscreenGraphics.setColor(Config.DefaultBackgroundColor);
+            offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth + Config.ScoreBoardWidth, heightInTiles * tileHeight);
 
-        // Init scoreboard
-        offscreenGraphics.setFont(Config.ScoreboardTextFont);
+            // Init scoreboard
+            offscreenGraphics.setFont(Config.ScoreboardTextFont);
+        }
     }
 
     /**
@@ -106,15 +108,17 @@ public class Renderer extends JPanel {
      * @return this for convenient chaining of method calls
      */
     public void clear() {
-        for (int i = 0; i < widthInTiles; i++) {
-            for (int j = 0; j < heightInTiles; j++) {
-                tiles[i][j] = emptyTexture;
-                oldTiles[i][j] = emptyTexture;
+        synchronized (this) {
+            for (int i = 0; i < widthInTiles; i++) {
+                for (int j = 0; j < heightInTiles; j++) {
+                    tiles[i][j] = emptyTexture;
+                    oldTiles[i][j] = emptyTexture;
+                }
             }
+            repaintTilePositions.clear();
+            additionalTiles.clear();
+            offscreenGraphics.fillRect(0, 0, tileWidth * widthInTiles + scoreboardWidth, tileHeight * heightInTiles);
         }
-        repaintTilePositions.clear();
-        additionalTiles.clear();
-        offscreenGraphics.fillRect(0, 0, tileWidth * widthInTiles + scoreboardWidth, tileHeight * heightInTiles);
     }
 
     /**
@@ -127,13 +131,15 @@ public class Renderer extends JPanel {
      * @return this for convenient chaining of method calls
      */
     public void setTexture(Texture texture, int x, int y) {
-        if (x < 0 || x >= widthInTiles)
-            throw new IllegalArgumentException("x " + x + " must be within range [0," + widthInTiles + ")");
+        synchronized (this) {
+            if (x < 0 || x >= widthInTiles)
+                throw new IllegalArgumentException("x " + x + " must be within range [0," + widthInTiles + ")");
 
-        if (y < 0 || y >= heightInTiles)
-            throw new IllegalArgumentException("y " + y + " must be within range [0," + heightInTiles + ")");
+            if (y < 0 || y >= heightInTiles)
+                throw new IllegalArgumentException("y " + y + " must be within range [0," + heightInTiles + ")");
 
-        tiles[x][y] = texture;
+            tiles[x][y] = texture;
+        }
     }
 
     /**
@@ -141,7 +147,9 @@ public class Renderer extends JPanel {
      * @param repaintPositions
      */
     public void addRepaintTilePositions(Collection<IntPair> repaintPositions) {
-        this.repaintTilePositions.addAll(repaintPositions);
+        synchronized (this) {
+            this.repaintTilePositions.addAll(repaintPositions);
+        }
     }
     
     /**
@@ -151,7 +159,9 @@ public class Renderer extends JPanel {
      * @param texture
      */
     public void addAdditionalTile(FloatPair position, Texture texture) {
-        this.additionalTiles.add(new Pair<>(position, texture));
+        synchronized (this) {
+            this.additionalTiles.add(new Pair<>(position, texture));
+        }
     }
 
 
@@ -192,54 +202,56 @@ public class Renderer extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        if (g == null)
-            throw new NullPointerException();
+        synchronized (this) {
+            if (g == null)
+                throw new NullPointerException();
 
-        // Repaint specified positions
-        for (IntPair pos : repaintTilePositions) {
-            int x = pos.first, y = pos.second;
-            offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-            offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+            // Repaint specified positions
+            for (IntPair pos : repaintTilePositions) {
+                int x = pos.first, y = pos.second;
+                offscreenGraphics.setColor(Config.DefaultBackgroundColor);
+                offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
 
-            if (tiles[x][y] == null) {
-                tiles[x][y] = emptyTexture;
-            }
-            BufferedImage img = tiles[x][y].getImage(tileWidth, tileHeight);
-            offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
-        }
-        this.repaintTilePositions.clear();
-
-        // Drawing tiles
-        for (int x = 0; x < widthInTiles; x++) {
-            for (int y = 0; y < heightInTiles; y++) {
-                if (oldTiles[x][y] == tiles[x][y]) {
-                    continue;
-                }
                 if (tiles[x][y] == null) {
                     tiles[x][y] = emptyTexture;
                 }
-                offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-                offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
                 BufferedImage img = tiles[x][y].getImage(tileWidth, tileHeight);
                 offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
-
-                oldTiles[x][y] = tiles[x][y];
             }
-        }
+            this.repaintTilePositions.clear();
 
-        // Drawing additional tiles
-        for (int i = 0; i < additionalTiles.size(); i++) {
-            FloatPair position = additionalTiles.get(i).first;
-            Texture texture = additionalTiles.get(i).second;
-            if (texture != null) {
-                BufferedImage img = texture.getImage(tileWidth, tileHeight);
-                int leftPixel = Math.round(position.first * tileWidth);
-                int topPixel = Math.round(position.second * tileHeight);
-                offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+            // Drawing tiles
+            for (int x = 0; x < widthInTiles; x++) {
+                for (int y = 0; y < heightInTiles; y++) {
+                    if (oldTiles[x][y] == tiles[x][y]) {
+                        continue;
+                    }
+                    if (tiles[x][y] == null) {
+                        tiles[x][y] = emptyTexture;
+                    }
+                    offscreenGraphics.setColor(Config.DefaultBackgroundColor);
+                    offscreenGraphics.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+                    BufferedImage img = tiles[x][y].getImage(tileWidth, tileHeight);
+                    offscreenGraphics.drawImage(img, x * tileWidth, y * tileHeight, null);
+
+                    oldTiles[x][y] = tiles[x][y];
+                }
             }
-        }
-        additionalTiles.clear();
 
-        g.drawImage(offscreenBuffer, 0, 0, this);
+            // Drawing additional tiles
+            for (int i = 0; i < additionalTiles.size(); i++) {
+                FloatPair position = additionalTiles.get(i).first;
+                Texture texture = additionalTiles.get(i).second;
+                if (texture != null) {
+                    BufferedImage img = texture.getImage(tileWidth, tileHeight);
+                    int leftPixel = Math.round(position.first * tileWidth);
+                    int topPixel = Math.round(position.second * tileHeight);
+                    offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+                }
+            }
+            additionalTiles.clear();
+
+            g.drawImage(offscreenBuffer, 0, 0, this);
+        }
     }
 }

@@ -1,16 +1,16 @@
 package com.pandaawake;
 
-import com.pandaawake.renderer.TileFileParser;
+import com.mandas.tiled2d.renderer.TileFileParser;
 
 import java.awt.*;
 
 public class Config {
     // Global settings
-    public static final String Version = "1.1";
+    public static final String Version = "v1.1";
+    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05 " + Version;
 
     // Tile settings
     public static final int TileSize = 50;      // A tile's size
-    public static final Color DefaultBackgroundColor = Color.WHITE;
 
     // Tile File settings
     public static final String TileFilepath = "src/main/resources/tiles.png";
@@ -21,10 +21,7 @@ public class Config {
     public static final int MapWidth = 15;
     public static final int MapHeight = 15;
 
-    // Core settings
-    public static final int MaxFrameRate = 60;
-    public static final int ScoreBoardWidth = 150;
-    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05" + Version;
+
 
     // Game settings
     //      - AI settings
@@ -42,9 +39,5 @@ public class Config {
     public static final float HumanPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     public static final float ComputerPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     public static final int BombExtendedRadius = 1;       // Extended radius of the bomb center, describes the exploding area
-
-    //      - Render settings
-    public static final Font ScoreboardTextFont = new Font("宋体", Font.PLAIN, 36);
-    public static final Color FontColor = Color.black;
 
 }

@@ -1,13 +1,13 @@
 package com.pandaawake.scene;
 
-import com.pandaawake.renderer.RenderCommand;
+import com.pandaawake.render.RenderCommand;
 import com.pandaawake.sprites.MovableSprite;
 import com.pandaawake.sprites.Sprite;
 import com.pandaawake.tiles.Floor;
 import com.pandaawake.tiles.Thing;
 import com.pandaawake.tiles.Tile;
-import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.Pair;
+import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.Pair;
 
 import java.util.*;
 

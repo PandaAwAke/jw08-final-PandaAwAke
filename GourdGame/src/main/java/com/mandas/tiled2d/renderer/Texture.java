@@ -1,6 +1,6 @@
-package com.pandaawake.renderer;
+package com.mandas.tiled2d.renderer;
 
-import com.pandaawake.utils.IntPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

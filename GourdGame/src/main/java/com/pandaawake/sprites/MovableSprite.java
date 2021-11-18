@@ -1,12 +1,11 @@
 package com.pandaawake.sprites;
 
 import com.pandaawake.Config;
-import com.pandaawake.scene.GameMap;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.utils.Direction;
-import com.pandaawake.utils.FloatPair;
-import com.pandaawake.utils.IntPair;
-import com.pandaawake.utils.Pair;
+import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.Pair;
 
 import java.util.Set;
 import java.util.TreeSet;

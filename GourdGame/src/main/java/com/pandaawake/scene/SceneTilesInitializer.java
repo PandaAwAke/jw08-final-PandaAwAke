@@ -3,7 +3,7 @@ package com.pandaawake.scene;
 import com.pandaawake.Config;
 import com.pandaawake.sprites.MovableSprite;
 import com.pandaawake.tiles.*;
-import com.pandaawake.utils.IntPair;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.util.Random;
 

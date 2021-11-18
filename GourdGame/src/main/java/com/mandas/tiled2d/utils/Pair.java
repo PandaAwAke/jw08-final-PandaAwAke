@@ -1,4 +1,4 @@
-package com.pandaawake.utils;
+package com.mandas.tiled2d.utils;
 
 public class Pair<A, B> {
     public A first;

@@ -1,4 +1,4 @@
-package com.pandaawake.renderer;
+package com.mandas.tiled2d.renderer;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

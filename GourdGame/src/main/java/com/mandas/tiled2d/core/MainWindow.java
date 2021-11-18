@@ -1,21 +1,18 @@
-package com.pandaawake.core;
+package com.mandas.tiled2d.core;
 
 import javax.swing.JFrame;
 
-import com.pandaawake.Config;
-import com.pandaawake.renderer.Renderer;
+import com.mandas.tiled2d.renderer.Renderer;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class MainWindow extends JFrame implements KeyListener {
     
-    private Renderer renderer;
     private Application app;
 
-    public MainWindow(Renderer renderer, Application app) {
-        super(Config.WindowTitle);
-        this.renderer = renderer;
+    public MainWindow(String title, Renderer renderer, Application app) {
+        super(title);
         this.app = app;
         add(renderer);
         pack();
