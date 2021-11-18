@@ -1,11 +1,13 @@
 package com.pandaawake;
 
 import com.mandas.tiled2d.renderer.TileFileParser;
+import com.mandas.tiled2d.utils.IntPair;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Config {
-    // Global settings
+    // Core settings
     public static final String Version = "v1.1";
     public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05 " + Version;
 
@@ -20,6 +22,40 @@ public class Config {
     // Map settings
     public static final int MapWidth = 15;
     public static final int MapHeight = 15;
+
+    /**
+     * 1: Floor
+     * 2: Wall
+     * 3: Tree
+     * 4: TwiceBreakableWall
+     */
+    public static final String[] level1TileMap = {
+            "222222222222222",
+            "113321131121111",
+            "121222212222121",
+            "124111111111421",
+            "122122232221221",
+            "133123113321333",
+            "122121444321221",
+            "221133444311122",
+            "122123444321221",
+            "111133313121131",
+            "122122212221223",
+            "321111111111123",
+            "224232212222421",
+            "111321113321311",
+            "222222222222222"
+    };
+    public static final ArrayList<IntPair> level1HumanPlayerPositions = new ArrayList<>();
+    public static final ArrayList<IntPair> level1ComputerPlayerPositions = new ArrayList<>();
+
+    static {
+        level1HumanPlayerPositions.add(new IntPair(0, 1));
+
+        level1ComputerPlayerPositions.add(new IntPair(0, 13));
+        level1ComputerPlayerPositions.add(new IntPair(14, 13));
+        level1ComputerPlayerPositions.add(new IntPair(14, 1));
+    }
 
 
 

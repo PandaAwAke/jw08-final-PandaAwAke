@@ -1,6 +1,5 @@
 package com.pandaawake.gourdgame;
 
-import com.mandas.tiled2d.core.Application;
 import com.mandas.tiled2d.core.GameApplication;
 import com.pandaawake.Config;
 import com.pandaawake.player.ComputerPlayer;
@@ -29,9 +28,11 @@ public class GameApp implements GameApplication {
 
     private GameMap gameMap;
     private Scene scene;
+    private Level level;
     private SceneTilesInitializer sceneTilesInitializer;
     private Set<Player> players;
     private HumanPlayer mainPlayer;
+
 
     public boolean pause = false;
     public void setPause(boolean pause) {
@@ -44,50 +45,38 @@ public class GameApp implements GameApplication {
     private GameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
         scene = new Scene(gameMap);
+        level = new Level(Config.level1TileMap, Config.level1HumanPlayerPositions, Config.level1ComputerPlayerPositions);
+        sceneTilesInitializer = new SceneTilesInitializer(scene);
         players = new HashSet<>();
 
-        sceneTilesInitializer = new SceneTilesInitializer(scene);
-        sceneTilesInitializer.initializeTiles();
         initializeSprites();
-        initializeHumanPlayers();
-        initializeComputerPlayers();
+        initializeMapTileAndLevel();
 
         RenderCommand.Init();
-    }
-
-    private void initializeHumanPlayers() {
-        Calabash humanCalabash = new Calabash(scene);
-        IntPair position = new IntPair(0, 1);
-        // IntPair position =
-        // sceneTilesInitializer.getASpriteEntryPositionRandomly(humanCalabash);
-        humanCalabash.setPos(position.first, position.second);
-        scene.addSprite(humanCalabash);
-
-        mainPlayer = new HumanPlayer(scene, humanCalabash);
-        players.add(mainPlayer);
     }
 
     private void initializeSprites() {
 
     }
 
-    private void initializeComputerPlayers() {
-        for (int i = 0; i < 3; i++) {
+    private void initializeMapTileAndLevel() {
+        // ------ Initialize tiles ------
+        sceneTilesInitializer.initializeTiles(level);
+
+        // ------ Initialize human player positions ------
+        for (IntPair position : level.humanPlayerPositions) {
+            Calabash humanCalabash = new Calabash(scene);
+            humanCalabash.setPos(position.first, position.second);
+            scene.addSprite(humanCalabash);
+
+            // TODO: mainPlayer and multi-players?
+            mainPlayer = new HumanPlayer(scene, humanCalabash);
+            players.add(mainPlayer);
+        }
+
+        for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
-            ComputerPlayer computerSnakePlayer;
-            IntPair position;
-            // IntPair position =
-            // sceneTilesInitializer.getASpriteEntryPositionRandomly(computerSnake);
-            if (i == 0) {
-                position = new IntPair(0, 13);
-                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.up);
-            } else if (i == 1) {
-                position = new IntPair(14, 13);
-                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.up);
-            } else {
-                position = new IntPair(14, 1);
-                computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down);
-            }
+            ComputerPlayer computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down);
             computerSnake.setPos(position.first, position.second);
             scene.addSprite(computerSnake);
 
@@ -99,7 +88,6 @@ public class GameApp implements GameApplication {
             thread.start();
         }
     }
-
 
     public void resetAll() {
         RenderCommand.clear();
@@ -113,10 +101,9 @@ public class GameApp implements GameApplication {
             }
         }
         players.clear();
-        sceneTilesInitializer.initializeTiles();
+
         initializeSprites();
-        initializeHumanPlayers();
-        initializeComputerPlayers();
+        initializeMapTileAndLevel();
     }
 
     // ---------------------- Callback Functions ----------------------
@@ -150,12 +137,12 @@ public class GameApp implements GameApplication {
             setPause(!getPause());
             return;
         }
-        if (pause) {
-            return;
-        }
         if (e.getKeyCode() == KeyEvent.VK_F5) {
             resetAll();
             pause = false;
+            return;
+        }
+        if (pause) {
             return;
         }
         for (Player player : players) {

@@ -103,9 +103,8 @@ public class Renderer extends JPanel {
     }
 
     /**
-     * Clear the entire screen to whatever the default background color is.
-     * 
-     * @return this for convenient chaining of method calls
+     * Clear the entire screen to emptyTile.
+     *
      */
     public void clear() {
         synchronized (this) {

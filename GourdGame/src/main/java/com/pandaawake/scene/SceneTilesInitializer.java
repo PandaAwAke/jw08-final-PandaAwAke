@@ -14,37 +14,13 @@ public class SceneTilesInitializer {
     private static final char KIND_TREE = '3';
     private static final char KIND_TWICE_BREAKABLE_WALL = '4';
 
-    /**
-     * 1: Floor
-     * 2: Wall
-     * 3: Tree
-     * 4: TwiceBreakableWall
-     */
-    private final String[] tileMap = {
-            "222222222222222",
-            "113321131121111",
-            "121222212222121",
-            "124111111111421",
-            "122122232221221",
-            "133123113321333",
-            "122121444321221",
-            "221133444311122",
-            "122123444321221",
-            "111133313121131",
-            "122122212221223",
-            "321111111111123",
-            "224232212222421",
-            "111321113321311",
-            "222222222222222"
-    };
-
 
     private Scene scene;
 
     /**
      * This function will initialize the tiles for the game scene by [tileMap].
      */
-    public void initializeTiles() {
+    public void initializeTiles(String[] tileMap) {
         // TODO: Support non 1x1 tile thing
         for (int y = 0; y < Config.MapHeight; y++) {
             for (int x = 0; x < Config.MapWidth; x++) {
@@ -52,7 +28,7 @@ public class SceneTilesInitializer {
                 if (tile == null) {
                     throw new NullPointerException("Null tile in GameMap! Please create GameMap first.");
                 }
-                Thing thing = getNewThing(x, y);
+                Thing thing = getNewThing(tileMap[y].charAt(x));
                 if (thing != null) {
                     scene.addThing(thing, tile);
                 }
@@ -60,13 +36,16 @@ public class SceneTilesInitializer {
         }
     }
 
+    public void initializeTiles(Level level) {
+        initializeTiles(level.getLevelTileMap());
+    }
+
     public SceneTilesInitializer(Scene scene) {
         this.scene = scene;
     }
 
-    private Thing getNewThing(int x, int y) {
-        char tileKind = tileMap[y].charAt(x);
-        switch (tileKind) {
+    private Thing getNewThing(char c) {
+        switch (c) {
             case KIND_FLOOR:
                 return new Floor();
             case KIND_WALL:
