@@ -30,7 +30,7 @@ Made by PandaAwAke, Nanjing University, November 2021.
   * Renderer：渲染器，基于 JPanel、Graphics (最早借用并改写了 AsciiPanel，后来重写了一个版本)，使用它来在窗口上画出游戏画面
   * Texture：材质，包装一个 BufferedImage，提供缩放等功能
   * TileFileParser *：解析一个 Tiled 图片，获取某个位置的 Texture。如下例所示
-    ![TiledMap](E:\dev\jw05-PandaAwAke\README.assets\tile_example.png)
+    ![TiledMap](resources/tile_example.png)
   * TileTextures *：描述了一组有顺序的 Texture，可以作为游戏中某个可绘制对象的成员存储材质表示
 
 * 包 com.mandas.tile2d.utils
