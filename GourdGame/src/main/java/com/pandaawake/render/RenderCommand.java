@@ -20,7 +20,7 @@ public class RenderCommand {
     public static void Init() {
         emptyTexture = Config.TileParser.getEmptyTexture();
 
-        Renderer.Init(emptyTexture);
+        Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
         renderer = Renderer.getRenderer();
     }
 
@@ -31,7 +31,7 @@ public class RenderCommand {
                 int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
                 FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
                 Texture texture = sprite.getTextures().get(indexInsideSprite);
-                renderer.addAdditionalTile(tilePosition, texture);
+                renderer.addFloatingTile(tilePosition, texture, false);
                 // TODO: Distinguish Rendering area and Collision area
 
             }

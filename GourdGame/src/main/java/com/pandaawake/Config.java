@@ -18,6 +18,8 @@ public class Config {
     public static final String TileFilepath = "src/main/resources/tiles.png";
     public static final TileFileParser TileParser = new TileFileParser(TileFilepath, 50, 50, 16, 16, 0, 0);
 
+    // Render settings
+    public static final int ScoreBoardWidth = 150;
 
     // Map settings
     public static final int MapWidth = 15;

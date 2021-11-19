@@ -10,11 +10,17 @@ import java.awt.event.KeyEvent;
 public class Application {
     private GameApplication gameApp = null;
     private MainWindow window;
-    private String windowTitle = "Mandas Java Tile2D Engine";
+    private String windowTitle = "Mandas Java Tiled2D Engine";
+
+    public Application(GameApplication gameApp) {
+        this.gameApp = gameApp;
+        gameApp.InitRenderer();
+    }
 
     public Application(GameApplication gameApp, String title) {
         this.gameApp = gameApp;
         this.windowTitle = title;
+        gameApp.InitRenderer();
     }
 
     public void createWindowAndRun() {
@@ -30,14 +36,14 @@ public class Application {
     /**
      * This function will be called when the window repaints.
      */
-    public void OnRender() {
+    void OnRender() {
         if (gameApp == null) {
             throw new IllegalStateException("Please setGameApplication first!");
         }
         gameApp.OnRender();
     }
 
-    public void OnKeyPressed(KeyEvent e) {
+    void OnKeyPressed(KeyEvent e) {
         if (gameApp == null) {
             throw new IllegalStateException("Please setGameApplication first!");
         }
@@ -45,7 +51,7 @@ public class Application {
         gameApp.OnKeyPressed(e);
     }
 
-    public void OnUpdate(float timestep) {
+    void OnUpdate(float timestep) {
         if (gameApp == null) {
             throw new IllegalStateException("Please setGameApplication first!");
         }
@@ -53,7 +59,7 @@ public class Application {
         window.repaint();
     }
 
-    public class ApplicationUpdator implements Runnable {
+    private class ApplicationUpdator implements Runnable {
 
         private long oldTime = 0;
         private Application app;

@@ -6,7 +6,6 @@ public class Config {
     // Core settings
     public static final String Version = "v0.1";
     public static final int MaxFrameRate = 60;
-    public static final int ScoreBoardWidth = 150;
 
 
     //      - Render settings

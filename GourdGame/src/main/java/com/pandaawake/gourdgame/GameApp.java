@@ -51,8 +51,6 @@ public class GameApp implements GameApplication {
 
         initializeSprites();
         initializeMapTileAndLevel();
-
-        RenderCommand.Init();
     }
 
     private void initializeSprites() {
@@ -74,6 +72,7 @@ public class GameApp implements GameApplication {
             players.add(mainPlayer);
         }
 
+        // ------ Initialize computer player positions ------
         for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
             ComputerPlayer computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down);
@@ -106,7 +105,28 @@ public class GameApp implements GameApplication {
         initializeMapTileAndLevel();
     }
 
-    // ---------------------- Callback Functions ----------------------
+    // ---------------------- GameApplication Functions ----------------------
+    @Override
+    public void InitRenderer() {
+        RenderCommand.Init();
+    }
+
+    @Override
+    public void OnRender() {
+        scene.OnRender();
+
+        // Paint something on scoreboard
+        RenderCommand.clearScoreboard();
+
+        int playerLives = mainPlayer.getCalabash().getLives();
+        RenderCommand.drawScoreboardString(25, 250, "HP: " + String.valueOf(playerLives));
+        for (int i = 0; i < playerLives; i++) {
+            RenderCommand.drawScoreboardTile(0 + Config.TileSize * i, 150,
+                    mainPlayer.getCalabash().getTextures().get(0));
+        }
+    }
+
+    @Override
     public void OnUpdate(float timestep) {
         if (pause) {
             return;
@@ -118,20 +138,7 @@ public class GameApp implements GameApplication {
         }
     }
 
-    public void OnRender() {
-        scene.OnRender();
-
-        // Paint something in scoreboard
-        RenderCommand.clearScoreboard();
-
-        int playerLives = mainPlayer.getCalabash().getLives();
-        RenderCommand.drawScoreboardString(25, 250, "HP: " + String.valueOf(playerLives));
-        for (int i = 0; i < playerLives; i++) {
-            RenderCommand.drawScoreboardTile(0 + Config.TileSize * i, 150,
-                    mainPlayer.getCalabash().getTextures().get(0));
-        }
-    }
-
+    @Override
     public void OnKeyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             setPause(!getPause());

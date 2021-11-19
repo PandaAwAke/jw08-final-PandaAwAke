@@ -22,8 +22,34 @@ import javax.swing.JPanel;
 public class Renderer extends JPanel {
 
     private static Renderer globalRenderer = null;
-    public static void Init(Texture emptyTexture) {
-        globalRenderer = new Renderer(com.pandaawake.Config.MapWidth, com.pandaawake.Config.MapHeight, com.pandaawake.Config.TileSize, com.pandaawake.Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
+    /**
+     * Initialize the rendering configuration
+     *
+     * @param widthInTiles The width of map (in tiles count).
+     * @param heightInTiles The height of map (in tiles count).
+     * @param tileWidth The width of a tile.
+     * @param tileHeight The width of a tile.
+     * @param scoreboardWidth The width of scoreboard, set to 0 if you do not need this.
+     * @param emptyTextureColor If there are unset tiles in the map, set to this pure color.
+     */
+    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Color emptyTextureColor) {
+        globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth,
+                tileHeight, scoreboardWidth, Texture.getPureColorTexture(tileWidth, tileHeight, emptyTextureColor));
+        globalRenderer.Init();
+    }
+    /**
+     * Initialize the rendering configuration
+     *
+     * @param widthInTiles The width of map (in tiles count).
+     * @param heightInTiles The height of map (in tiles count).
+     * @param tileWidth The width of a tile.
+     * @param tileHeight The width of a tile.
+     * @param scoreboardWidth The width of scoreboard, set to 0 if you do not need this.
+     * @param emptyTexture If there are unset tiles in the map, set to this texture.
+     */
+    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
+        globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth,
+                tileHeight, scoreboardWidth, emptyTexture);
         globalRenderer.Init();
     }
     public static Renderer getRenderer() {
@@ -49,15 +75,9 @@ public class Renderer extends JPanel {
     // Before every rendering, set this variable to clear tiles inside.
     private Set<IntPair> repaintTilePositions;
     // Additional things to render
-    private ArrayList<Pair<FloatPair, Texture>> additionalTiles;
+    private ArrayList<Pair<FloatPair, Texture>> flotingTiles;
 
-    /**
-     * Class constructor specifying the width and height in gamemap and the
-     * tile font
-     *
-     * @param 
-     */
-    public Renderer(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
+    Renderer(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
         super();
         if (emptyTexture == null) {
             throw new IllegalArgumentException("emptyTexture cannot be null!");
@@ -88,17 +108,16 @@ public class Renderer extends JPanel {
         oldTiles = new Texture[widthInTiles][heightInTiles];
 
         repaintTilePositions = new TreeSet<>();
-        additionalTiles = new ArrayList<>();
+        flotingTiles = new ArrayList<>();
+
+        Init();
     }
 
-    public void Init() {
+    private void Init() {
         synchronized (this) {
             // Set Clear Color First
             offscreenGraphics.setColor(Config.DefaultBackgroundColor);
-            offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth + Config.ScoreBoardWidth, heightInTiles * tileHeight);
-
-            // Init scoreboard
-            offscreenGraphics.setFont(Config.ScoreboardTextFont);
+            offscreenGraphics.fillRect(0, 0, widthInTiles * tileWidth + scoreboardWidth, heightInTiles * tileHeight);
         }
     }
 
@@ -115,7 +134,7 @@ public class Renderer extends JPanel {
                 }
             }
             repaintTilePositions.clear();
-            additionalTiles.clear();
+            flotingTiles.clear();
             offscreenGraphics.fillRect(0, 0, tileWidth * widthInTiles + scoreboardWidth, tileHeight * heightInTiles);
         }
     }
@@ -154,13 +173,37 @@ public class Renderer extends JPanel {
     /**
      * This function is used for set some additional render tiles.
      * They should be set before every rendering.
-     * @param position
-     * @param texture
+     * @param position          Position to render.
+     * @param texture           Texture to show.
+     * @param repaintNearTiles  If you don't want to repaint nearby tiles or specify repaint tiles yourself, set this to false.
      */
-    public void addAdditionalTile(FloatPair position, Texture texture) {
+    public void addFloatingTile(FloatPair position, Texture texture, boolean repaintNearTiles) {
         synchronized (this) {
-            this.additionalTiles.add(new Pair<>(position, texture));
+            this.flotingTiles.add(new Pair<>(position, texture));
+
+            if (repaintNearTiles) {
+                int left = (int) Math.round(Math.floor(position.first));
+                int right = (int) Math.round(Math.ceil(position.first));
+                int top = (int) Math.round(Math.floor(position.second));
+                int bottom = (int) Math.round(Math.ceil(position.second));
+
+                for (int x = Math.max(left, 0); x <= right && x < widthInTiles; x++) {
+                    for (int y = Math.max(top, 0); y <= bottom && y < heightInTiles; y++) {
+                        this.repaintTilePositions.add(new IntPair(x, y));
+                    }
+                }
+            }
         }
+    }
+
+    /**
+     * This function is used for set some additional render tiles.
+     * They should be set before every rendering.
+     * @param position          Position to render.
+     * @param texture           Texture to show.
+     */
+    public void addFloatingTile(FloatPair position, Texture texture) {
+        addFloatingTile(position, texture, true);
     }
 
 
@@ -176,7 +219,19 @@ public class Renderer extends JPanel {
      * @param string string to draw
      */
     public void drawScoreboardString(int startX, int startY, String string) {
+        drawScoreboardString(startX, startY, string, Config.ScoreboardTextFont);
+    }
+
+    /**
+     * This function draws some string in scoreboard.
+     * @param startX x in scoreboard
+     * @param startY y in scoreboard
+     * @param string string to draw
+     * @param font Font for drawing
+     */
+    public void drawScoreboardString(int startX, int startY, String string, Font font) {
         offscreenGraphics.setColor(Config.FontColor);
+        offscreenGraphics.setFont(font);
         offscreenGraphics.drawString(string, scoreboardLeft + startX, scoreboardTop + startY);
     }
 
@@ -238,9 +293,9 @@ public class Renderer extends JPanel {
             }
 
             // Drawing additional tiles
-            for (int i = 0; i < additionalTiles.size(); i++) {
-                FloatPair position = additionalTiles.get(i).first;
-                Texture texture = additionalTiles.get(i).second;
+            for (int i = 0; i < flotingTiles.size(); i++) {
+                FloatPair position = flotingTiles.get(i).first;
+                Texture texture = flotingTiles.get(i).second;
                 if (texture != null) {
                     BufferedImage img = texture.getImage(tileWidth, tileHeight);
                     int leftPixel = Math.round(position.first * tileWidth);
@@ -248,7 +303,7 @@ public class Renderer extends JPanel {
                     offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
                 }
             }
-            additionalTiles.clear();
+            flotingTiles.clear();
 
             g.drawImage(offscreenBuffer, 0, 0, this);
         }
