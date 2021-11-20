@@ -209,7 +209,6 @@ public class Scene {
 
             // Repaint area
             if (positionsToRepaint.size() > 0) {
-                RenderCommand.repaintPosition(positionsToRepaint);
                 positionsToRepaint.clear();
             }
         }
@@ -245,9 +244,6 @@ public class Scene {
                 for (Tile<Thing> tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
                 }
-            }
-            for (Sprite sprite : spritesToRemove) {
-                positionsToRepaint.addAll(sprite.getRenderingBox());
             }
 
             things.removeAll(thingsToRemove);

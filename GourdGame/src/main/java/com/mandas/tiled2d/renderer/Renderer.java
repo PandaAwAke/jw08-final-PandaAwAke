@@ -146,7 +146,6 @@ public class Renderer extends JPanel {
      * @param texture   the tile to write
      * @param x         the distance from the left to begin writing from
      * @param y         the distance from the top to begin writing from
-     * @return this for convenient chaining of method calls
      */
     public void setTexture(Texture texture, int x, int y) {
         synchronized (this) {
@@ -162,39 +161,14 @@ public class Renderer extends JPanel {
 
     /**
      * This function is used for set some positions to be repainted next time, even through tile does not change.
-     * @param repaintPositions
+     * @param repaintPositions Positions of tiles to repaint
      */
     public void addRepaintTilePositions(Collection<IntPair> repaintPositions) {
         synchronized (this) {
             this.repaintTilePositions.addAll(repaintPositions);
         }
     }
-    
-    /**
-     * This function is used for set some additional render tiles.
-     * They should be set before every rendering.
-     * @param position          Position to render.
-     * @param texture           Texture to show.
-     * @param repaintNearTiles  If you don't want to repaint nearby tiles or specify repaint tiles yourself, set this to false.
-     */
-    public void addFloatingTile(FloatPair position, Texture texture, boolean repaintNearTiles) {
-        synchronized (this) {
-            this.flotingTiles.add(new Pair<>(position, texture));
 
-            if (repaintNearTiles) {
-                int left = (int) Math.round(Math.floor(position.first));
-                int right = (int) Math.round(Math.ceil(position.first));
-                int top = (int) Math.round(Math.floor(position.second));
-                int bottom = (int) Math.round(Math.ceil(position.second));
-
-                for (int x = Math.max(left, 0); x <= right && x < widthInTiles; x++) {
-                    for (int y = Math.max(top, 0); y <= bottom && y < heightInTiles; y++) {
-                        this.repaintTilePositions.add(new IntPair(x, y));
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * This function is used for set some additional render tiles.
@@ -203,7 +177,9 @@ public class Renderer extends JPanel {
      * @param texture           Texture to show.
      */
     public void addFloatingTile(FloatPair position, Texture texture) {
-        addFloatingTile(position, texture, true);
+        synchronized (this) {
+            this.flotingTiles.add(new Pair<>(position, texture));
+        }
     }
 
 
@@ -302,7 +278,22 @@ public class Renderer extends JPanel {
                     int topPixel = Math.round(position.second * tileHeight);
                     offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
                 }
+
+                // Repaint nearby area next time
+                {
+                    int left = (int) Math.round(Math.floor(position.first));
+                    int right = (int) Math.round(Math.ceil(position.first));
+                    int top = (int) Math.round(Math.floor(position.second));
+                    int bottom = (int) Math.round(Math.ceil(position.second));
+
+                    for (int x = Math.max(left, 0); x <= right && x < widthInTiles; x++) {
+                        for (int y = Math.max(top, 0); y <= bottom && y < heightInTiles; y++) {
+                            this.repaintTilePositions.add(new IntPair(x, y));
+                        }
+                    }
+                }
             }
+
             flotingTiles.clear();
 
             g.drawImage(offscreenBuffer, 0, 0, this);

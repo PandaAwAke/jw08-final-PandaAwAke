@@ -25,13 +25,13 @@ public class RenderCommand {
     }
 
     public static void drawSprite(Sprite sprite) {
-        renderer.addRepaintTilePositions(sprite.getRenderingBox());
+        //renderer.addRepaintTilePositions(sprite.getRenderingBox());
         for (int y = 0; y < sprite.getSpriteRenderHeight(); y++) {
             for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
                 int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
                 FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
                 Texture texture = sprite.getTextures().get(indexInsideSprite);
-                renderer.addFloatingTile(tilePosition, texture, false);
+                renderer.addFloatingTile(tilePosition, texture);
                 // TODO: Distinguish Rendering area and Collision area
 
             }
