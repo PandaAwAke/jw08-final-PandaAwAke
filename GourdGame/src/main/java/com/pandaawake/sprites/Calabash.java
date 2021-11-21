@@ -1,5 +1,6 @@
 package com.pandaawake.sprites;
 
+import com.mandas.tiled2d.utils.FloatPair;
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.utils.UtilFunctions;
@@ -14,7 +15,7 @@ public class Calabash extends MovableSprite implements HasBomb {
 
     public Calabash(Scene scene) {
         super(true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
-        tileTextures.setTileTexture(Config.TileParser.getTile(6, 8));
+        getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
     }
 
     public int getLives() {

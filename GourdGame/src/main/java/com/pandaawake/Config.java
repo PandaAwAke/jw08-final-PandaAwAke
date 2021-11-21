@@ -1,9 +1,8 @@
 package com.pandaawake;
 
-import com.mandas.tiled2d.renderer.TileFileParser;
+import com.mandas.tiled2d.utils.TileFileParser;
 import com.mandas.tiled2d.utils.IntPair;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class Config {

@@ -27,6 +27,14 @@ public class Texture {
         this.img = img;
     }
 
+    public void setImage(BufferedImage img, int width, int height) {
+        setImage(img);
+        if (width == img.getWidth() && height == img.getHeight()) {
+            return;
+        }
+        this.img = getImage(width, height);
+    }
+
     public BufferedImage getImage() {
         return img;
     }

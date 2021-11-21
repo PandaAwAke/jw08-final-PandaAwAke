@@ -2,6 +2,9 @@ package com.mandas.tiled2d.utils;
 
 public class IntPair extends Pair<Integer, Integer> implements Comparable<IntPair> {
 
+    public IntPair(int first, int second) {
+        super(first, second);
+    }
     public IntPair(Integer first, Integer second) {
         super(first, second);
     }

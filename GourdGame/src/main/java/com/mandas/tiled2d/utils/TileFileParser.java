@@ -1,4 +1,6 @@
-package com.mandas.tiled2d.renderer;
+package com.mandas.tiled2d.utils;
+
+import com.mandas.tiled2d.renderer.Texture;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

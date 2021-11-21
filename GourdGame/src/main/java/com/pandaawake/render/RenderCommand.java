@@ -2,6 +2,7 @@ package com.pandaawake.render;
 
 import com.mandas.tiled2d.renderer.Renderer;
 import com.mandas.tiled2d.renderer.Texture;
+import com.mandas.tiled2d.scene.Scene;
 import com.pandaawake.Config;
 import com.pandaawake.scene.GameMap;
 import com.pandaawake.sprites.Sprite;
@@ -17,25 +18,25 @@ public class RenderCommand {
     private static Renderer renderer;
     private static Texture emptyTexture;
 
-    public static void Init() {
+    public static void Init(Scene scene) {
         emptyTexture = Config.TileParser.getEmptyTexture();
 
-        Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture);
+        Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture, scene);
         renderer = Renderer.getRenderer();
     }
 
     public static void drawSprite(Sprite sprite) {
         //renderer.addRepaintTilePositions(sprite.getRenderingBox());
-        for (int y = 0; y < sprite.getSpriteRenderHeight(); y++) {
-            for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
-                int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
-                FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
-                Texture texture = sprite.getTextures().get(indexInsideSprite);
-                renderer.addFloatingTile(tilePosition, texture);
-                // TODO: Distinguish Rendering area and Collision area
-
-            }
-        }
+//        for (int y = 0; y < sprite.getSpriteRenderHeight(); y++) {
+//            for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
+//                int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
+//                FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
+//                Texture texture = sprite.getTextures().get(indexInsideSprite);
+//                renderer.addFloatingTile(tilePosition, texture);
+//                // TODO: Distinguish Rendering area and Collision area
+//
+//            }
+//        }
     }
 
     public static void drawGameMap(GameMap gameMap) {

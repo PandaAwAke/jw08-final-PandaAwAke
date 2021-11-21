@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.mandas.tiled2d.renderer.TileTextures;
+import com.mandas.tiled2d.scene.Component;
+import com.mandas.tiled2d.scene.Entity;
+import com.mandas.tiled2d.scene.TileTextureRenderComponent;
+import com.mandas.tiled2d.scene.TransformComponent;
 import com.pandaawake.Config;
 import com.mandas.tiled2d.renderer.Texture;
 import com.pandaawake.scene.Scene;
-import com.mandas.tiled2d.renderer.TileTextures;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 
-public class Sprite {
+public class Sprite extends Entity {
     /**
      * Sprite is a movable/interactive thing in the scene.
      * The rendering of the sprite should not cover the rendering of tiles.
@@ -22,7 +26,7 @@ public class Sprite {
     protected int spriteWidth, spriteHeight;                // Use for collision box
     protected int spriteRenderWidth, spriteRenderHeight;    // Use for rendering
     protected boolean blocking;
-    protected TileTextures tileTextures;
+    //protected TileTextures tileTextures;
 
 
     // TODO: Distinguish Rendering area and Collision area
@@ -33,18 +37,22 @@ public class Sprite {
         this.spriteHeight = spriteHeight;
         this.spriteRenderWidth = spriteRenderWidth;
         this.spriteRenderHeight = spriteRenderHeight;
-        this.posX = -1.0f;
-        this.posY = -1.0f;
-        this.tileTextures = new TileTextures();
+        this.posX = 0.0f;
+        this.posY = 0.0f;
+        //this.tileTextures = new TileTextures();
+
+        // Components
+        this.addComponent(new TileTextureRenderComponent());
+        this.addComponent(new TransformComponent());
     }
 
     public Sprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
         this(blocking, scene, spriteWidth, spriteHeight, spriteWidth, spriteHeight);
     }
 
-    public ArrayList<Texture> getTextures() {
-        return tileTextures.getTextures();
-    }
+//    public ArrayList<Texture> getTextures() {
+//        return tileTextures.getTextures();
+//    }
 
     public boolean isBlocking() {
         return blocking;
@@ -66,13 +74,15 @@ public class Sprite {
     }
     public void setX(float x) {
         posX = x;
+        getTransformComponent().setTranslationX(x);
     }
     public void setY(float y) {
         posY = y;
+        getTransformComponent().setTranslationY(y);
     }
     public void setPos(float x, float y) {
-        posX = x;
-        posY = y;
+        setX(x);
+        setY(y);
     }
     public int getSpriteWidth() {
         return spriteWidth;

@@ -55,18 +55,17 @@ public class MovableSprite extends Sprite {
     }
     @Override
     public void setX(float x) {
-        posX = x;
+        super.setX(x);
         targetPos.first = x;
     }
     @Override
     public void setY(float y) {
-        posY = y;
+        super.setY(y);
         targetPos.second = y;
     }
     @Override
     public void setPos(float x, float y) {
-        posX = x;
-        posY = y;
+        super.setPos(x, y);
         targetPos.first = x;
         targetPos.second = y;
     }
@@ -177,11 +176,10 @@ public class MovableSprite extends Sprite {
             movingTime += timestep;
             if (movingTime >= 1.0f / movingSpeed) {
                 status = Status.Ok;
-                this.posX = targetPos.first;
-                this.posY = targetPos.second;
+                setPos(targetPos.first, targetPos.second);
             } else {
-                this.posX += targetDeltaPos.first * movingSpeed * timestep;
-                this.posY += targetDeltaPos.second * movingSpeed * timestep;
+                setX(posX + targetDeltaPos.first * movingSpeed * timestep);
+                setY(posY + targetDeltaPos.second * movingSpeed * timestep);
             }
         }
         

@@ -108,7 +108,7 @@ public class GameApp implements GameApplication {
     // ---------------------- GameApplication Functions ----------------------
     @Override
     public void InitRenderer() {
-        RenderCommand.Init();
+        RenderCommand.Init(scene);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class GameApp implements GameApplication {
         RenderCommand.drawScoreboardString(25, 250, "HP: " + String.valueOf(playerLives));
         for (int i = 0; i < playerLives; i++) {
             RenderCommand.drawScoreboardTile(0 + Config.TileSize * i, 150,
-                    mainPlayer.getCalabash().getTextures().get(0));
+                    mainPlayer.getCalabash().getTileTextureRenderComponent().getPositionsAndTextures().get(0).second);
         }
     }
 
@@ -132,7 +132,6 @@ public class GameApp implements GameApplication {
             return;
         }
         scene.OnUpdate(timestep);
-
         for (Player player : players) {
             player.OnUpdate(timestep);
         }

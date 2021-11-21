@@ -1,5 +1,6 @@
 package com.pandaawake.scene;
 
+import com.mandas.tiled2d.scene.Entity;
 import com.pandaawake.render.RenderCommand;
 import com.pandaawake.sprites.MovableSprite;
 import com.pandaawake.sprites.Sprite;
@@ -11,7 +12,7 @@ import com.mandas.tiled2d.utils.Pair;
 
 import java.util.*;
 
-public class Scene {
+public class Scene extends com.mandas.tiled2d.scene.Scene {
     /**
      * The scene is the place that holds all Things in the game.
      * Note: Every Thing added to the scene should be unique!
@@ -23,6 +24,7 @@ public class Scene {
     private final GameMap gameMap;
 
     public Scene(GameMap gameMap) {
+        super();
         things = new HashSet<>();
         sprites = new HashSet<>();
         this.gameMap = gameMap;
@@ -113,10 +115,10 @@ public class Scene {
      * This function tells whether the sprite can move to x, y,
      * considering no sprites(moving or stop) collides, tile[x][y] is not blocking,
      * and (x, y) is inside the map.
-     * @param sprite
-     * @param x
-     * @param y
-     * @return
+     * @param sprite Sprite to test
+     * @param x Position X
+     * @param y Position Y
+     * @return Can move to?
      */
     public boolean spriteCanMoveTo(MovableSprite sprite, int x, int y) {
         synchronized (this) {
@@ -200,6 +202,10 @@ public class Scene {
                 }
             });
             spritesToRender.addAll(sprites);
+
+            // Set the sequence for render
+            super.setEntities(spritesToRender);
+
             for (Sprite sprite : spritesToRender) {
                 RenderCommand.drawSprite(sprite);
             }
@@ -209,18 +215,19 @@ public class Scene {
 
             // Repaint area
             if (positionsToRepaint.size() > 0) {
+                RenderCommand.repaintPosition(positionsToRepaint);
                 positionsToRepaint.clear();
             }
         }
     }
 
+    @Override
     public void OnUpdate(float timestep) {
         synchronized (this) {
+            super.OnUpdate(timestep);
+
             for (Thing thing : things) {
                 thing.OnUpdate(timestep);
-            }
-            for (Sprite sprite : sprites) {
-                sprite.OnUpdate(timestep);
             }
 
             for (Pair<Thing, ArrayList<Tile<Thing>>> thingAndTiles : thingsToAdd) {
@@ -231,6 +238,7 @@ public class Scene {
                 }
                 things.add(thing);
             }
+
             for (Thing thing : thingsToRemove) {
                 for (Tile<Thing> tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
@@ -240,6 +248,7 @@ public class Scene {
                 }
                 thing.getTiles().clear();
             }
+
             for (Thing thing : thingsToRepaint) {
                 for (Tile<Thing> tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));

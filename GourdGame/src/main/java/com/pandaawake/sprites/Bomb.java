@@ -1,5 +1,6 @@
 package com.pandaawake.sprites;
 
+import com.mandas.tiled2d.utils.FloatPair;
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
 import com.pandaawake.tiles.Thing;
@@ -22,10 +23,9 @@ public class Bomb extends Sprite {
      */
     public Bomb(Scene scene, HasBomb owner, float posX, float posY) {
         super(false, scene, 1, 1);
-        this.posX = posX;
-        this.posY = posY;
+        setPos(posX, posY);
         this.owner = owner;
-        tileTextures.setTileTexture(Config.TileParser.getTile(7, 8));
+        getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(7, 8));
     }
 
     public HasBomb getOwner() {

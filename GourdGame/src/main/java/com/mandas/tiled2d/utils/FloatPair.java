@@ -2,6 +2,9 @@ package com.mandas.tiled2d.utils;
 
 public class FloatPair extends Pair<Float, Float> implements Comparable<FloatPair> {
 
+    public FloatPair(float first, float second) {
+        super(first, second);
+    }
     public FloatPair(Float first, Float second) {
         super(first, second);
     }

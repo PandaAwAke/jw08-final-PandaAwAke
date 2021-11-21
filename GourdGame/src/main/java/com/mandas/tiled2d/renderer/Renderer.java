@@ -1,11 +1,14 @@
 package com.mandas.tiled2d.renderer;
 
 import com.mandas.tiled2d.Config;
+import com.mandas.tiled2d.scene.*;
+import com.mandas.tiled2d.scene.Component;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 import com.mandas.tiled2d.utils.Pair;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,9 +35,9 @@ public class Renderer extends JPanel {
      * @param scoreboardWidth The width of scoreboard, set to 0 if you do not need this.
      * @param emptyTextureColor If there are unset tiles in the map, set to this pure color.
      */
-    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Color emptyTextureColor) {
+    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Color emptyTextureColor, Scene scene) {
         globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth,
-                tileHeight, scoreboardWidth, Texture.getPureColorTexture(tileWidth, tileHeight, emptyTextureColor));
+                tileHeight, scoreboardWidth, Texture.getPureColorTexture(tileWidth, tileHeight, emptyTextureColor), scene);
         globalRenderer.Init();
     }
     /**
@@ -47,9 +50,9 @@ public class Renderer extends JPanel {
      * @param scoreboardWidth The width of scoreboard, set to 0 if you do not need this.
      * @param emptyTexture If there are unset tiles in the map, set to this texture.
      */
-    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
+    public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture, Scene scene) {
         globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth,
-                tileHeight, scoreboardWidth, emptyTexture);
+                tileHeight, scoreboardWidth, emptyTexture, scene);
         globalRenderer.Init();
     }
     public static Renderer getRenderer() {
@@ -59,8 +62,8 @@ public class Renderer extends JPanel {
         return globalRenderer;
     }
 
-    private Image offscreenBuffer;
-    private Graphics offscreenGraphics;
+    private BufferedImage offscreenBuffer;
+    private Graphics2D offscreenGraphics;
     private int widthInTiles;
     private int heightInTiles;
     private int tileWidth;
@@ -71,13 +74,14 @@ public class Renderer extends JPanel {
     private Texture emptyTexture;
     private int scoreboardWidth;
     private int scoreboardLeft, scoreboardTop;
+    private Scene scene;
 
     // Before every rendering, set this variable to clear tiles inside.
     private Set<IntPair> repaintTilePositions;
     // Additional things to render
     private ArrayList<Pair<FloatPair, Texture>> flotingTiles;
 
-    Renderer(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture) {
+    Renderer(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight, int scoreboardWidth, Texture emptyTexture, Scene scene) {
         super();
         if (emptyTexture == null) {
             throw new IllegalArgumentException("emptyTexture cannot be null!");
@@ -95,6 +99,7 @@ public class Renderer extends JPanel {
         this.tileHeight = tileHeight;
         this.emptyTexture = emptyTexture;
         this.scoreboardWidth = scoreboardWidth;
+        this.scene = scene;
         this.scoreboardLeft = widthInTiles * tileWidth;
         this.scoreboardTop = 0;
         
@@ -102,7 +107,7 @@ public class Renderer extends JPanel {
         setPreferredSize(panelSize);
         
         offscreenBuffer = new BufferedImage(panelSize.width, panelSize.height, BufferedImage.TYPE_INT_RGB);
-        offscreenGraphics = offscreenBuffer.getGraphics();
+        offscreenGraphics = offscreenBuffer.createGraphics();
         
         tiles = new Texture[widthInTiles][heightInTiles];
         oldTiles = new Texture[widthInTiles][heightInTiles];
@@ -236,7 +241,7 @@ public class Renderer extends JPanel {
             if (g == null)
                 throw new NullPointerException();
 
-            // Repaint specified positions
+            // 1: Repaint specified positions
             for (IntPair pos : repaintTilePositions) {
                 int x = pos.first, y = pos.second;
                 offscreenGraphics.setColor(Config.DefaultBackgroundColor);
@@ -250,7 +255,7 @@ public class Renderer extends JPanel {
             }
             this.repaintTilePositions.clear();
 
-            // Drawing tiles
+            // 2: Drawing tiles
             for (int x = 0; x < widthInTiles; x++) {
                 for (int y = 0; y < heightInTiles; y++) {
                     if (oldTiles[x][y] == tiles[x][y]) {
@@ -268,7 +273,48 @@ public class Renderer extends JPanel {
                 }
             }
 
-            // Drawing additional tiles
+            // 3: Paint all entities in Scene
+            for (Entity entity : scene.getEntities()) {
+                TransformComponent transComponent = (TransformComponent) entity.getComponent(Component.TransformComponentId);
+                double translationX = 0, translationY = 0;
+                if (transComponent != null) {
+                    AffineTransform transform = transComponent.getTransform();
+                    offscreenGraphics.setTransform(transform);
+                    translationX = transComponent.getTranslateX();
+                    translationY = transComponent.getTranslateY();
+                }
+
+                TileTextureRenderComponent ttrComponent = (TileTextureRenderComponent) entity.getComponent(Component.TileTextureRenderComponentId);
+                if (ttrComponent != null) {
+                    for (Pair<FloatPair, Texture> positionAndTex : ttrComponent.getPositionsAndTextures()) {
+                        BufferedImage img = positionAndTex.second.getImage(tileWidth, tileHeight);
+
+                        double leftTileIndex = positionAndTex.first.first + translationX;
+                        double topTileIndex = positionAndTex.first.second + translationY;
+
+                        int leftPixel = (int) Math.round(leftTileIndex * tileWidth);
+                        int topPixel = (int) Math.round(topTileIndex * tileHeight);
+
+                        offscreenGraphics.drawImage(img, leftPixel, topPixel, null);
+                        offscreenGraphics.setTransform(new AffineTransform());
+
+                        // Repaint nearby area next time
+                        {
+                            int left = (int) Math.round(Math.floor(leftTileIndex));
+                            int right = (int) Math.round(Math.ceil(leftTileIndex));
+                            int top = (int) Math.round(Math.floor(topTileIndex));
+                            int bottom = (int) Math.round(Math.ceil(topTileIndex));
+                            for (int x = Math.max(left, 0); x <= right && x < widthInTiles; x++) {
+                                for (int y = Math.max(top, 0); y <= bottom && y < heightInTiles; y++) {
+                                    this.repaintTilePositions.add(new IntPair(x, y));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 4: Drawing additional tiles
             for (int i = 0; i < flotingTiles.size(); i++) {
                 FloatPair position = flotingTiles.get(i).first;
                 Texture texture = flotingTiles.get(i).second;

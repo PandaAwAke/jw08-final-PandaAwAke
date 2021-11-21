@@ -4,12 +4,14 @@ import javax.swing.JFrame;
 
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.renderer.Renderer;
+import com.mandas.tiled2d.scene.Scene;
 
 import java.awt.event.KeyEvent;
 
 public class Application {
     private GameApplication gameApp = null;
     private MainWindow window;
+
     private String windowTitle = "Mandas Java Tiled2D Engine";
 
     public Application(GameApplication gameApp) {
