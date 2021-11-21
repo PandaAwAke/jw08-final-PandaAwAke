@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class Config {
     // Core settings
-    public static final String Version = "v1.1";
-    public static final String WindowTitle = "葫芦娃泡泡堂 By Ma Yingshuo, Java Hw05 " + Version;
+    public static final String Version = "v2.0";
+    public static final String WindowTitle = "葫芦娃泡泡堂 By MYS, Java Hw05 " + Version;
 
     // Tile settings
     public static final int TileSize = 50;      // A tile's size
@@ -37,7 +37,7 @@ public class Config {
             "11133321113111211111",
             "11211222211222211211",
             "11241111111111114211",
-            "11221122233222112211",
+            "11221122213222112211",
             "11133112311133211333",
             "11221121144432112211",
             "22113344411311122111",
@@ -56,8 +56,9 @@ public class Config {
         level1HumanPlayerPositions.add(new IntPair(0, 1));
 
         level1ComputerPlayerPositions.add(new IntPair(0, 13));
-        level1ComputerPlayerPositions.add(new IntPair(14, 13));
-        level1ComputerPlayerPositions.add(new IntPair(14, 1));
+        level1ComputerPlayerPositions.add(new IntPair(19, 13));
+        level1ComputerPlayerPositions.add(new IntPair(19, 1));
+        level1ComputerPlayerPositions.add(new IntPair(9, 3));
     }
 
 

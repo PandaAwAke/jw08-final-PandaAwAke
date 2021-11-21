@@ -78,6 +78,7 @@ public class Bomb extends Sprite {
                                 if (sprite instanceof Bomb) {
                                     ((Bomb) sprite).setExplodeImmediately();
                                 }
+                                break;
                             }
                         }
                     }
