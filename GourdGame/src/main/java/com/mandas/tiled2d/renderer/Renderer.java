@@ -65,10 +65,9 @@ public class Renderer extends JPanel {
 
     private BufferedImage offscreenBuffer, scoreboardBuffer;
     private Graphics2D offscreenGraphics, scoreboardGraphics;
-    private int mapWidthInTiles;
-    private int mapHeightInTiles;
-    private int tileWidth;
-    private int tileHeight;
+    private int mapWidthInTiles, mapHeightInTiles;
+    private int renderWidthInTiles, renderHeightInTiles;
+    private int tileWidth, tileHeight;
 
     private Texture[][] tiles;
     private Texture[][] oldTiles;
@@ -104,6 +103,8 @@ public class Renderer extends JPanel {
         this.scoreboardWidth = scoreboardWidth;
         this.scene = scene;
         this.defaultCamera = defaultCamera;
+        this.renderWidthInTiles = (int) defaultCamera.getWidthInTiles();
+        this.renderHeightInTiles = (int) defaultCamera.getHeightInTiles();
         
         Dimension panelSize = new Dimension(tileWidth * (int)(defaultCamera.getWidthInTiles()) + scoreboardWidth,
                 tileHeight * (int)(defaultCamera.getHeightInTiles()));
@@ -270,7 +271,7 @@ public class Renderer extends JPanel {
             // 5: Camera
             BufferedImage cameraBufferedImage = paint_camera();
 
-            int scoreboardLeft = mapWidthInTiles * tileWidth;
+            int scoreboardLeft = renderWidthInTiles * tileWidth;
             g.drawImage(cameraBufferedImage, 0, 0, cameraBufferedImage.getWidth(), cameraBufferedImage.getHeight(), this);
             g.drawImage(scoreboardBuffer, scoreboardLeft, 0, this);
         }
@@ -389,8 +390,8 @@ public class Renderer extends JPanel {
 
     private BufferedImage paint_camera() {
         synchronized (this) {
-            int cameraWidth = Math.max((int) (renderingCamera.getWidthInTiles() * tileWidth), 0);
-            int cameraHeight = Math.max((int) (renderingCamera.getHeightInTiles() * tileHeight), 0);
+            int cameraWidth = Math.max(renderWidthInTiles * tileWidth, 0);
+            int cameraHeight = Math.max(renderHeightInTiles * tileHeight, 0);
             int cameraTranslateX = (int) (renderingCamera.getTranslateX() * tileWidth);
             int cameraTranslateY = (int) (renderingCamera.getTranslateY() * tileHeight);
             int cameraScaledWidth = Math.max((int) (cameraWidth * renderingCamera.getScaleX()), 0);

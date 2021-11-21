@@ -19,9 +19,11 @@ public class Config {
 
     // Render settings
     public static final int ScoreBoardWidth = 150;
+    public static final int RenderWidth = 15;
+    public static final int RenderHeight = 15;
 
     // Map settings
-    public static final int MapWidth = 15;
+    public static final int MapWidth = 20;
     public static final int MapHeight = 15;
 
     /**
@@ -31,21 +33,21 @@ public class Config {
      * 4: TwiceBreakableWall
      */
     public static final String[] level1TileMap = {
-            "222222222222222",
-            "113321131121111",
-            "121222212222121",
-            "124111111111421",
-            "122122232221221",
-            "133123113321333",
-            "122121444321221",
-            "221133444311122",
-            "122123444321221",
-            "111133313121131",
-            "122122212221223",
-            "321111111111123",
-            "224232212222421",
-            "111321113321311",
-            "222222222222222"
+            "22222222222222222222",
+            "11133321113111211111",
+            "11211222211222211211",
+            "11241111111111114211",
+            "11221122233222112211",
+            "11133112311133211333",
+            "11221121144432112211",
+            "22113344411311122111",
+            "11221123444322112211",
+            "11113331131221133311",
+            "12221122212221112231",
+            "32111111111111111123",
+            "22142322211222224211",
+            "11113211113322113111",
+            "22222222222222222222"
     };
     public static final ArrayList<IntPair> level1HumanPlayerPositions = new ArrayList<>();
     public static final ArrayList<IntPair> level1ComputerPlayerPositions = new ArrayList<>();
