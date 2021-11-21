@@ -156,6 +156,50 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     }
 
     /**
+     * This function tells whether the sprite can move to x, y,
+     * considering no sprites(moving or stop) collides, tile[x][y] is not blocking,
+     * and (x, y) is inside the map.
+     * @param sprite Sprite to test
+     * @param x Position X
+     * @param y Position Y
+     * @return Can add to this position?
+     */
+    public boolean spriteCanAddTo(MovableSprite sprite, int x, int y) {
+        synchronized (this) {
+            if (sprite.getStatus() == MovableSprite.Status.Moving) {
+                return false;
+            }
+            if (!gameMap.insideMap(x, y)) {
+                return false;
+            }
+            if (gameMap.getTile(x, y).getThing() != null && gameMap.getTile(x, y).getThing().isBlocking()) {
+                return false;
+            }
+
+            if (!sprite.isBlocking()) {
+                return true;
+            }
+            // Consider other sprites, get their collision boxes first
+            Set<IntPair> unreachablePositions = new TreeSet<>();
+            for (Sprite otherSprite : sprites) {
+                if (sprite == otherSprite) {
+                    continue;
+                }
+                if (!otherSprite.isBlocking()) {
+                    continue;
+                }
+                unreachablePositions.addAll(otherSprite.getCollisionBox());
+            }
+            for (IntPair position : sprite.tryToAddCollisionBox(x, y)) {
+                if (unreachablePositions.contains(position)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
      * Reset the entire scene.
      */
     public void resetAll() {
@@ -205,10 +249,6 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
 
             // Set the sequence for render
             super.setEntities(spritesToRender);
-
-            for (Sprite sprite : spritesToRender) {
-                RenderCommand.drawSprite(sprite);
-            }
 
             // Render GameMap
             RenderCommand.drawGameMap(gameMap);

@@ -53,25 +53,8 @@ public class MovableSprite extends Sprite {
     public FloatPair getTargetPos() {
         return targetPos;
     }
-    @Override
-    public void setX(float x) {
-        super.setX(x);
-        targetPos.first = x;
-    }
-    @Override
-    public void setY(float y) {
-        super.setY(y);
-        targetPos.second = y;
-    }
-    @Override
-    public void setPos(float x, float y) {
-        super.setPos(x, y);
-        targetPos.first = x;
-        targetPos.second = y;
-    }
 
-
-    private Pair<Integer, Integer> tryMove(Direction direction) {
+    private IntPair tryMove(Direction direction) {
         int newX = Math.round(posX), newY = Math.round(posY);
         switch (direction) {
             case left:
@@ -87,14 +70,14 @@ public class MovableSprite extends Sprite {
                 newY += 1;
                 break;
         }
-        return new Pair<Integer, Integer>(newX, newY);
+        return new IntPair(newX, newY);
     }
 
     public boolean doMove(Direction direction) {
         if (status != Status.Ok) {
             return false;
         }
-        Pair<Integer, Integer> newPosition = tryMove(direction);
+        IntPair newPosition = tryMove(direction);
         if (scene.spriteCanMoveTo(this, newPosition.first, newPosition.second)) {
             status = Status.Moving;
             targetDeltaPos.first = newPosition.first - posX;
@@ -116,17 +99,32 @@ public class MovableSprite extends Sprite {
     public Set<IntPair> tryToMoveCollisionBox(int targetX, int targetY) {
         int left, right, top, bottom;
         Set<IntPair> collisionBox = new TreeSet<>();
-        if (posX == -1.0f) {
-            left = (int) Math.round(Math.floor(targetX));
-            right = (int) Math.round(Math.ceil(targetX)) + spriteWidth - 1;
-            top = (int) Math.round(Math.floor(targetY));
-            bottom = (int) Math.round(Math.ceil(targetY)) + spriteHeight - 1;
-        } else {
-            left = (int) Math.round(Math.floor(Math.min(targetX, posX)));
-            right = (int) Math.round(Math.ceil(Math.max(targetX, posX))) + spriteWidth - 1;
-            top = (int) Math.round(Math.floor(Math.min(targetY, posY)));
-            bottom = (int) Math.round(Math.ceil(Math.max(targetY, posY))) + spriteHeight - 1;
+        left = (int) Math.round(Math.floor(Math.min(targetX, posX)));
+        right = (int) Math.round(Math.ceil(Math.max(targetX, posX))) + spriteWidth - 1;
+        top = (int) Math.round(Math.floor(Math.min(targetY, posY)));
+        bottom = (int) Math.round(Math.ceil(Math.max(targetY, posY))) + spriteHeight - 1;
+
+        for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
+            for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
+                collisionBox.add(new IntPair(x, y));
+            }
         }
+        return collisionBox;
+    }
+
+    /**
+     * This function will help scene to judge if this sprite can move to (targetX, targetY).
+     * @param targetX
+     * @param targetY
+     * @return The collision box of this try.
+     */
+    public Set<IntPair> tryToAddCollisionBox(int targetX, int targetY) {
+        int left, right, top, bottom;
+        Set<IntPair> collisionBox = new TreeSet<>();
+        left = (int) Math.round(Math.floor(targetX));
+        right = (int) Math.round(Math.ceil(targetX)) + spriteWidth - 1;
+        top = (int) Math.round(Math.floor(targetY));
+        bottom = (int) Math.round(Math.ceil(targetY)) + spriteHeight - 1;
 
         for (int x = Math.max(left, 0); x <= right && x < Config.MapWidth; x++) {
             for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
@@ -139,6 +137,9 @@ public class MovableSprite extends Sprite {
     // Collision box
     @Override
     public Set<IntPair> getCollisionBox() {
+        if (status == Status.Ok) {
+            return super.getCollisionBox();
+        }
         int left = (int) Math.round(Math.floor(Math.min(targetPos.first, posX)));
         int right = (int) Math.round(Math.ceil(Math.max(targetPos.first, posX))) + spriteWidth - 1;
         int top = (int) Math.round(Math.floor(Math.min(targetPos.second, posY)));
@@ -155,6 +156,9 @@ public class MovableSprite extends Sprite {
     // Rendering box
     @Override
     public Set<IntPair> getRenderingBox() {
+        if (status == Status.Ok) {
+            return super.getCollisionBox();
+        }
         int left = (int) Math.round(Math.floor(Math.min(targetPos.first, posX)));
         int right = (int) Math.round(Math.ceil(Math.max(targetPos.first, posX))) + spriteRenderWidth - 1;
         int top = (int) Math.round(Math.floor(Math.min(targetPos.second, posY)));

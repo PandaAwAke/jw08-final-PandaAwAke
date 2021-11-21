@@ -128,7 +128,7 @@ public class Sprite extends Entity {
         return renderingBox;
     }
 
-
+    @Override
     public void OnUpdate(float timestep) {}
 
     public boolean OnExplode(Bomb bomb) {

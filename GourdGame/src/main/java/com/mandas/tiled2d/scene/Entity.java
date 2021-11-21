@@ -49,8 +49,6 @@ public class Entity {
     }
 
 
-    public void OnUpdate(float timestep) {
-
-    }
+    public void OnUpdate(float timestep) {}
 
 }

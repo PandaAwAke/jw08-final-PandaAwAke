@@ -83,7 +83,7 @@ public class SceneTilesInitializer {
             if (tile.getThing() != null && tile.getThing().isBlocking()) {
                 continue;
             }
-            if (!scene.spriteCanMoveTo(sprite, x, y)) {
+            if (!scene.spriteCanAddTo(sprite, x, y)) {
                 continue;
             }
             return new IntPair(x, y);

@@ -1,5 +1,6 @@
 package com.pandaawake.render;
 
+import com.mandas.tiled2d.renderer.Camera;
 import com.mandas.tiled2d.renderer.Renderer;
 import com.mandas.tiled2d.renderer.Texture;
 import com.mandas.tiled2d.scene.Scene;
@@ -17,26 +18,18 @@ public class RenderCommand {
 
     private static Renderer renderer;
     private static Texture emptyTexture;
+    private static Camera camera;
 
     public static void Init(Scene scene) {
         emptyTexture = Config.TileParser.getEmptyTexture();
+        camera = new Camera(Config.MapWidth, Config.MapHeight);
+        camera.setScale(1.2, 1.2);
+        camera.setTranslation(0, 0);
 
-        Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize, Config.ScoreBoardWidth, emptyTexture, scene);
+        Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize,
+                Config.ScoreBoardWidth, emptyTexture, scene, camera);
+
         renderer = Renderer.getRenderer();
-    }
-
-    public static void drawSprite(Sprite sprite) {
-        //renderer.addRepaintTilePositions(sprite.getRenderingBox());
-//        for (int y = 0; y < sprite.getSpriteRenderHeight(); y++) {
-//            for (int x = 0; x < sprite.getSpriteRenderWidth(); x++) {
-//                int indexInsideSprite = y * sprite.getSpriteRenderHeight() + x;
-//                FloatPair tilePosition = new FloatPair(sprite.getX() + x, sprite.getY() + y);
-//                Texture texture = sprite.getTextures().get(indexInsideSprite);
-//                renderer.addFloatingTile(tilePosition, texture);
-//                // TODO: Distinguish Rendering area and Collision area
-//
-//            }
-//        }
     }
 
     public static void drawGameMap(GameMap gameMap) {

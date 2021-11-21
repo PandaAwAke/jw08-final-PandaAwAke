@@ -47,9 +47,9 @@ public class Bomb extends Sprite {
             if (elapsedTime >= TimeBeforeExploding || explodeImmediately) {
                 // Exploded!
                 exploded = true;
-                int left = (int) Math.round(posX) - Config.BombExtendedRadius;
+                int left = (int) posX - Config.BombExtendedRadius;
                 int right = left + 2 * Config.BombExtendedRadius;
-                int top = (int) Math.round(posY) - Config.BombExtendedRadius;
+                int top = (int) posY - Config.BombExtendedRadius;
                 int bottom = top + 2 * Config.BombExtendedRadius;
 
                 Set<Sprite> spritesToRemove = new HashSet<>();
