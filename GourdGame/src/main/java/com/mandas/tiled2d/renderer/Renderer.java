@@ -268,7 +268,7 @@ public class Renderer extends JPanel {
         }
     }
 
-    
+
     private void paint_repaintTiles() {
         synchronized (this) {
             for (IntPair pos : repaintTilePositions) {
@@ -378,17 +378,26 @@ public class Renderer extends JPanel {
         synchronized (this) {
             int cameraWidth = Math.max((int) (camera.getWidthInTiles() * tileWidth), 0);
             int cameraHeight = Math.max((int) (camera.getHeightInTiles() * tileHeight), 0);
-            int cameraTranslateX = Math.max((int) (camera.getTranslateX() * tileWidth), 0);
-            int cameraTranslateY = Math.max((int) (camera.getTranslateY() * tileHeight), 0);
+            int cameraTranslateX = (int) (camera.getTranslateX() * tileWidth);
+            int cameraTranslateY = (int) (camera.getTranslateY() * tileHeight);
             int cameraScaledWidth = Math.max((int) (cameraWidth * camera.getScaleX()), 0);
             int cameraScaledHeight = Math.max((int) (cameraHeight * camera.getScaleY()), 0);
 
             Graphics2D graphics2D;
 
             // Get targeted area
-            BufferedImage offScreenSubImage = offscreenBuffer.getSubimage(cameraTranslateX, cameraTranslateY,
+            BufferedImage offScreenSubImage = new BufferedImage(
                     Math.max(Math.min(cameraWidth, offscreenBuffer.getWidth() - cameraTranslateX), 0),
-                    Math.max(Math.min(cameraHeight, offscreenBuffer.getHeight() - cameraTranslateY), 0));
+                    Math.max(Math.min(cameraHeight, offscreenBuffer.getHeight() - cameraTranslateY), 0), BufferedImage.TYPE_INT_ARGB);
+            graphics2D = offScreenSubImage.createGraphics();
+            graphics2D.drawImage(offscreenBuffer.getSubimage(
+                    Math.max(cameraTranslateX, 0), Math.max(cameraTranslateY, 0),
+                    Math.max(Math.min(cameraWidth, offscreenBuffer.getWidth() - cameraTranslateX), 0),
+                    Math.max(Math.min(cameraHeight, offscreenBuffer.getHeight() - cameraTranslateY), 0)),
+                    Math.max(0, -cameraTranslateX),
+                    Math.max(0, -cameraTranslateY), null
+            );
+            graphics2D.dispose();
             // Get scaled image
             Image scaledOffScreenSubImage = offScreenSubImage.getScaledInstance(
                     (int) (offScreenSubImage.getWidth() * camera.getScaleX()),

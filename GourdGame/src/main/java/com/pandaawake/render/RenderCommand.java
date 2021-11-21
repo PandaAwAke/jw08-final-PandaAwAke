@@ -23,8 +23,8 @@ public class RenderCommand {
     public static void Init(Scene scene) {
         emptyTexture = Config.TileParser.getEmptyTexture();
         camera = new Camera(Config.MapWidth, Config.MapHeight);
-        camera.setScale(1.2, 1.2);
-        camera.setTranslation(0, 0);
+        camera.setScale(1.1, 1.1);
+        //camera.setTranslation(0, 1);
 
         Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize,
                 Config.ScoreBoardWidth, emptyTexture, scene, camera);
