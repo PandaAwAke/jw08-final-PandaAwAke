@@ -34,7 +34,6 @@ public class MainWindow extends JFrame implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         app.OnKeyPressed(e);
-        // repaint();
     }
 
     @Override

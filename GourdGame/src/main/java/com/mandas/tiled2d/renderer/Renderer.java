@@ -2,7 +2,6 @@ package com.mandas.tiled2d.renderer;
 
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.scene.*;
-import com.mandas.tiled2d.scene.Component;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 import com.mandas.tiled2d.utils.Pair;

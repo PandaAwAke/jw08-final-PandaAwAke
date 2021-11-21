@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class Config {
     // Core settings
-    public static final String Version = "v0.1";
+    public static final String Version = "v1.2";
     public static final int MaxFrameRate = 60;
 
 

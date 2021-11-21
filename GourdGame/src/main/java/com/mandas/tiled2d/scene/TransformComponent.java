@@ -1,7 +1,5 @@
 package com.mandas.tiled2d.scene;
 
-import java.awt.geom.AffineTransform;
-
 public class TransformComponent implements Component {
 
     @Override
