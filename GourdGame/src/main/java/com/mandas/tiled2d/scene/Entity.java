@@ -48,6 +48,15 @@ public class Entity {
         return null;
     }
 
+    public CameraComponent getCameraComponent() {
+        for (Component comp : components) {
+            if (comp instanceof CameraComponent) {
+                return (CameraComponent) comp;
+            }
+        }
+        return null;
+    }
+
 
     public void OnUpdate(float timestep) {}
 

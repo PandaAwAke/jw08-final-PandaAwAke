@@ -1,5 +1,7 @@
 package com.pandaawake.sprites;
 
+import com.mandas.tiled2d.renderer.Camera;
+import com.mandas.tiled2d.scene.CameraComponent;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.pandaawake.Config;
 import com.pandaawake.scene.Scene;
@@ -16,6 +18,7 @@ public class Calabash extends MovableSprite implements HasBomb {
     public Calabash(Scene scene) {
         super(true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
+        addComponent(new CameraComponent(new Camera(Config.MapWidth, Config.MapHeight), true));
     }
 
     public int getLives() {

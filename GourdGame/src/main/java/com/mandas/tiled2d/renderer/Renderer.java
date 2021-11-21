@@ -35,9 +35,9 @@ public class Renderer extends JPanel {
      * @param emptyTextureColor If there are unset tiles in the map, set to this pure color.
      */
     public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight,
-                            int scoreboardWidth, Color emptyTextureColor, Scene scene, Camera camera) {
+                            int scoreboardWidth, Color emptyTextureColor, Scene scene, Camera defaultCamera) {
         globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth, tileHeight,
-                scoreboardWidth, Texture.getPureColorTexture(tileWidth, tileHeight, emptyTextureColor), scene, camera);
+                scoreboardWidth, Texture.getPureColorTexture(tileWidth, tileHeight, emptyTextureColor), scene, defaultCamera);
         globalRenderer.Init();
     }
     /**
@@ -51,9 +51,9 @@ public class Renderer extends JPanel {
      * @param emptyTexture If there are unset tiles in the map, set to this texture.
      */
     public static void Init(int widthInTiles, int heightInTiles, int tileWidth, int tileHeight,
-                            int scoreboardWidth, Texture emptyTexture, Scene scene, Camera camera) {
+                            int scoreboardWidth, Texture emptyTexture, Scene scene, Camera defaultCamera) {
         globalRenderer = new Renderer(widthInTiles, heightInTiles, tileWidth, tileHeight,
-                scoreboardWidth, emptyTexture, scene, camera);
+                scoreboardWidth, emptyTexture, scene, defaultCamera);
         globalRenderer.Init();
     }
     public static Renderer getRenderer() {
@@ -75,7 +75,8 @@ public class Renderer extends JPanel {
     private Texture emptyTexture;
     private int scoreboardWidth;
     private Scene scene;
-    private Camera camera;
+    private Camera defaultCamera;
+    private Camera renderingCamera = null;
 
     // Before every rendering, set this variable to clear tiles inside.
     private Set<IntPair> repaintTilePositions;
@@ -83,7 +84,7 @@ public class Renderer extends JPanel {
     private ArrayList<Pair<FloatPair, Texture>> flotingTiles;
 
     Renderer(int mapWidthInTiles, int mapHeightInTiles, int tileWidth, int tileHeight, int scoreboardWidth,
-             Texture emptyTexture, Scene scene, Camera camera) {
+             Texture emptyTexture, Scene scene, Camera defaultCamera) {
         super();
         if (emptyTexture == null) {
             throw new IllegalArgumentException("emptyTexture cannot be null!");
@@ -102,15 +103,15 @@ public class Renderer extends JPanel {
         this.emptyTexture = emptyTexture;
         this.scoreboardWidth = scoreboardWidth;
         this.scene = scene;
-        this.camera = camera;
+        this.defaultCamera = defaultCamera;
         
-        Dimension panelSize = new Dimension(tileWidth * (int)(camera.getWidthInTiles()) + scoreboardWidth,
-                tileHeight * (int)(camera.getHeightInTiles()));
+        Dimension panelSize = new Dimension(tileWidth * (int)(defaultCamera.getWidthInTiles()) + scoreboardWidth,
+                tileHeight * (int)(defaultCamera.getHeightInTiles()));
         setPreferredSize(panelSize);
         
         offscreenBuffer = new BufferedImage(tileWidth * mapWidthInTiles, tileHeight * mapHeightInTiles, BufferedImage.TYPE_INT_ARGB);
         offscreenGraphics = offscreenBuffer.createGraphics();
-        scoreboardBuffer = new BufferedImage(scoreboardWidth, tileHeight * (int)(camera.getHeightInTiles()), BufferedImage.TYPE_INT_ARGB);
+        scoreboardBuffer = new BufferedImage(scoreboardWidth, tileHeight * (int)(defaultCamera.getHeightInTiles()), BufferedImage.TYPE_INT_ARGB);
         scoreboardGraphics = scoreboardBuffer.createGraphics();
 
         tiles = new Texture[mapWidthInTiles][mapHeightInTiles];
@@ -130,8 +131,12 @@ public class Renderer extends JPanel {
         }
     }
 
-    public Camera getCamera() {
-        return camera;
+    public Camera getDefaultCamera() {
+        return defaultCamera;
+    }
+
+    public void setDefaultCamera(Camera defaultCamera) {
+        this.defaultCamera = defaultCamera;
     }
 
     /**
@@ -247,6 +252,8 @@ public class Renderer extends JPanel {
             if (g == null)
                 throw new NullPointerException();
 
+            renderingCamera = defaultCamera;
+
             // 1: Repaint specified positions
             paint_repaintTiles();
 
@@ -254,6 +261,7 @@ public class Renderer extends JPanel {
             paint_tiles();
 
             // 3: Paint all entities in Scene
+            // Note: This may change renderingCamera!
             paint_scene();
 
             // 4: Drawing floting tiles
@@ -310,14 +318,14 @@ public class Renderer extends JPanel {
     private void paint_scene() {
         synchronized (this) {
             for (Entity entity : scene.getEntities()) {
-                TransformComponent transComponent = (TransformComponent) entity.getComponent(Component.TransformComponentId);
+                TransformComponent transComponent = entity.getTransformComponent();
                 double translationX = 0, translationY = 0;
                 if (transComponent != null) {
                     translationX = transComponent.getTranslateX();
                     translationY = transComponent.getTranslateY();
                 }
 
-                TileTextureRenderComponent ttrComponent = (TileTextureRenderComponent) entity.getComponent(Component.TileTextureRenderComponentId);
+                TileTextureRenderComponent ttrComponent = entity.getTileTextureRenderComponent();
                 if (ttrComponent != null) {
                     for (Pair<FloatPair, Texture> positionAndTex : ttrComponent.getPositionsAndTextures()) {
                         BufferedImage img = positionAndTex.second.getImage(tileWidth, tileHeight);
@@ -341,6 +349,11 @@ public class Renderer extends JPanel {
                             }
                         }
                     }
+                }
+
+                CameraComponent cameraComponent = entity.getCameraComponent();
+                if (cameraComponent != null && cameraComponent.isRenderingCamera()) {
+                    renderingCamera = cameraComponent.getCamera();
                 }
             }
         }
@@ -376,12 +389,12 @@ public class Renderer extends JPanel {
 
     private BufferedImage paint_camera() {
         synchronized (this) {
-            int cameraWidth = Math.max((int) (camera.getWidthInTiles() * tileWidth), 0);
-            int cameraHeight = Math.max((int) (camera.getHeightInTiles() * tileHeight), 0);
-            int cameraTranslateX = (int) (camera.getTranslateX() * tileWidth);
-            int cameraTranslateY = (int) (camera.getTranslateY() * tileHeight);
-            int cameraScaledWidth = Math.max((int) (cameraWidth * camera.getScaleX()), 0);
-            int cameraScaledHeight = Math.max((int) (cameraHeight * camera.getScaleY()), 0);
+            int cameraWidth = Math.max((int) (renderingCamera.getWidthInTiles() * tileWidth), 0);
+            int cameraHeight = Math.max((int) (renderingCamera.getHeightInTiles() * tileHeight), 0);
+            int cameraTranslateX = (int) (renderingCamera.getTranslateX() * tileWidth);
+            int cameraTranslateY = (int) (renderingCamera.getTranslateY() * tileHeight);
+            int cameraScaledWidth = Math.max((int) (cameraWidth * renderingCamera.getScaleX()), 0);
+            int cameraScaledHeight = Math.max((int) (cameraHeight * renderingCamera.getScaleY()), 0);
 
             Graphics2D graphics2D;
 
@@ -400,8 +413,8 @@ public class Renderer extends JPanel {
             graphics2D.dispose();
             // Get scaled image
             Image scaledOffScreenSubImage = offScreenSubImage.getScaledInstance(
-                    (int) (offScreenSubImage.getWidth() * camera.getScaleX()),
-                    (int) (offScreenSubImage.getHeight() * camera.getScaleY()),
+                    (int) (offScreenSubImage.getWidth() * renderingCamera.getScaleX()),
+                    (int) (offScreenSubImage.getHeight() * renderingCamera.getScaleY()),
                     Image.SCALE_DEFAULT);
             // Paint scaled image into a BufferedImage
             BufferedImage scaledOffScreenSubBuffedImage = new BufferedImage(cameraScaledWidth, cameraScaledHeight, BufferedImage.TYPE_INT_ARGB);
