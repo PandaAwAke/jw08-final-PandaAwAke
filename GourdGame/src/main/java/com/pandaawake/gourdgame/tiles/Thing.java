@@ -1,6 +1,7 @@
 package com.pandaawake.gourdgame.tiles;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.mandas.tiled2d.renderer.Texture;
 import com.mandas.tiled2d.renderer.TileTextures;
@@ -12,6 +13,12 @@ public class Thing {
     protected boolean blocking;
     protected TileTextures tileTextures;
 
+    public Thing(boolean blocking) {
+        this.blocking = blocking;
+        tiles = new ArrayList<>();
+        tileTextures = new TileTextures();
+    }
+
     public void addTile(Tile<Thing> tile) {
         if (!tiles.contains(tile)) {
             tiles.add(tile);
@@ -21,12 +28,6 @@ public class Thing {
 
     public ArrayList<Tile<Thing>> getTiles() {
         return tiles;
-    }
-
-    public Thing(boolean blocking) {
-        tiles = new ArrayList<>();
-        this.blocking = blocking;   // Will this thing blocks the player?
-        this.tileTextures = new TileTextures();
     }
 
     public boolean isBlocking() {

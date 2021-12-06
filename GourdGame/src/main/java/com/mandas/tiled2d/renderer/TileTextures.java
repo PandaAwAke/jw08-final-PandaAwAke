@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class TileTextures {
 
-
     /** If texture is 2*3, and its ints are:
      * 1 2
      * 3 4

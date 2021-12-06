@@ -1,6 +1,9 @@
 package com.pandaawake.gourdgame.main;
 
 import com.mandas.tiled2d.core.GameApplication;
+import com.mandas.tiled2d.event.EventDispatcher;
+import com.mandas.tiled2d.event.KeyCodes;
+import com.mandas.tiled2d.event.KeyEvents;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.player.ComputerPlayer;
 import com.pandaawake.gourdgame.player.HumanPlayer;
@@ -49,8 +52,29 @@ public class GameApp implements GameApplication {
         sceneTilesInitializer = new SceneTilesInitializer(scene);
         players = new HashSet<>();
 
+        initializeEventDispatcher();
         initializeSprites();
         initializeMapTileAndLevel();
+    }
+
+    private void initializeEventDispatcher() {
+        EventDispatcher.register(KeyEvents.Pressed.class, e -> {
+            if (e.getKeyCode() == KeyCodes.VC_ESCAPE) {
+                setPause(!getPause());
+                return;
+            }
+            if (e.getKeyCode() == KeyCodes.VC_F5) {
+                resetAll();
+                pause = false;
+                return;
+            }
+            if (pause) {
+                return;
+            }
+            for (Player player : players) {
+                player.OnKeyPressed(e);
+            }
+        });
     }
 
     private void initializeSprites() {
@@ -80,11 +104,6 @@ public class GameApp implements GameApplication {
             scene.addSprite(computerSnake);
 
             players.add(computerSnakePlayer);
-
-            // Create threads and let's go!
-            ComputerPlayer.ComputerPlayerThread thread = new ComputerPlayer.ComputerPlayerThread(computerSnakePlayer);
-            thread.setDaemon(true);
-            thread.start();
         }
     }
 
@@ -134,25 +153,6 @@ public class GameApp implements GameApplication {
         scene.OnUpdate(timestep);
         for (Player player : players) {
             player.OnUpdate(timestep);
-        }
-    }
-
-    @Override
-    public void OnKeyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            setPause(!getPause());
-            return;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_F5) {
-            resetAll();
-            pause = false;
-            return;
-        }
-        if (pause) {
-            return;
-        }
-        for (Player player : players) {
-            player.OnKeyPressed(e);
         }
     }
 

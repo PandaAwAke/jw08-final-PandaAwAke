@@ -1,5 +1,6 @@
 package com.pandaawake.gourdgame.player;
 
+import com.mandas.tiled2d.event.KeyEvents;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.MovableSprite;
@@ -77,38 +78,8 @@ public class ComputerPlayer implements Player {
     }
 
     @Override
-    public void OnKeyPressed(KeyEvent e) {
+    public void OnKeyPressed(KeyEvents.Pressed e) {
 
-    }
-
-
-
-    public static class ComputerPlayerThread extends Thread {
-        private ComputerPlayer player;
-        private long oldTime = 0;
-
-        public ComputerPlayerThread(ComputerPlayer player) {
-            this.player = player;
-        }
-
-        @Override
-        public void run() {
-            while (player.getRunning()) {
-                if (oldTime == 0) {
-                    oldTime = System.currentTimeMillis();
-                }
-                else {
-                    long time = System.currentTimeMillis();
-                    player.OnUpdate(time - oldTime);
-                    oldTime = time;
-                }
-                try {
-                    Thread.sleep(Math.round(1000.0f / com.mandas.tiled2d.Config.MaxFrameRate));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
 }

@@ -1,5 +1,7 @@
 package com.pandaawake.gourdgame.player;
 
+import com.mandas.tiled2d.event.KeyCodes;
+import com.mandas.tiled2d.event.KeyEvents;
 import com.pandaawake.gourdgame.main.GameApp;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.*;
@@ -56,32 +58,32 @@ public class HumanPlayer implements Player {
     }
 
     @Override
-    public void OnKeyPressed(KeyEvent e) {
+    public void OnKeyPressed(KeyEvents.Pressed e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A:
-            case KeyEvent.VK_LEFT:
+            case KeyCodes.VC_A:
+            case KeyCodes.VC_LEFT:
                 calabash.doMove(Direction.left);
                 break;
-            case KeyEvent.VK_W:
-            case KeyEvent.VK_UP:
+            case KeyCodes.VC_W:
+            case KeyCodes.VC_UP:
                 calabash.doMove(Direction.up);
                 break;
-            case KeyEvent.VK_D:
-            case KeyEvent.VK_RIGHT:
+            case KeyCodes.VC_D:
+            case KeyCodes.VC_RIGHT:
                 calabash.doMove(Direction.right);
                 break;
-            case KeyEvent.VK_S:
-            case KeyEvent.VK_DOWN:
+            case KeyCodes.VC_S:
+            case KeyCodes.VC_DOWN:
                 calabash.doMove(Direction.down);
                 break;
-            case KeyEvent.VK_SPACE:
-            case KeyEvent.VK_NUMPAD0:
+            case KeyCodes.VC_SPACE:
+            case KeyCodes.VC_0:
                 for (Bomb bomb : calabash.getBombs()) {
                     bomb.setExplodeImmediately();
                 }
                 break;
-            case KeyEvent.VK_J:
-            case KeyEvent.VK_NUMPAD1:
+            case KeyCodes.VC_J:
+            case KeyCodes.VC_1:
                 setBomb();
                 break;
         }
