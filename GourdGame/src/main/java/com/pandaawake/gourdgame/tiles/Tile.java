@@ -2,9 +2,9 @@ package com.pandaawake.gourdgame.tiles;
 
 import com.mandas.tiled2d.utils.IntPair;
 
-public class Tile<T extends Thing> {
+public class Tile {
 
-    private T thing;
+    private Thing thing;
     private int xPos;
     private int yPos;
 
@@ -40,14 +40,12 @@ public class Tile<T extends Thing> {
         this.yPos = yPos;
     }
 
-    public void setThing(T thing) {
+    public void setThing(Thing thing) {
         this.thing = thing;
     }
 
-    public T getThing() {
+    public Thing getThing() {
         return thing;
     }
-
-    // TODO: Some drawing things
 
 }

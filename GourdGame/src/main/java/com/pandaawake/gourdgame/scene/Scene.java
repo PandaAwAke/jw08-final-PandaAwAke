@@ -36,20 +36,20 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     /** Add and remove in update, to avoid the ConcurrentModificationException when iterating
      * [things] and [sprites]
      */
-    Set<Pair<Thing, ArrayList<Tile<Thing>>>> thingsToAdd = new HashSet<>();
+    Set<Pair<Thing, ArrayList<Tile>>> thingsToAdd = new HashSet<>();
     Set<Thing> thingsToRemove = new HashSet<>();
     Set<Thing> thingsToRepaint = new HashSet<>();
     Set<Sprite> spritesToAdd = new HashSet<>();
     Set<Sprite> spritesToRemove = new HashSet<>();
     Set<IntPair> positionsToRepaint = new TreeSet<>();
     // ---------------------- Things ----------------------
-    public boolean addThing(Thing thing, ArrayList<Tile<Thing>> tiles) {
+    public boolean addThing(Thing thing, ArrayList<Tile> tiles) {
         synchronized (this) {
             // Check every tile, avoiding conflict things
             if (things.contains(thing)) {
                 return false;
             }
-            for (Tile<Thing> tile : tiles) {
+            for (Tile tile : tiles) {
                 if (tile.getThing() != null) {
                     return false;
                 }
@@ -59,8 +59,8 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
         }
     }
 
-    public boolean addThing(Thing thing, Tile<Thing> tile) {
-        ArrayList<Tile<Thing>> tiles = new ArrayList<>();
+    public boolean addThing(Thing thing, Tile tile) {
+        ArrayList<Tile> tiles = new ArrayList<>();
         tiles.add(tile);
         return addThing(thing, tiles);
     }
@@ -269,17 +269,17 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
                 thing.OnUpdate(timestep);
             }
 
-            for (Pair<Thing, ArrayList<Tile<Thing>>> thingAndTiles : thingsToAdd) {
+            for (Pair<Thing, ArrayList<Tile>> thingAndTiles : thingsToAdd) {
                 Thing thing = thingAndTiles.first;
-                ArrayList<Tile<Thing>> tiles = thingAndTiles.second;
-                for (Tile<Thing> tile : tiles) {
+                ArrayList<Tile> tiles = thingAndTiles.second;
+                for (Tile tile : tiles) {
                     thing.addTile(tile);
                 }
                 things.add(thing);
             }
 
             for (Thing thing : thingsToRemove) {
-                for (Tile<Thing> tile : thing.getTiles()) {
+                for (Tile tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
                     Floor floor = new Floor();
                     floor.addTile(tile);
@@ -289,7 +289,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
             }
 
             for (Thing thing : thingsToRepaint) {
-                for (Tile<Thing> tile : thing.getTiles()) {
+                for (Tile tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
                 }
             }

@@ -14,7 +14,6 @@ import com.pandaawake.gourdgame.sprites.*;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.mandas.tiled2d.utils.IntPair;
 
-import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,7 +90,6 @@ public class GameApp implements GameApplication {
             humanCalabash.setPos(position.first, position.second);
             scene.addSprite(humanCalabash);
 
-            // TODO: mainPlayer and multi-players?
             mainPlayer = new HumanPlayer(scene, humanCalabash);
             players.add(mainPlayer);
         }

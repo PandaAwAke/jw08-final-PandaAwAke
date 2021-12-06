@@ -24,7 +24,7 @@ public class SceneTilesInitializer {
         // TODO: Support non 1x1 tile thing
         for (int y = 0; y < Config.MapHeight; y++) {
             for (int x = 0; x < Config.MapWidth; x++) {
-                Tile<Thing> tile = scene.getGameMap().getTile(x, y);
+                Tile tile = scene.getGameMap().getTile(x, y);
                 if (tile == null) {
                     throw new NullPointerException("Null tile in GameMap! Please create GameMap first.");
                 }
@@ -76,7 +76,7 @@ public class SceneTilesInitializer {
         while (true) {
             int x = random.nextInt(scene.getGameMap().getWidth());
             int y = random.nextInt(scene.getGameMap().getHeight());
-            Tile<Thing> tile = scene.getGameMap().getTile(x, y);
+            Tile tile = scene.getGameMap().getTile(x, y);
             if (tile == null) {
                 throw new NullPointerException("Null tile in GameMap! Please create GameMap first.");
             }

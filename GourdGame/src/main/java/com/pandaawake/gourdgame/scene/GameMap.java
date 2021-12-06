@@ -8,7 +8,7 @@ public class GameMap {
      */
     private int width, height;
 
-    private Tile<Thing>[][] tiles;
+    private Tile[][] tiles;
 
     public GameMap(int width, int height) {
         this.width = width;
@@ -17,16 +17,16 @@ public class GameMap {
         tiles = new Tile[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                tiles[x][y] = new Tile<>(x, y);
+                tiles[x][y] = new Tile(x, y);
             }
         }
     }
 
-    public Tile<Thing> getTile(int x, int y) {
+    public Tile getTile(int x, int y) {
         return tiles[x][y];
     }
 
-    public void setTile(int x, int y, Tile<Thing> tile) {
+    public void setTile(int x, int y, Tile tile) {
         tiles[x][y] = tile;
         tile.setxPos(x);
         tile.setyPos(y);

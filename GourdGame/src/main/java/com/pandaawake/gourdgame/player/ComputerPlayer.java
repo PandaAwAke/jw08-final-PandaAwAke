@@ -8,7 +8,6 @@ import com.pandaawake.gourdgame.sprites.Snake;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.pandaawake.gourdgame.utils.UtilFunctions;
 
-import java.awt.event.KeyEvent;
 import java.util.Random;
 
 public class ComputerPlayer implements Player {

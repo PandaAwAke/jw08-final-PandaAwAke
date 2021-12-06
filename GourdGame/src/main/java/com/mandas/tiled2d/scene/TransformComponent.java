@@ -7,8 +7,8 @@ public class TransformComponent implements Component {
         return Component.TransformComponentId;
     }
 
-    private double rotation = 0.0;
-    private double rotationAnchorX = 0.0, rotationAnchorY = 0.0;
+    //private double rotation = 0.0;
+    //private double rotationAnchorX = 0.0, rotationAnchorY = 0.0;
     private double translationX = 0.0, translationY = 0.0;
     private double scaleX = 1.0, scaleY = 1.0;
 

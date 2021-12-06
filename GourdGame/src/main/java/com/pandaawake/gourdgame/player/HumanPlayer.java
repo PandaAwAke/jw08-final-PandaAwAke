@@ -8,7 +8,6 @@ import com.pandaawake.gourdgame.sprites.*;
 import com.pandaawake.gourdgame.utils.Direction;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 
 public class HumanPlayer implements Player {
 

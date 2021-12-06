@@ -1,7 +1,5 @@
 package com.mandas.tiled2d.core;
 
-import java.awt.event.KeyEvent;
-
 public interface GameApplication {
 
     public void InitRenderer();

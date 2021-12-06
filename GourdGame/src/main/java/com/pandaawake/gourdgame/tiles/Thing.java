@@ -1,7 +1,6 @@
 package com.pandaawake.gourdgame.tiles;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.mandas.tiled2d.renderer.Texture;
 import com.mandas.tiled2d.renderer.TileTextures;
@@ -9,7 +8,7 @@ import com.mandas.tiled2d.renderer.TileTextures;
 public class Thing {
 
     // Do not use Set, because array can maintain a sequence
-    protected ArrayList<Tile<Thing>> tiles;
+    protected ArrayList<Tile> tiles;
     protected boolean blocking;
     protected TileTextures tileTextures;
 
@@ -19,14 +18,14 @@ public class Thing {
         tileTextures = new TileTextures();
     }
 
-    public void addTile(Tile<Thing> tile) {
+    public void addTile(Tile tile) {
         if (!tiles.contains(tile)) {
             tiles.add(tile);
             tile.setThing(this);
         }
     }
 
-    public ArrayList<Tile<Thing>> getTiles() {
+    public ArrayList<Tile> getTiles() {
         return tiles;
     }
 
