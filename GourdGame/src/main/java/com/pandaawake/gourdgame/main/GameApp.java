@@ -8,6 +8,7 @@ import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.player.ComputerPlayer;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
+import com.pandaawake.gourdgame.player.Replayer;
 import com.pandaawake.gourdgame.render.RenderCommand;
 import com.pandaawake.gourdgame.scene.*;
 import com.pandaawake.gourdgame.sprites.*;
@@ -34,6 +35,7 @@ public class GameApp implements GameApplication {
     private SceneTilesInitializer sceneTilesInitializer;
     private Set<Player> players;
     private HumanPlayer mainPlayer;
+    private Replayer replayer = null;
 
 
     public boolean pause = false;
@@ -54,6 +56,10 @@ public class GameApp implements GameApplication {
         initializeEventDispatcher();
         initializeSprites();
         initializeMapTileAndLevel();
+
+        if (Config.ReplayMode) {
+            replayer = new Replayer(players);
+        }
     }
 
     private void initializeEventDispatcher() {
@@ -90,14 +96,16 @@ public class GameApp implements GameApplication {
             humanCalabash.setPos(position.first, position.second);
             scene.addSprite(humanCalabash);
 
-            mainPlayer = new HumanPlayer(scene, humanCalabash);
+            mainPlayer = new HumanPlayer(scene, humanCalabash, "Panda");
             players.add(mainPlayer);
         }
 
         // ------ Initialize computer player positions ------
+        String[] names = {"Alice", "Bob", "Tom", "Jerry"};
+        int index = 0;
         for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
-            ComputerPlayer computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down);
+            ComputerPlayer computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down, names[index++]);
             computerSnake.setPos(position.first, position.second);
             scene.addSprite(computerSnake);
 
@@ -151,6 +159,10 @@ public class GameApp implements GameApplication {
         scene.OnUpdate(timestep);
         for (Player player : players) {
             player.OnUpdate(timestep);
+        }
+
+        if (replayer != null) {
+            replayer.OnUpdate(timestep);
         }
     }
 

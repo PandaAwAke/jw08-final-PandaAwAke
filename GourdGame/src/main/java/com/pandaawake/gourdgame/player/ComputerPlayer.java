@@ -1,5 +1,6 @@
 package com.pandaawake.gourdgame.player;
 
+import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.KeyEvents;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
@@ -20,13 +21,21 @@ public class ComputerPlayer implements Player {
     private float elapsedTime = 0.0f;
     private Direction direction;
 
+    private String name;
+
     private boolean running = true;
 
-    public ComputerPlayer(Scene scene, Snake snake, Direction defaultDirection) {
+    public ComputerPlayer(Scene scene, Snake snake, Direction defaultDirection, String name) {
         random = new Random();
         this.scene = scene;
         this.snake = snake;
         this.direction = defaultDirection;
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     public void setRunning(boolean running) {
@@ -43,19 +52,23 @@ public class ComputerPlayer implements Player {
 
     @Override
     public void OnUpdate(float timestep) {
+        if (Config.ReplayMode) {
+            return;
+        }
         elapsedTime += timestep;
         if (elapsedTime >= Config.DecisionTime) {
             makeDecision();
-            elapsedTime -= Config.DecisionTime;
+            elapsedTime = 0.0f;
         }
     }
-
 
     public void makeDecision() {
         float probability = UtilFunctions.getRandomProbability();
         if (probability <= Config.DoNothingProbability) {
             // Do nothing
+            Log.file().trace("Computer " + this.name + " NoAction");
         } else if (probability <= Config.DoNothingProbability + Config.SetBombProbability) {
+            Log.file().trace("Computer " + this.name + " SetBomb");
             setBomb();
         } else {
             tryMove();
@@ -66,14 +79,25 @@ public class ComputerPlayer implements Player {
         if (UtilFunctions.getRandomResultByProbability(Config.ChangeDirectionProbability)) {
             direction = directions[random.nextInt(4)];
         }
+        Log.file().trace("Computer " + this.name + " DoMove " + direction.toString());
+        doMove(direction);
+    }
+
+
+
+    @Override
+    public void doMove(Direction direction) {
         snake.doMove(direction);
     }
 
     @Override
     public void setBomb() {
-        if (snake.getStatus() == MovableSprite.Status.Ok) {
-            snake.setNewBomb();
-        }
+        snake.setNewBomb();
+    }
+
+    @Override
+    public void explodeBomb() {
+
     }
 
     @Override

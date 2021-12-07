@@ -45,7 +45,7 @@ public class Snake extends MovableSprite implements HasBomb {
 
     @Override
     public void setNewBomb() {
-        if (canSetBomb()) {
+        if (status == MovableSprite.Status.Ok && canSetBomb()) {
             Bomb bomb = new Bomb2(scene, this, posX, posY);
             bombs.add(bomb);
             scene.addSprite(bomb);

@@ -1,7 +1,9 @@
 package com.pandaawake.gourdgame.player;
 
+import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.KeyCodes;
 import com.mandas.tiled2d.event.KeyEvents;
+import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.main.GameApp;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.*;
@@ -13,29 +15,32 @@ public class HumanPlayer implements Player {
 
     private final Scene scene;
     private Calabash calabash;
+    private String name;
 
-    public HumanPlayer(Scene scene, Calabash calabash) {
+    public HumanPlayer(Scene scene, Calabash calabash, String name) {
         this.scene = scene;
         this.calabash = calabash;
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     public Calabash getCalabash() {
         return calabash;
     }
 
-    public void tryMove() {
 
-    }
 
-    @Override
-    public void setBomb() {
-        if (calabash.getStatus() == MovableSprite.Status.Ok) {
-            calabash.setNewBomb();
-        }
-    }
 
     @Override
     public void OnUpdate(float timestep) {
+        if (Config.ReplayMode) {
+            return;
+        }
+
         if (!scene.getSprites().contains(calabash)) {
             // Game over
             GameApp.getGameApp().setPause(true);
@@ -58,33 +63,62 @@ public class HumanPlayer implements Player {
 
     @Override
     public void OnKeyPressed(KeyEvents.Pressed e) {
+        if (GameApp.getGameApp().getPause()) {
+            return;
+        }
+        if (Config.ReplayMode) {
+            return;
+        }
         switch (e.getKeyCode()) {
             case KeyCodes.VC_A:
             case KeyCodes.VC_LEFT:
+                Log.file().trace("Human " + this.name + " DoMove left");
                 calabash.doMove(Direction.left);
                 break;
             case KeyCodes.VC_W:
             case KeyCodes.VC_UP:
+                Log.file().trace("Human " + this.name + " DoMove up");
                 calabash.doMove(Direction.up);
                 break;
             case KeyCodes.VC_D:
             case KeyCodes.VC_RIGHT:
+                Log.file().trace("Human " + this.name + " DoMove right");
                 calabash.doMove(Direction.right);
                 break;
             case KeyCodes.VC_S:
             case KeyCodes.VC_DOWN:
+                Log.file().trace("Human " + this.name + " DoMove down");
                 calabash.doMove(Direction.down);
                 break;
             case KeyCodes.VC_SPACE:
             case KeyCodes.VC_0:
-                for (Bomb bomb : calabash.getBombs()) {
-                    bomb.setExplodeImmediately();
-                }
+                Log.file().trace("Human " + this.name + " ExplodeBomb");
+                explodeBomb();
                 break;
             case KeyCodes.VC_J:
             case KeyCodes.VC_1:
+                Log.file().trace("Human " + this.name + " SetBomb");
                 setBomb();
                 break;
+        }
+    }
+
+
+
+    @Override
+    public void doMove(Direction direction) {
+        calabash.doMove(direction);
+    }
+
+    @Override
+    public void setBomb() {
+        calabash.setNewBomb();
+    }
+
+    @Override
+    public void explodeBomb() {
+        for (Bomb bomb : calabash.getBombs()) {
+            bomb.setExplodeImmediately();
         }
     }
 }

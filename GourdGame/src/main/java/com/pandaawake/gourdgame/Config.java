@@ -10,6 +10,8 @@ public class Config {
     public static final String Version = "v2.0";
     public static final String WindowTitle = "葫芦娃泡泡堂 By MYS, Java Hw05 " + Version;
 
+    public static final boolean ReplayMode = true; // Replay a play by log file
+
     // Tile settings
     public static final int TileSize = 50;      // A tile's size
 

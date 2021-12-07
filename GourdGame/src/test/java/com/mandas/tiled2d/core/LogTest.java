@@ -6,6 +6,7 @@ public class LogTest {
 
     @Test
     public void testMandasLogger() {
+        // If Config.EnableLogging is false, these are invalid
         Log.mandas().trace("Mandas Logger Test Trace");
         Log.mandas().debug("Mandas Logger Test Debug");
         Log.mandas().info("Mandas Logger Test Info");
