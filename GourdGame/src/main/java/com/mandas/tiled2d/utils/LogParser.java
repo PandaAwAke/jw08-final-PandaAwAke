@@ -43,13 +43,21 @@ public class LogParser {
         }
         String content = strings[1];
         String info = strings[0];
-        String[] infoStrings = info.split(" ", 4);
-        if (infoStrings.length < 4) {
-            Log.mandas().error("Illegal log line format!");
-            System.exit(1);
+        String[] infoStringsTemp = info.split(" ");
+        String[] infoStrings = new String[5];
+        int index = 0;
+        for (String str : infoStringsTemp) {
+            if (str.isEmpty()) {
+                continue;
+            }
+            if (index >= 5) {
+                Log.mandas().error("Illegal log line format!");
+                System.exit(1);
+            }
+            infoStrings[index++] = str;
         }
 
-        String timeStr = infoStrings[0];
+        String timeStr = infoStrings[0] + " " + infoStrings[1];
         Date time = null;
         try {
             time = Config.DateFormat.parse(timeStr);
@@ -60,7 +68,7 @@ public class LogParser {
 
 
         Level level = Level.OFF;
-        switch (infoStrings[2]) {
+        switch (infoStrings[3]) {
             case "TRACE":
                 level = Level.TRACE;
                 break;
@@ -80,7 +88,7 @@ public class LogParser {
                 level = Level.FATAL;
                 break;
         }
-        return new LogLine(content, time, level, infoStrings[3]);
+        return new LogLine(content, time, level, infoStrings[4]);
     }
 
     public void Close() throws IOException {

@@ -50,10 +50,10 @@ public class Application {
         window.repaint();
     }
 
-    private class ApplicationUpdator implements Runnable {
+    private static class ApplicationUpdator implements Runnable {
 
         private long oldTime = 0;
-        private Application app;
+        private final Application app;
 
         public ApplicationUpdator(Application app) {
             this.app = app;

@@ -10,7 +10,7 @@ public class Config {
 
     // Log settings
     public static final String LogFilename = "test.log";
-    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS");
+    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public static final boolean EnableLogging = false;
 
     //      - Render settings

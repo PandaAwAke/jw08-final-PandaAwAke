@@ -21,12 +21,12 @@ public class LogTest {
         Log.app().error("Mandas Logger Test Error");
         Log.app().fatal("Mandas Logger Test Fatal");
 
-        Log.file().trace("Mandas Logger Test Trace");
-        Log.file().debug("Mandas Logger Test Debug");
-        Log.file().info("Mandas Logger Test Info");
-        Log.file().warn("Mandas Logger Test Warn");
-        Log.file().error("Mandas Logger Test Error");
-        Log.file().fatal("Mandas Logger Test Fatal");
+//        Log.file().trace("Mandas Logger Test Trace");
+//        Log.file().debug("Mandas Logger Test Debug");
+//        Log.file().info("Mandas Logger Test Info");
+//        Log.file().warn("Mandas Logger Test Warn");
+//        Log.file().error("Mandas Logger Test Error");
+//        Log.file().fatal("Mandas Logger Test Fatal");
     }
 
 }
