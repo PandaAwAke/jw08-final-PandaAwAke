@@ -11,7 +11,7 @@ import com.pandaawake.gourdgame.utils.Direction;
 
 import javax.swing.*;
 
-public class HumanPlayer implements Player {
+public class HumanPlayer extends Player {
 
     private final Scene scene;
     private Calabash calabash;

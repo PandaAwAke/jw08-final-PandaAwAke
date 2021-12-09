@@ -1,5 +1,7 @@
 package com.pandaawake.gourdgame.network;
 
+import com.pandaawake.gourdgame.utils.UtilFunctions;
+
 public class ServerDataProcessor extends DataProcessor {
 
     private GameServer server;
@@ -10,23 +12,22 @@ public class ServerDataProcessor extends DataProcessor {
 
     @Override
     public Action ProcessData(byte[] data) {
-        byte[] numberBytes = new byte[4];
-        System.arraycopy(data, 0, numberBytes, 0, 4);
-        int number = bytesToInt(numberBytes);
+        int number = UtilFunctions.getHeaderNumber(data, 0);
+
+        byte[] info = new byte[1024];
+        System.arraycopy(data, 4, info, 0, data.length - 4);
 
         switch (number) {
             // Connection Signals
             case ClientEnter:
-
+                
                 break;
             case ClientExit:
 
                 break;
-
             // Game Action Signals
             case ClientServerPlayerAction:
-                new Actions.PlayerNoAction();
-                break;
+                return Action.bytesToPlayerAction(info);
         }
         return null;
     }

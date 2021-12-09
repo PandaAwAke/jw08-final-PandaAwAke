@@ -1,5 +1,9 @@
 package com.pandaawake.gourdgame.network;
 
+import java.io.IOException;
+
+import com.pandaawake.gourdgame.utils.UtilFunctions;
+
 public abstract class DataProcessor {
 
     // -------------- Game Network Numbers --------------
@@ -26,62 +30,32 @@ public abstract class DataProcessor {
     // -------------- Functions --------------
     public abstract Action ProcessData(byte[] data);
 
-    public byte[] actionToData(Action action, boolean senderIsServer) {
+    public byte[] actionToData(Action action, boolean senderIsServer) throws IOException {
         if (action instanceof Actions.GameStart) {
-            return intToBytes(GameStart);
+            return UtilFunctions.intToBytes(GameStart);
         } else if (action instanceof Actions.GamePause) {
-            return intToBytes(GamePause);
+            return UtilFunctions.intToBytes(GamePause);
         } else if (action instanceof Actions.GameResume) {
-            return intToBytes(GameResume);
+            return UtilFunctions.intToBytes(GameResume);
         } else if (action instanceof Actions.GameEnd) {
-            return intToBytes(GameEnd);
+            return UtilFunctions.intToBytes(GameEnd);
         } else if (action instanceof Actions.GameInitialize) {
-            byte[] number = intToBytes(ServerGameInitialize);
-            // TODO
-
-        } else {
+            byte[] number = UtilFunctions.intToBytes(ServerGameInitialize);
+            byte[] actionBytes = Action.gameInitializeToBytes((Actions.GameInitialize) action);
+            return UtilFunctions.concatBytes(number, actionBytes);
+        } else if (action instanceof PlayerAction) {
             byte[] number;
             if (senderIsServer) {
-                number = intToBytes(ServerClientPlayerAction);
+                number = UtilFunctions.intToBytes(ServerClientPlayerAction);
             } else {
-                number = intToBytes(ClientServerPlayerAction);
+                number = UtilFunctions.intToBytes(ClientServerPlayerAction);
             }
-
-            // TODO
-
-
-            if (action instanceof Actions.PlayerNoAction) {
-
-            } else if (action instanceof Actions.PlayerDoMove) {
-
-            } else if (action instanceof Actions.PlayerSetBomb) {
-
-            } else if (action instanceof Actions.PlayerExplodeBomb) {
-
-            }
+            byte[] actionBytes = Action.playerActionToBytes((PlayerAction) action);
+            return UtilFunctions.concatBytes(number, actionBytes);
         }
         return null;
     }
 
-    // -------------- Util functions --------------
-    protected byte[] intToBytes(int num) {
-        byte[] result = new byte[4];
-        result[0] = (byte)((num >>> 24) & 0xff);
-        result[1] = (byte)((num >>> 16) & 0xff);
-        result[2] = (byte)((num >>> 8)  & 0xff);
-        result[3] = (byte)((num >>> 0)  & 0xff);
-        return result;
-    }
-    protected int bytesToInt(byte[] bytes) {
-        int result = 0;
-        if (bytes.length == 4) {
-            int a = (bytes[0] & 0xff) << 24;
-            int b = (bytes[1] & 0xff) << 16;
-            int c = (bytes[2] & 0xff) << 8;
-            int d = (bytes[3] & 0xff);
-            result = a | b | c | d;
-        }
-        return result;
-    }
+    
 
 }

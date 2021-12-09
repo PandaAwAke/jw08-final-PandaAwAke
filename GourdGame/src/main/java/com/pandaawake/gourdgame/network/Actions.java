@@ -18,12 +18,27 @@ public class Actions {
     }
 
     // Player Actions
-    public static class PlayerNoAction extends Action {}
-    public static class PlayerDoMove extends Action {
-        public Direction direction;
-        public PlayerDoMove(Direction direction) { this.direction = direction; }
+    public static class PlayerNoAction extends PlayerAction {
+        public PlayerNoAction(int playerId) {
+            super(playerId);
+        }
     }
-    public static class PlayerSetBomb extends Action {}
-    public static class PlayerExplodeBomb extends Action {}
+    public static class PlayerDoMove extends PlayerAction {
+        public Direction direction;
+        public PlayerDoMove(int playerId, Direction direction) {
+            super(playerId);
+            this.direction = direction;
+        }
+    }
+    public static class PlayerSetBomb extends PlayerAction {
+        public PlayerSetBomb(int playerId) {
+            super(playerId);
+        }
+    }
+    public static class PlayerExplodeBomb extends PlayerAction {
+        public PlayerExplodeBomb(int playerId) {
+            super(playerId);
+        }
+    }
 
 }

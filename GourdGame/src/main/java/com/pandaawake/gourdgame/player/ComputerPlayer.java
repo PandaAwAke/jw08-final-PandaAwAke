@@ -4,14 +4,13 @@ import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.KeyEvents;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
-import com.pandaawake.gourdgame.sprites.MovableSprite;
 import com.pandaawake.gourdgame.sprites.Snake;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.pandaawake.gourdgame.utils.UtilFunctions;
 
 import java.util.Random;
 
-public class ComputerPlayer implements Player {
+public class ComputerPlayer extends Player {
     private static final Direction[] directions = { Direction.left, Direction.up, Direction.right, Direction.down};
 
     private Snake snake;

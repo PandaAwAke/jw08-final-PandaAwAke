@@ -5,10 +5,7 @@ import com.mandas.tiled2d.core.Log;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
 
 // From https://github.com/arukshani/JavaIOAndNIO
 /**

@@ -2,7 +2,6 @@ package com.pandaawake.gourdgame.utils;
 
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.utils.LogParser;
-import com.pandaawake.gourdgame.utils.Direction;
 
 import java.util.Date;
 
