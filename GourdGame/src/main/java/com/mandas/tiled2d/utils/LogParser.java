@@ -20,7 +20,7 @@ public class LogParser {
         try {
             reader = new BufferedReader(new FileReader(logFile));
         } catch (FileNotFoundException e) {
-            Log.mandas().error("LogParser: Log file not found!");
+            Log.mandas().error(this.getClass().getName() + ": Log file not found!");
             System.exit(1);
         }
     }
@@ -30,7 +30,7 @@ public class LogParser {
         try {
             line = reader.readLine();
         } catch (IOException e) {
-            Log.mandas().error("LogParser: getLine - IOException!");
+            Log.mandas().error(this.getClass().getName() + ": getLine - IOException!");
             System.exit(1);
         }
         if (line == null) {
@@ -38,7 +38,7 @@ public class LogParser {
         }
         String[] strings = line.split(ContentSeparator, 2);
         if (strings.length < 2) {
-            Log.mandas().error("Illegal log line format!");
+            Log.mandas().error(this.getClass().getName() + ": Illegal log line format!");
             System.exit(1);
         }
         String content = strings[1];
@@ -51,7 +51,7 @@ public class LogParser {
                 continue;
             }
             if (index >= 5) {
-                Log.mandas().error("Illegal log line format!");
+                Log.mandas().error(this.getClass().getName() + ": Illegal log line format!");
                 System.exit(1);
             }
             infoStrings[index++] = str;
@@ -62,7 +62,7 @@ public class LogParser {
         try {
             time = Config.DateFormat.parse(timeStr);
         } catch (ParseException e) {
-            Log.mandas().error("Illegal date time format!");
+            Log.mandas().error(this.getClass().getName() + ": Illegal date time format!");
             System.exit(1);
         }
 

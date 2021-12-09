@@ -1,4 +1,4 @@
-package com.pandaawake.gourdgame.network;
+package com.pandaawake.gourdgame.player.action;
 
 import com.pandaawake.gourdgame.player.Player;
 import com.pandaawake.gourdgame.utils.Direction;
@@ -19,25 +19,24 @@ public class Actions {
 
     // Player Actions
     public static class PlayerNoAction extends PlayerAction {
-        public PlayerNoAction(int playerId) {
-            super(playerId);
+        public PlayerNoAction() {
+            
         }
     }
     public static class PlayerDoMove extends PlayerAction {
         public Direction direction;
-        public PlayerDoMove(int playerId, Direction direction) {
-            super(playerId);
+        public PlayerDoMove(Direction direction) {
             this.direction = direction;
         }
     }
     public static class PlayerSetBomb extends PlayerAction {
-        public PlayerSetBomb(int playerId) {
-            super(playerId);
+        public PlayerSetBomb() {
+            
         }
     }
     public static class PlayerExplodeBomb extends PlayerAction {
-        public PlayerExplodeBomb(int playerId) {
-            super(playerId);
+        public PlayerExplodeBomb() {
+            
         }
     }
 

@@ -6,7 +6,7 @@ import com.pandaawake.gourdgame.Config;
 public class Main {
 
     public static void main(String[] args) {
-        GameApp gameApp = GameApp.getGameApp();
+        GameApp gameApp = new GameApp();
         Application application = new Application(gameApp, Config.WindowTitle);
 
         application.createWindowAndRun();

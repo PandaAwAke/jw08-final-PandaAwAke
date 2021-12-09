@@ -12,6 +12,10 @@ public abstract class Player {
         this.sprite = sprite;
     }
 
+    public PlayableSprite getSprite() {
+        return sprite;
+    }
+
     public abstract String getName();
 
     public abstract void doMove(Direction direction);

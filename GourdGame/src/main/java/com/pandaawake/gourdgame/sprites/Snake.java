@@ -7,7 +7,7 @@ import com.pandaawake.gourdgame.scene.Scene;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Snake extends MovableSprite implements HasBomb {
+public class Snake extends PlayableSprite implements HasBomb {
 
     private int lives = Config.ComputerPlayerLives;
     private Set<Bomb> bombs = new HashSet<>();

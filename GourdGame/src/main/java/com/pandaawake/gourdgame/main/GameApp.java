@@ -18,25 +18,17 @@ import com.mandas.tiled2d.utils.IntPair;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 public class GameApp implements GameApplication {
 
-    private static GameApp globalGameApp = null;
-
-    public static GameApp getGameApp() {
-        if (globalGameApp == null) {
-            globalGameApp = new GameApp();
-        }
-        return globalGameApp;
-    }
-
-    private GameMap gameMap;
-    private Scene scene;
-    private Level level;
-    private SceneTilesInitializer sceneTilesInitializer;
-    private Set<Player> players;
-    private HumanPlayer mainPlayer;
-    private Replayer replayer = null;
-
+    protected GameMap gameMap;
+    protected Scene scene;
+    protected Level level;
+    protected SceneTilesInitializer sceneTilesInitializer;
+    protected Set<Player> players;
+    protected HumanPlayer mainPlayer;
+    protected Replayer replayer = null;
 
     public boolean pause = false;
     public void setPause(boolean pause) {
@@ -46,7 +38,19 @@ public class GameApp implements GameApplication {
         return pause;
     }
 
-    private GameApp() {
+    public Scene getScene() {
+        return scene;
+    }
+
+    public HumanPlayer getMainPlayer() {
+        return mainPlayer;
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public GameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
         scene = new Scene(gameMap);
         level = new Level(Config.level1TileMap, Config.level1HumanPlayerPositions, Config.level1ComputerPlayerPositions);
@@ -58,11 +62,11 @@ public class GameApp implements GameApplication {
         initializeMapTileAndLevel();
 
         if (Config.ReplayMode) {
-            replayer = new Replayer(players);
+            replayer = new Replayer(this);
         }
     }
 
-    private void initializeEventDispatcher() {
+    protected void initializeEventDispatcher() {
         EventDispatcher.register(KeyEvents.Pressed.class, e -> {
             if (e.getKeyCode() == KeyCodes.VC_ESCAPE) {
                 setPause(!getPause());
@@ -76,17 +80,15 @@ public class GameApp implements GameApplication {
             if (pause) {
                 return;
             }
-            for (Player player : players) {
-                player.OnKeyPressed(e);
-            }
+            mainPlayer.OnKeyPressed(e);
         });
     }
 
-    private void initializeSprites() {
+    protected void initializeSprites() {
 
     }
 
-    private void initializeMapTileAndLevel() {
+    protected void initializeMapTileAndLevel() {
         // ------ Initialize tiles ------
         sceneTilesInitializer.initializeTiles(level);
 
@@ -96,7 +98,7 @@ public class GameApp implements GameApplication {
             humanCalabash.setPos(position.first, position.second);
             scene.addSprite(humanCalabash);
 
-            mainPlayer = new HumanPlayer(scene, humanCalabash, "Panda");
+            mainPlayer = new HumanPlayer(humanCalabash, "Panda");
             players.add(mainPlayer);
         }
 
@@ -105,7 +107,7 @@ public class GameApp implements GameApplication {
         int index = 0;
         for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
-            ComputerPlayer computerSnakePlayer = new ComputerPlayer(scene, computerSnake, Direction.down, names[index++]);
+            ComputerPlayer computerSnakePlayer = new ComputerPlayer(computerSnake, Direction.down, names[index++]);
             computerSnake.setPos(position.first, position.second);
             scene.addSprite(computerSnake);
 
@@ -128,6 +130,27 @@ public class GameApp implements GameApplication {
 
         initializeSprites();
         initializeMapTileAndLevel();
+    }
+
+    protected void checkGameEnds() {
+        if (!scene.getSprites().contains(mainPlayer.getCalabash())) {
+            // Game over
+            setPause(true);
+            JOptionPane.showMessageDialog(null, "游戏结束！你输了！");
+        } else {
+            boolean NoSnakes = true;
+            for (Sprite sprite : scene.getSprites()) {
+                if (sprite instanceof Snake) {
+                    NoSnakes = false;
+                    break;
+                }
+            }
+            if (NoSnakes) {
+                // Game over
+                setPause(true);
+                JOptionPane.showMessageDialog(null, "游戏结束！恭喜你赢了！");
+            }
+        }
     }
 
     // ---------------------- GameApplication Functions ----------------------
@@ -156,6 +179,9 @@ public class GameApp implements GameApplication {
         if (pause) {
             return;
         }
+
+        checkGameEnds();
+
         scene.OnUpdate(timestep);
         for (Player player : players) {
             player.OnUpdate(timestep);

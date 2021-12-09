@@ -1,7 +1,10 @@
-package com.pandaawake.gourdgame.network;
+package com.pandaawake.gourdgame.network.data;
 
 import java.io.IOException;
 
+import com.pandaawake.gourdgame.player.action.Action;
+import com.pandaawake.gourdgame.player.action.Actions;
+import com.pandaawake.gourdgame.player.action.PlayerAction;
 import com.pandaawake.gourdgame.utils.UtilFunctions;
 
 public abstract class DataProcessor {
@@ -13,14 +16,15 @@ public abstract class DataProcessor {
     public static final int GameResume = 102;
     public static final int GameEnd = 103;
 
-    // Signals name starts with "Server" represents a transfer from GameServer to Client,
-    // Signals name starts with "Client" represents a transfer from Client to GameServer.
+    // Signals name starts with "Server" represents a transfer from SocketServer to SocketClient,
+    // Signals name starts with "Client" represents a transfer from SocketClient to SocketServer.
 
     // Connection Signals
     public static final int ClientEnter = 200;
     public static final int ClientExit = 201;
     public static final int ServerClientSuccessfullyAccepted = 202;
     public static final int ServerClientUnsuccessfullyAccepted = 203;
+    public static final int ServerClosed = 204;
 
     // Game Action Signals
     public static final int ServerGameInitialize = 300;

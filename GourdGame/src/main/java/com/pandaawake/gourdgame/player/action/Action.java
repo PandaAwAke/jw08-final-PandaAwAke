@@ -1,4 +1,4 @@
-package com.pandaawake.gourdgame.network;
+package com.pandaawake.gourdgame.player.action;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -110,10 +110,12 @@ public abstract class Action {
         int playerActionNumber = UtilFunctions.getHeaderNumber(bytes, 0);
         int off = 4;
         int playerId = UtilFunctions.getHeaderNumber(bytes, off);
+        // TODO: handle playerId and name
+        
         off += 4;
         switch (playerActionNumber) {
             case PlayerNoAction:
-                return new Actions.PlayerNoAction(playerId);
+                return new Actions.PlayerNoAction();
             case PlayerDoMove:
                 int directionNumber = UtilFunctions.getHeaderNumber(bytes, off);
                 Direction direction = null;
@@ -132,11 +134,11 @@ public abstract class Action {
                         direction = Direction.down;
                         break;
                 }
-                return new Actions.PlayerDoMove(playerId, direction);
+                return new Actions.PlayerDoMove(direction);
             case PlayerSetBomb:
-                return new Actions.PlayerSetBomb(playerId);
+                return new Actions.PlayerSetBomb();
             case PlayerExplodeBomb:
-                return new Actions.PlayerExplodeBomb(playerId);
+                return new Actions.PlayerExplodeBomb();
         }
         return null;
     }

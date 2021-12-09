@@ -1,73 +1,56 @@
 package com.pandaawake.gourdgame.network;
 
-import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.network.data.ClientDataProcessor;
+import com.pandaawake.gourdgame.player.action.Action;
+import com.pandaawake.gourdgame.player.action.ClientActionPerformer;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
-// From https://github.com/arukshani/JavaIOAndNIO
-/**
- *
- * Test client for NIO server
- *
- */
 public class Client {
-    private InetSocketAddress hostAddress;
-    private SocketChannel channel;
 
-    public Client() throws IOException {
-        hostAddress = new InetSocketAddress("localhost", 9093);
-        channel = SocketChannel.open(hostAddress);
+    boolean running = true;
+
+    public boolean isRunning() {
+        return running;
     }
 
-    public void clientOperation() throws IOException, InterruptedException {
-        String threadName = Thread.currentThread().getName();
+    public void stop() {
+        running = false;
+    }
 
-        // Send messages to server
-        String[] messages = new String[]{threadName + ": msg1", threadName + ": msg2", threadName + ": msg3"};
+    SocketClient socketClient;
+    ClientDataProcessor dataProcessor;
+    ClientActionPerformer actionPerformer;
 
-        for (int i = 0; i < messages.length; i++) {
-            ByteBuffer buffer = ByteBuffer.allocate(74);
-            buffer.put(messages[i].getBytes());
-            buffer.flip();
-            channel.write(buffer);
-            System.out.println(messages[i]);
-            buffer.clear();
-            Thread.sleep(5000);
+    public Client(ClientActionPerformer actionPerformer) {
+        socketClient = new SocketClient();
+        dataProcessor = new ClientDataProcessor();
+        this.actionPerformer = actionPerformer;
+    }
+
+    public void run() {
+        socketClient.run();
+        while (socketClient.hasDataToHandle()) {
+            byte[] data = socketClient.pollDataToHandle();
+            Action action = dataProcessor.ProcessData(data);
+            actionPerformer.performAction(action);
         }
-
-        channel.close();
     }
 
 
-
-
+    
     public static class ClientRunnable implements Runnable {
-
         private Client client;
 
-        public ClientRunnable() {
-            try {
-                client = new Client();
-            } catch (IOException e) {
-                Log.app().error("Exception when creating Client!");
-                e.printStackTrace();
-            }
+        public ClientRunnable(Client client) {
+            this.client = client;
         }
 
         @Override
         public void run() {
-//            while (true) {
-//                try {
-//
-//                }
-//                catch () {
-//                    Log.app().error("IOException when running GameServer!");
-//                    e.printStackTrace();
-//                }
-//            }
+            while (client.isRunning()) {
+                client.run();
+            }
+            client.socketClient.close();
         }
     }
 

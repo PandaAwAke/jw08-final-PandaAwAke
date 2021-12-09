@@ -12,6 +12,10 @@ public class Config {
 
     public static final boolean ReplayMode = true; // Replay a play by log file
 
+    // Network settings
+    public static final String ServerHostName = "localhost";
+    public final static int ServerPort = 9093;
+
     // Tile settings
     public static final int TileSize = 50;      // A tile's size
 

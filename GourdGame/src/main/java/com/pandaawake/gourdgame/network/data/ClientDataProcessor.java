@@ -1,15 +1,15 @@
-package com.pandaawake.gourdgame.network;
+package com.pandaawake.gourdgame.network.data;
 
 import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.player.action.Action;
+import com.pandaawake.gourdgame.player.action.Actions;
 import com.pandaawake.gourdgame.utils.UtilFunctions;
 
 
 public class ClientDataProcessor extends DataProcessor {
 
-    //private Client client;
-
     public ClientDataProcessor() {
-        //this.client = client;
+        
     }
 
     @Override
@@ -37,7 +37,10 @@ public class ClientDataProcessor extends DataProcessor {
                 break;
             case ServerClientUnsuccessfullyAccepted:
                 String errorReason = new String(info);
-                Log.app().error("Failed to connect to the GameServer! " + errorReason);
+                Log.app().fatal(this.getClass().getName() + ": Failed to connect to the GameSocketServer! " + errorReason);
+
+                break;
+            case ServerClosed:
 
                 break;
 
@@ -46,6 +49,9 @@ public class ClientDataProcessor extends DataProcessor {
                 return Action.bytesToGameInitialize(info);
             case ServerClientPlayerAction:
                 return Action.bytesToPlayerAction(info);
+            default:
+                Log.app().error(this.getClass().getName() + ": Received some illegal data?");
+                break;
         }
         return null;
     }

@@ -1,13 +1,13 @@
-package com.pandaawake.gourdgame.network;
+package com.pandaawake.gourdgame.network.data;
 
+import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.player.action.Action;
 import com.pandaawake.gourdgame.utils.UtilFunctions;
 
 public class ServerDataProcessor extends DataProcessor {
 
-    private GameServer server;
-
-    public ServerDataProcessor(GameServer server) {
-        this.server = server;
+    public ServerDataProcessor() {
+        
     }
 
     @Override
@@ -28,6 +28,9 @@ public class ServerDataProcessor extends DataProcessor {
             // Game Action Signals
             case ClientServerPlayerAction:
                 return Action.bytesToPlayerAction(info);
+            default:
+                Log.app().error(this.getClass().getName() + ": Received some illegal data?");
+                break;
         }
         return null;
     }

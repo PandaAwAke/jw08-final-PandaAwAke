@@ -25,8 +25,8 @@ public class EventHandler implements
             GlobalScreen.registerNativeHook();
         }
         catch (NativeHookException ex) {
-            Log.mandas().fatal("There was a problem registering the native hook.");
-            Log.mandas().fatal(ex.getMessage());
+            Log.mandas().fatal(this.getClass().getName() + ": There was a problem registering the native hook.");
+            Log.mandas().fatal(this.getClass().getName() + ": " + ex.getMessage());
 
             System.exit(1);
         }
