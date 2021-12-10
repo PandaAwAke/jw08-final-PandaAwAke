@@ -12,10 +12,8 @@ public class HumanPlayer extends Player {
     private Calabash calabash;
     private String name;
 
-    public HumanPlayer(Calabash calabash, String name) {
-        super(calabash);
-        this.calabash = calabash;
-        this.name = name;
+    public HumanPlayer(Calabash calabash, int id, String name) {
+        super(calabash, id, name);
     }
 
     @Override

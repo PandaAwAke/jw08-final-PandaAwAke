@@ -22,12 +22,11 @@ public class ComputerPlayer extends Player {
 
     private boolean running = true;
 
-    public ComputerPlayer(Snake snake, Direction defaultDirection, String name) {
-        super(snake);
+    public ComputerPlayer(Snake snake, Direction defaultDirection, int id, String name) {
+        super(snake, id, name);
         random = new Random();
         this.snake = snake;
         this.direction = defaultDirection;
-        this.name = name;
     }
 
     @Override

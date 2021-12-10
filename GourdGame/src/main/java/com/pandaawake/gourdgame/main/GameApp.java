@@ -4,21 +4,25 @@ import com.mandas.tiled2d.core.GameApplication;
 import com.mandas.tiled2d.event.EventDispatcher;
 import com.mandas.tiled2d.event.KeyCodes;
 import com.mandas.tiled2d.event.KeyEvents;
+import com.mandas.tiled2d.utils.IntPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.player.ComputerPlayer;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
 import com.pandaawake.gourdgame.player.Replayer;
 import com.pandaawake.gourdgame.render.RenderCommand;
-import com.pandaawake.gourdgame.scene.*;
-import com.pandaawake.gourdgame.sprites.*;
+import com.pandaawake.gourdgame.scene.GameMap;
+import com.pandaawake.gourdgame.scene.Level;
+import com.pandaawake.gourdgame.scene.Scene;
+import com.pandaawake.gourdgame.scene.SceneTilesInitializer;
+import com.pandaawake.gourdgame.sprites.Calabash;
+import com.pandaawake.gourdgame.sprites.Snake;
+import com.pandaawake.gourdgame.sprites.Sprite;
 import com.pandaawake.gourdgame.utils.Direction;
-import com.mandas.tiled2d.utils.IntPair;
 
+import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.swing.JOptionPane;
 
 public class GameApp implements GameApplication {
 
@@ -98,7 +102,7 @@ public class GameApp implements GameApplication {
             humanCalabash.setPos(position.first, position.second);
             scene.addSprite(humanCalabash);
 
-            mainPlayer = new HumanPlayer(humanCalabash, "Panda");
+            mainPlayer = new HumanPlayer(humanCalabash, 0, "Panda");
             players.add(mainPlayer);
         }
 
@@ -107,7 +111,7 @@ public class GameApp implements GameApplication {
         int index = 0;
         for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
-            ComputerPlayer computerSnakePlayer = new ComputerPlayer(computerSnake, Direction.down, names[index++]);
+            ComputerPlayer computerSnakePlayer = new ComputerPlayer(computerSnake, Direction.down, index + 1, names[index++]);
             computerSnake.setPos(position.first, position.second);
             scene.addSprite(computerSnake);
 

@@ -7,16 +7,34 @@ import com.pandaawake.gourdgame.utils.Direction;
 public abstract class Player {
 
     protected PlayableSprite sprite;
+    protected String name = "";
+    protected int id = 0;
 
     public Player(PlayableSprite sprite) {
+        this(sprite, 0);
+    }
+
+    public Player(PlayableSprite sprite, int id) {
+        this(sprite, id, "");
+    }
+
+    public Player(PlayableSprite sprite, int id, String name) {
         this.sprite = sprite;
+        this.id = id;
+        this.name = name;
     }
 
     public PlayableSprite getSprite() {
         return sprite;
     }
 
-    public abstract String getName();
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public abstract void doMove(Direction direction);
     public abstract void setBomb();

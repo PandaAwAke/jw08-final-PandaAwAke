@@ -25,7 +25,7 @@ public class Log {
     }
 
     public static Logger file() {
-        if (Config.EnableLogging) {
+        if (Config.EnableLogging && Config.EnableFileLogging) {
             return fileLogger;
         }
         return invalidLogger;

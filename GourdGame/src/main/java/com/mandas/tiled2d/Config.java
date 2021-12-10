@@ -11,7 +11,8 @@ public class Config {
     // Log settings
     public static final String LogFilename = "test.log";
     public static final SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    public static final boolean EnableLogging = false;
+    public static final boolean EnableLogging = true;
+    public static final boolean EnableFileLogging = false;
 
     //      - Render settings
     public static final Font ScoreboardTextFont = new Font("宋体", Font.PLAIN, 36);

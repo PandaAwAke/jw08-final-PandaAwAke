@@ -2,9 +2,9 @@ package com.pandaawake.gourdgame.player;
 
 import com.mandas.tiled2d.Config;
 import com.pandaawake.gourdgame.main.GameApp;
-import com.pandaawake.gourdgame.player.action.ActionPerformer;
-import com.pandaawake.gourdgame.player.action.PlayerAction;
-import com.pandaawake.gourdgame.player.action.ReplayerActionPerformer;
+import com.pandaawake.gourdgame.network.data.performer.ActionPerformer;
+import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.performer.ReplayerActionPerformer;
 import com.pandaawake.gourdgame.utils.GameTraceParser;
 
 public class Replayer {

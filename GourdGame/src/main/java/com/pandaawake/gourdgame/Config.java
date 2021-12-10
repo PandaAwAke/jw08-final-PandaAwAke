@@ -10,7 +10,8 @@ public class Config {
     public static final String Version = "v2.0";
     public static final String WindowTitle = "葫芦娃泡泡堂 By MYS, Java Hw05 " + Version;
 
-    public static final boolean ReplayMode = true; // Replay a play by log file
+    public static final boolean ReplayMode = false; // Replay a play by log file
+
 
     // Network settings
     public static final String ServerHostName = "localhost";

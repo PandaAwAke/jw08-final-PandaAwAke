@@ -28,7 +28,7 @@ public class EventHandler implements
             Log.mandas().fatal(this.getClass().getName() + ": There was a problem registering the native hook.");
             Log.mandas().fatal(this.getClass().getName() + ": " + ex.getMessage());
 
-            System.exit(1);
+            
         }
         GlobalScreen.addNativeKeyListener(this);
         GlobalScreen.addNativeMouseListener(this);
