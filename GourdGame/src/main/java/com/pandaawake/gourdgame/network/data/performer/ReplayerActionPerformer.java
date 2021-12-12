@@ -1,7 +1,7 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.main.GameApp;
+import com.pandaawake.gourdgame.main.ClientGameApp;
 import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ReplayerActionPerformer extends ActionPerformer {
 
-    private GameApp app;
+    private ClientGameApp app;
 
-    public ReplayerActionPerformer(GameApp app) {
+    public ReplayerActionPerformer(ClientGameApp app) {
         this.app = app;
     }
 
@@ -46,7 +46,7 @@ public class ReplayerActionPerformer extends ActionPerformer {
     protected void performAction(PlayerAction action) {
         List<Player> matchedPlayers = new ArrayList<>();
         for (Player player : app.getPlayers()) {
-            if (player.getId() == action.playerId) {
+            if (player.id == action.playerId) {
                 matchedPlayers.add(player);
             }
         }
@@ -64,7 +64,9 @@ public class ReplayerActionPerformer extends ActionPerformer {
         if (action instanceof PlayerAction.NoAction) {
             // Do nothing
         } else if (action instanceof PlayerAction.DoMove) {
-            assert ((PlayerAction.DoMove) action).direction != null;
+            if (((PlayerAction.DoMove) action).direction == null) {
+                Log.app().error("Null direction?!");
+            }
             matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
         } else if (action instanceof PlayerAction.SetBomb) {
             matchedPlayer.setBomb();

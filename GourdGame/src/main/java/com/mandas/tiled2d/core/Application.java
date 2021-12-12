@@ -1,9 +1,9 @@
 package com.mandas.tiled2d.core;
 
-import javax.swing.JFrame;
-
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.renderer.Renderer;
+
+import javax.swing.*;
 
 public class Application {
     private GameApplication gameApp = null;
@@ -17,6 +17,7 @@ public class Application {
     }
 
     public Application(GameApplication gameApp, String title) {
+        Log.mandas().info(">>> Welcome to Mandas Tiled2D Engine! <<<");
         this.gameApp = gameApp;
         this.windowTitle = title;
         gameApp.InitRenderer();
@@ -27,7 +28,7 @@ public class Application {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 
-        Thread updateThread = new Thread(new ApplicationUpdator(this));
+        Thread updateThread = new Thread(new ApplicationUpdater(this));
         updateThread.setDaemon(true);
         updateThread.start();
     }
@@ -50,12 +51,12 @@ public class Application {
         window.repaint();
     }
 
-    private static class ApplicationUpdator implements Runnable {
+    private static class ApplicationUpdater implements Runnable {
 
         private long oldTime = 0;
         private final Application app;
 
-        public ApplicationUpdator(Application app) {
+        public ApplicationUpdater(Application app) {
             this.app = app;
         }
 

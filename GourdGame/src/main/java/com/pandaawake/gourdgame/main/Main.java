@@ -6,10 +6,10 @@ import com.pandaawake.gourdgame.Config;
 public class Main {
 
     public static void main(String[] args) {
-        GameApp gameApp = new GameApp();
-        Application application = new Application(gameApp, Config.WindowTitle);
+        ControllerApp app = new ControllerApp();
+        Application engineApp = new Application(app, Config.WindowTitle);
 
-        application.createWindowAndRun();
+        engineApp.createWindowAndRun();
     }
 
 }

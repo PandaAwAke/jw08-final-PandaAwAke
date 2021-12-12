@@ -30,7 +30,7 @@ public class SceneTilesInitializer {
                 }
                 Thing thing = getNewThing(tileMap[y].charAt(x));
                 if (thing != null) {
-                    scene.addThing(thing, tile);
+                    scene.getSceneUpdater().addThing(thing, tile);
                 }
             }
         }

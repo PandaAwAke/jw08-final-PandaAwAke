@@ -1,9 +1,9 @@
 package com.pandaawake.gourdgame.player;
 
 import com.mandas.tiled2d.Config;
-import com.pandaawake.gourdgame.main.GameApp;
-import com.pandaawake.gourdgame.network.data.performer.ActionPerformer;
+import com.pandaawake.gourdgame.main.ClientGameApp;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.performer.ActionPerformer;
 import com.pandaawake.gourdgame.network.data.performer.ReplayerActionPerformer;
 import com.pandaawake.gourdgame.utils.GameTraceParser;
 
@@ -17,9 +17,9 @@ public class Replayer {
     private boolean running = true;
     
     private float nextActionDeltaTime = 1.0f;   // Initialize value
-    private GameApp app;
+    private ClientGameApp app;
 
-    public Replayer(GameApp app) {
+    public Replayer(ClientGameApp app) {
         this.app = app;
         parser = new GameTraceParser(Config.LogFilename);
         performer = new ReplayerActionPerformer(app);

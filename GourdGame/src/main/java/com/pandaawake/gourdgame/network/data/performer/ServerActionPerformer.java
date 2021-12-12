@@ -1,12 +1,15 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
 import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.main.ServerGameApp;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
+import com.pandaawake.gourdgame.sprites.Calabash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +35,16 @@ public class ServerActionPerformer extends ActionPerformer {
     @Override
     protected void performAction(ConnectionAction action) {
         if (action instanceof ConnectionAction.ClientEnter) {
+            Log.app().info("Client Enter");
             // App: Allocate a Player for this client
-
+            Calabash humanCalabash = new Calabash(app.getScene(), false);
+            humanCalabash.setPos(0, 1);
+            app.getScene().getSceneUpdater().addSprite(humanCalabash);
+            app.getPlayers().add(new HumanPlayer(humanCalabash, action.senderClientId, Config.names[action.senderClientId]));
+            gameServer.sendAction(new ConnectionAction.ClientSuccessfullyAccepted(-1, action.senderClientId));
         } else if (action instanceof ConnectionAction.ClientExit) {
             // App: Remove this id and Player for this client
-
+            //app.getPlayers().removeIf(player -> player.id == action.senderClientId);
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }
@@ -46,18 +54,22 @@ public class ServerActionPerformer extends ActionPerformer {
     protected void performAction(PlayerAction action) {
         List<Player> matchedPlayers = new ArrayList<>();
         for (Player player : app.getPlayers()) {
-            if (player.getId() == action.playerId) {
+            if (player.id == action.playerId) {
                 matchedPlayers.add(player);
             }
         }
 
-        assert matchedPlayers.size() == 1;
+        if (matchedPlayers.size() != 1) {
+            Log.app().error("No matched player?");
+        }
         Player matchedPlayer = matchedPlayers.get(0);
 
         if (action instanceof PlayerAction.NoAction) {
             // Do nothing
         } else if (action instanceof PlayerAction.DoMove) {
-            assert ((PlayerAction.DoMove) action).direction != null;
+            if (((PlayerAction.DoMove) action).direction == null) {
+                Log.app().error("Null direction?!");
+            }
             matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
         } else if (action instanceof PlayerAction.SetBomb) {
             matchedPlayer.setBomb();
@@ -66,6 +78,8 @@ public class ServerActionPerformer extends ActionPerformer {
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }
+
+        gameServer.sendAction(action);
     }
 
 }

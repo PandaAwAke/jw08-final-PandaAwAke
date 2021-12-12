@@ -1,17 +1,17 @@
 package com.pandaawake.gourdgame.sprites;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import com.mandas.tiled2d.scene.Entity;
 import com.mandas.tiled2d.scene.TileTextureRenderComponent;
 import com.mandas.tiled2d.scene.TransformComponent;
-import com.pandaawake.gourdgame.Config;
-import com.pandaawake.gourdgame.scene.Scene;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
+import com.pandaawake.gourdgame.Config;
+import com.pandaawake.gourdgame.scene.Scene;
 
-public class Sprite extends Entity {
+import java.util.Set;
+import java.util.TreeSet;
+
+public abstract class Sprite extends Entity {
     /**
      * Sprite is a movable/interactive thing in the scene.
      * The rendering of the sprite should not cover the rendering of tiles.
@@ -22,7 +22,6 @@ public class Sprite extends Entity {
     protected int spriteWidth, spriteHeight;                // Use for collision box
     protected int spriteRenderWidth, spriteRenderHeight;    // Use for rendering
     protected boolean blocking;
-    //protected TileTextures tileTextures;
 
 
     // TODO: Distinguish Rendering area and Collision area

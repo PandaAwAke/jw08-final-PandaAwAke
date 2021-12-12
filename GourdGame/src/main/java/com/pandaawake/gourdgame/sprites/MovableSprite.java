@@ -9,7 +9,7 @@ import com.mandas.tiled2d.utils.IntPair;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class MovableSprite extends Sprite {
+public abstract class MovableSprite extends Sprite {
 
     protected float movingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     protected FloatPair targetDeltaPos = new FloatPair(0.0f, 0.0f);
@@ -19,7 +19,23 @@ public class MovableSprite extends Sprite {
     protected Status status = Status.Ok;    // The sprite's status
 
     public enum Status {
-        Ok, Moving
+        Ok(0), Moving(1);
+
+        public int number = 0;
+        Status(int number) {
+            this.number = number;
+        }
+
+        public static Status fromNumber(int number) {
+            switch (number) {
+                case 0:
+                    return Status.Ok;
+                case 1:
+                    return Status.Moving;
+                default:
+                    return null;
+            }
+        }
     }
 
     public MovableSprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {

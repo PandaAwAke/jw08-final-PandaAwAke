@@ -11,6 +11,7 @@ public class Config {
     public static final String WindowTitle = "葫芦娃泡泡堂 By MYS, Java Hw05 " + Version;
 
     public static final boolean ReplayMode = false; // Replay a play by log file
+    public static final boolean ServerMode = true; // Open a server
 
 
     // Network settings
@@ -68,6 +69,9 @@ public class Config {
         level1ComputerPlayerPositions.add(new IntPair(9, 3));
     }
 
+    // Player Name settings
+    public static final String[] names = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
+
 
 
     // Game settings
@@ -86,5 +90,6 @@ public class Config {
     public static final float HumanPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     public static final float ComputerPlayerMovingSpeed = 4.0f;     // How many tiles will this sprite move in 1 second
     public static final int BombExtendedRadius = 1;       // Extended radius of the bomb center, describes the exploding area
+
 
 }

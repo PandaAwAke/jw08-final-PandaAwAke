@@ -4,21 +4,11 @@ import com.mandas.tiled2d.utils.FloatPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class Snake extends PlayableSprite implements HasBomb {
-
-    private int lives = Config.ComputerPlayerLives;
-    private Set<Bomb> bombs = new HashSet<>();
+public class Snake extends PlayableSprite {
 
     public Snake(Scene scene) {
-        super(true, scene, Config.ComputerPlayerMovingSpeed, 1, 1);
+        super(Config.ComputerPlayerLives, Config.ComputerPlayerBombs, true, scene, Config.ComputerPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 9));
-    }
-
-    public int getLives() {
-        return lives;
     }
 
     @Override
@@ -33,28 +23,14 @@ public class Snake extends PlayableSprite implements HasBomb {
         return false;
     }
 
-    @Override
-    public Set<Bomb> getBombs() {
-        return bombs;
-    }
-
-    @Override
-    public boolean canSetBomb() {
-        return bombs.size() < Config.ComputerPlayerBombs;
-    }
 
     @Override
     public void setNewBomb() {
         if (status == MovableSprite.Status.Ok && canSetBomb()) {
             Bomb bomb = new Bomb2(scene, this, posX, posY);
             bombs.add(bomb);
-            scene.addSprite(bomb);
+            scene.getSceneUpdater().addSprite(bomb);
         }
-    }
-
-    @Override
-    public void bombDestroyed(Bomb bomb) {
-        bombs.remove(bomb);
     }
 
 }

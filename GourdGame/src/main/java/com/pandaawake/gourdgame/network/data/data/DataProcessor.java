@@ -33,7 +33,7 @@ public abstract class DataProcessor {
     public static final int CLIENT_SERVER_PLAYER_ACTION = 401;
 
     // -------------- Functions --------------
-    public abstract Action dataToAction(byte[] data);
+    public abstract Action dataToAction(int senderClientId, byte[] data);
 
     protected abstract byte[] actionToData(GameAction action) throws IOException;
     protected abstract byte[] actionToData(ConnectionAction action) throws IOException;

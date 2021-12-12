@@ -1,11 +1,11 @@
 package com.pandaawake.gourdgame.network.data.action;
 
-import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
-import com.pandaawake.gourdgame.utils.UtilFunctions;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 public abstract class PlayerAction extends Action {
@@ -22,68 +22,88 @@ public abstract class PlayerAction extends Action {
     public static final int EXTRA_INFO_DIRECTION_RIGHT = 3;
     public static final int EXTRA_INFO_DIRECTION_DOWN = 4;
 
-    public int playerId = 0;
     public Date time = null;
+    public int playerId;
 
-    public PlayerAction(int playerId) {
+    public PlayerAction(int senderClientId, int playerId) {
+        super(senderClientId);
         this.playerId = playerId;
         time = new Date();
     }
 
-    public String toString() {
-        String result = "";
-        result += Config.DateFormat.format(time);
-        result += " " + playerId;
-        return result;
-    }
-
-    public byte[] toBytes() {
+    public byte[] toBytes() throws IOException {
         // [playerId] [type number (4)] [otherInfoNumbers (4)]
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-        int off = 0;
-        oStream.write(UtilFunctions.intToBytes(playerId), off, 4);
-        off += 4;
+        oStream.write(DataUtils.intToBytes(playerId));
         if (this instanceof NoAction) {
-            oStream.write(UtilFunctions.intToBytes(PLAYER_NO_ACTION), off, 4);
-            off += 4;
+            oStream.write(DataUtils.intToBytes(PLAYER_NO_ACTION));
         } else if (this instanceof DoMove) {
-            oStream.write(UtilFunctions.intToBytes(PLAYER_DO_MOVE), off, 4);
-            off += 4;
+            oStream.write(DataUtils.intToBytes(PLAYER_DO_MOVE));
             switch (((DoMove) this).direction) {
                 case left:
-                    oStream.write(UtilFunctions.intToBytes(EXTRA_INFO_DIRECTION_LEFT), off, 4);
-                    off += 4;
+                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_LEFT));
                     break;
                 case up:
-                    oStream.write(UtilFunctions.intToBytes(EXTRA_INFO_DIRECTION_UP), off, 4);
-                    off += 4;
+                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_UP));
                     break;
                 case right:
-                    oStream.write(UtilFunctions.intToBytes(EXTRA_INFO_DIRECTION_RIGHT), off, 4);
-                    off += 4;
+                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_RIGHT));
                     break;
                 case down:
-                    oStream.write(UtilFunctions.intToBytes(EXTRA_INFO_DIRECTION_DOWN), off, 4);
-                    off += 4;
+                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_DOWN));
                     break;
             }
         } else if (this instanceof SetBomb) {
-            oStream.write(UtilFunctions.intToBytes(PLAYER_SET_BOMB), off, 4);
-            off += 4;
+            oStream.write(DataUtils.intToBytes(PLAYER_SET_BOMB));
         } else if (this instanceof ExplodeBomb) {
-            oStream.write(UtilFunctions.intToBytes(PLAYER_EXPLODE_BOMB), off, 4);
-            off += 4;
+            oStream.write(DataUtils.intToBytes(PLAYER_EXPLODE_BOMB));
         } else {
             return null;
         }
-
         return oStream.toByteArray();
+    }
+
+    public static PlayerAction parseBytes(int senderClientId, byte[] bytes) {
+        int playerActionNumber = DataUtils.getHeaderNumber(bytes, 0);
+        int off = 4;
+        int playerId = DataUtils.getHeaderNumber(bytes, off);
+
+        switch (playerActionNumber) {
+            case PLAYER_NO_ACTION:
+                return new NoAction(senderClientId, playerId);
+            case PLAYER_DO_MOVE:
+                int directionNumber = DataUtils.getHeaderNumber(bytes, off);
+                Direction direction = null;
+
+                switch (directionNumber) {
+                    case EXTRA_INFO_DIRECTION_LEFT:
+                        direction = Direction.left;
+                        break;
+                    case EXTRA_INFO_DIRECTION_UP:
+                        direction = Direction.up;
+                        break;
+                    case EXTRA_INFO_DIRECTION_RIGHT:
+                        direction = Direction.right;
+                        break;
+                    case EXTRA_INFO_DIRECTION_DOWN:
+                        direction = Direction.down;
+                        break;
+                }
+                return new DoMove(senderClientId, playerId, direction);
+            case PLAYER_SET_BOMB:
+                return new SetBomb(senderClientId, playerId);
+            case PLAYER_EXPLODE_BOMB:
+                return new ExplodeBomb(senderClientId, playerId);
+        }
+        return null;
     }
 
     public static PlayerAction parseString(String str, Date time) {
         String[] params = str.split(" ", 3);
 
-        assert params.length >= 2;
+        if (params.length < 2) {
+            Log.app().error("Illegal params length!");
+        }
 
         // Player id
         int playerId = Integer.parseInt(params[0]);
@@ -95,10 +115,12 @@ public abstract class PlayerAction extends Action {
 
         switch (actionKind) {
             case "NoAction":
-                action = new PlayerAction.NoAction(playerId);
+                action = new PlayerAction.NoAction(playerId, playerId);
                 break;
             case "DoMove":
-                assert params.length == 3;
+                if (params.length != 3) {
+                    Log.app().error("Illegal params length!");
+                }
                 String directionStr = params[2];
                 Direction direction = null;
                 switch (directionStr) {
@@ -115,13 +137,13 @@ public abstract class PlayerAction extends Action {
                         direction = Direction.down;
                         break;
                 }
-                action = new PlayerAction.DoMove(playerId, direction);
+                action = new PlayerAction.DoMove(playerId, playerId, direction);
                 break;
             case "ExplodeBomb":
-                action = new PlayerAction.ExplodeBomb(playerId);
+                action = new PlayerAction.ExplodeBomb(playerId, playerId);
                 break;
             case "SetBomb":
-                action = new PlayerAction.SetBomb(playerId);
+                action = new PlayerAction.SetBomb(playerId, playerId);
                 break;
             default:
                 Log.app().error("Illegal action kind!");
@@ -134,89 +156,55 @@ public abstract class PlayerAction extends Action {
         return action;
     }
 
-    public static PlayerAction parseBytes(byte[] bytes) {
-        int playerActionNumber = UtilFunctions.getHeaderNumber(bytes, 0);
-        int off = 4;
-        int playerId = UtilFunctions.getHeaderNumber(bytes, off);
 
-        off += 4;
-        switch (playerActionNumber) {
-            case PLAYER_NO_ACTION:
-                return new NoAction(playerId);
-            case PLAYER_DO_MOVE:
-                int directionNumber = UtilFunctions.getHeaderNumber(bytes, off);
-                Direction direction = null;
-                off += 4;
-                switch (directionNumber) {
-                    case EXTRA_INFO_DIRECTION_LEFT:
-                        direction = Direction.left;
-                        break;
-                    case EXTRA_INFO_DIRECTION_UP:
-                        direction = Direction.up;
-                        break;
-                    case EXTRA_INFO_DIRECTION_RIGHT:
-                        direction = Direction.right;
-                        break;
-                    case EXTRA_INFO_DIRECTION_DOWN:
-                        direction = Direction.down;
-                        break;
-                }
-                return new DoMove(playerId, direction);
-            case PLAYER_SET_BOMB:
-                return new SetBomb(playerId);
-            case PLAYER_EXPLODE_BOMB:
-                return new ExplodeBomb(playerId);
-        }
-        return null;
-    }
 
 
 
 
     // Player Actions
     public static class NoAction extends PlayerAction {
-        public NoAction(int playerId) {
-            super(playerId);
+        public NoAction(int senderClientId, int playerId) {
+            super(senderClientId, playerId);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " NoAction";
+            return "" + playerId + " NoAction";
         }
     }
 
     public static class DoMove extends PlayerAction {
         public Direction direction;
-        public DoMove(int playerId, Direction direction) {
-            super(playerId);
+        public DoMove(int senderClientId, int playerId, Direction direction) {
+            super(senderClientId, playerId);
             this.direction = direction;
         }
 
         @Override
         public String toString() {
-            return super.toString() + " DoMove " + direction.toString();
+            return "" + playerId + " DoMove " + direction.toString();
         }
     }
 
     public static class SetBomb extends PlayerAction {
-        public SetBomb(int playerId) {
-            super(playerId);
+        public SetBomb(int senderClientId, int playerId) {
+            super(senderClientId, playerId);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " SetBomb";
+            return "" + playerId + " SetBomb";
         }
     }
 
     public static class ExplodeBomb extends PlayerAction {
-        public ExplodeBomb(int playerId) {
-            super(playerId);
+        public ExplodeBomb(int senderClientId, int playerId) {
+            super(senderClientId, playerId);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " ExplodeBomb";
+            return "" + playerId + " ExplodeBomb";
         }
     }
     

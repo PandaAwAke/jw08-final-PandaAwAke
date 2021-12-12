@@ -1,14 +1,23 @@
 package com.pandaawake.gourdgame.player;
 
-import com.mandas.tiled2d.event.KeyEvents;
+import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.PlayableSprite;
+import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public abstract class Player {
 
-    protected PlayableSprite sprite;
-    protected String name = "";
-    protected int id = 0;
+    public PlayableSprite sprite;
+    public int id = 0;
+    public String name = "";
+
+    public String getName() {
+        return name;
+    }
 
     public Player(PlayableSprite sprite) {
         this(sprite, 0);
@@ -24,34 +33,44 @@ public abstract class Player {
         this.name = name;
     }
 
-    public PlayableSprite getSprite() {
-        return sprite;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
     public abstract void doMove(Direction direction);
     public abstract void setBomb();
     public abstract void explodeBomb();
 
     // ---------------------- Callback Functions ----------------------
     public abstract void OnUpdate(float timestep);
-    public abstract void OnKeyPressed(KeyEvents.Pressed e);
 
-    public byte[] toBytes() {
-        // TODO
-        return null;
+    public byte[] toBytes() throws IOException {
+        // [spriteBytesLen] [spriteBytes] [id (4)] [nameBytesLen] [nameBytes]
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        oStream.write(DataUtils.addLengthHeader(sprite.toBytes()));
+        oStream.write(DataUtils.intToBytes(id));
+        oStream.write(DataUtils.addLengthHeader(name.getBytes()));
+        return oStream.toByteArray();
     }
 
-    public static Player parseBytes(byte[] bytes) {
-        // TODO
-        return null;
+    public static Player parseBytes(byte[] bytes, Scene scene) throws IOException {
+        ByteArrayInputStream iStream = new ByteArrayInputStream(bytes);
+        byte[] intBytes = new byte[4];
+
+        iStream.read(intBytes);
+        int spriteDataLen = DataUtils.bytesToInt(intBytes);
+
+        byte[] spriteBytes = new byte[spriteDataLen];
+        iStream.read(spriteBytes);
+        PlayableSprite sprite = PlayableSprite.parseBytes(spriteBytes, scene);
+
+        iStream.read(intBytes);
+        int id = DataUtils.bytesToInt(intBytes);
+
+        iStream.read(intBytes);
+        int nameDataLen = DataUtils.bytesToInt(intBytes);
+
+        byte[] nameBytes = new byte[nameDataLen];
+        iStream.read(nameBytes);
+        String name = new String(nameBytes);
+
+        return new OtherPlayer(sprite, id, name);
     }
 
 }

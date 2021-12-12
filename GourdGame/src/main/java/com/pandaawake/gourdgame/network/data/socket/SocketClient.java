@@ -2,6 +2,8 @@ package com.pandaawake.gourdgame.network.data.socket;
 
 import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.Config;
+import com.pandaawake.gourdgame.network.data.data.DataProcessor;
+import com.pandaawake.gourdgame.utils.DataUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,28 +32,37 @@ public class SocketClient {
 
         try {
             channel = SocketChannel.open(hostAddress);
+            channel.configureBlocking(false);
         } catch (IOException e) {
             Log.app().fatal(this.getClass().getName() + ": IOException when creating SocketClient!");
             e.printStackTrace();
-            
         }
 
         dataRead = new LinkedList<>();
+        Log.app().info(">>> SocketClient started <<<");
     }
 
     public void run() {
         synchronized (this) {
             try {
-                ByteBuffer buffer = ByteBuffer.allocate(1024);
-                int numRead = -1;
+                ByteBuffer buffer = ByteBuffer.allocate(4096);
                 ByteArrayOutputStream oStream = new ByteArrayOutputStream();
                 int off = 0;
-                while ((numRead = channel.read(buffer)) != -1) {
-                    // assert : data.length <= 1024
+                int numRead = channel.read(buffer);
+
+                while (numRead != 0 && numRead != -1) {
                     oStream.write(buffer.array(), off, numRead);
                     off += numRead;
+                    numRead = channel.read(buffer);
                 }
-                dataRead.offer(oStream.toByteArray());
+
+                if (numRead == -1) {
+                    // TODO: Client exit
+                }
+
+                if (oStream.size() > 0) {
+                    dataRead.offer(oStream.toByteArray());
+                }
             } catch (IOException e) {
                 Log.app().fatal(this.getClass().getName() + ": IOException when running SocketClient!");
                 e.printStackTrace();
@@ -85,11 +96,11 @@ public class SocketClient {
     public void close() {
         synchronized (this) {
             try {
+                writeData(DataUtils.intToBytes(DataProcessor.CLIENT_EXIT));
                 channel.close();
             } catch (IOException e) {
                 Log.app().fatal(this.getClass().getName() + ": IOException when closing SocketClient!");
                 e.printStackTrace();
-                
             }
         }
     }

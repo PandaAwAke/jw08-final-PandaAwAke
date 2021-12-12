@@ -1,9 +1,10 @@
 package com.pandaawake.gourdgame.network.data.socket;
 
 import com.mandas.tiled2d.core.Log;
+import com.mandas.tiled2d.utils.Pair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.data.data.DataProcessor;
-import com.pandaawake.gourdgame.utils.UtilFunctions;
+import com.pandaawake.gourdgame.utils.DataUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,13 +29,22 @@ public class SocketServer {
     private Selector selector;
 
     private final Map<Integer, SocketChannel> clientChannels;
-    private final Map<byte[], Set<SocketChannel>> dataToWrite_SendedChannels;
-    private final LinkedList<byte[]> dataRead;
+    private final LinkedList<Pair<byte[], Set<SocketChannel>>> dataToWrite_SendedChannels;
+    private final LinkedList<Pair<Integer, byte[]>> dataRead;
     private int clientIdIter = 0;
+
+    private int getChannelIndex(SocketChannel channel) {
+        for (Map.Entry<Integer, SocketChannel> entry : clientChannels.entrySet()) {
+            if (channel.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
 
     public SocketServer() {
         clientChannels = new HashMap<>();
-        dataToWrite_SendedChannels = new HashMap<>();
+        dataToWrite_SendedChannels = new LinkedList<>();
         dataRead = new LinkedList<>();
 
         try {
@@ -53,7 +63,6 @@ public class SocketServer {
         } catch (IOException e) {
             Log.app().fatal(this.getClass().getName() + ": IOException when creating SocketServer!");
             e.printStackTrace();
-
         }
     }
 
@@ -80,17 +89,25 @@ public class SocketServer {
     void read(SelectionKey key) throws IOException {
         synchronized (this) {
             SocketChannel channel = (SocketChannel) key.channel();
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
-            int numRead = -1;
+            ByteBuffer buffer = ByteBuffer.allocate(4096);
 
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
             int off = 0;
-            while ((numRead = channel.read(buffer)) != -1) {
-                // assert : data.length <= 1024
+            int numRead = channel.read(buffer);
+
+            while (numRead != 0 && numRead != -1) {
                 oStream.write(buffer.array(), off, numRead);
                 off += numRead;
+                numRead = channel.read(buffer);
             }
-            dataRead.offer(oStream.toByteArray());
+
+            if (numRead == -1) {
+                // TODO: Server closed
+            }
+
+            if (oStream.size() > 0) {
+                dataRead.offer(new Pair<>(getChannelIndex(channel), oStream.toByteArray()));
+            }
         }
     }
 
@@ -98,8 +115,8 @@ public class SocketServer {
         synchronized (this) {
             int numWrite = 0;
             while (numWrite < data.length) {
-                ByteBuffer buffer = ByteBuffer.allocate(1024);
-                int writeLen = Math.min(1024, data.length - numWrite);
+                ByteBuffer buffer = ByteBuffer.allocate(4096);
+                int writeLen = Math.min(4096, data.length - numWrite);
                 buffer.put(data, numWrite, writeLen);
                 numWrite += writeLen;
                 buffer.flip();
@@ -112,19 +129,19 @@ public class SocketServer {
     void processDataToWrite(SelectionKey key) throws IOException {
         synchronized (this) {
             SocketChannel channel = (SocketChannel) key.channel();
-            Set<byte[]> bytesToRemove = new HashSet<>();
-            for (Map.Entry<byte[], Set<SocketChannel>> entry : dataToWrite_SendedChannels.entrySet()) {
-                if (!entry.getValue().contains(channel)) {
-                    write(channel, entry.getKey());
-                    entry.getValue().add(channel);
-                    if (entry.getValue().size() == clientChannels.size()) {
+            Set<Pair<byte[], Set<SocketChannel>>> entriesToRemove = new HashSet<>();
+            for (Pair<byte[], Set<SocketChannel>> entry : dataToWrite_SendedChannels) {
+                if (!entry.second.contains(channel)) {
+                    write(channel, entry.first);
+                    entry.second.add(channel);
+                    if (entry.second.size() == clientChannels.size()) {
                         // Remove this entry
-                        bytesToRemove.add(entry.getKey());
+                        entriesToRemove.add(entry);
                     }
                 }
             }
-            for (byte[] bytes : bytesToRemove) {
-                dataToWrite_SendedChannels.remove(bytes);
+            for (Pair<byte[], Set<SocketChannel>> entry : entriesToRemove) {
+                dataToWrite_SendedChannels.remove(entry);
             }
         }
     }
@@ -157,7 +174,7 @@ public class SocketServer {
     // ------------------- Public functions -------------------
     public void addDataToWrite(byte[] dataToWrite) {
         synchronized (this) {
-            dataToWrite_SendedChannels.put(dataToWrite, new HashSet<>());
+            dataToWrite_SendedChannels.offer(new Pair<>(dataToWrite, new HashSet<>()));
         }
     }
 
@@ -171,7 +188,7 @@ public class SocketServer {
                 }
                 ignoreSet.add(channel);
             }
-            dataToWrite_SendedChannels.put(dataToWrite, ignoreSet);
+            dataToWrite_SendedChannels.offer(new Pair<>(dataToWrite, ignoreSet));
         }
     }
 
@@ -191,7 +208,7 @@ public class SocketServer {
         }
     }
 
-    public byte[] pollDataToHandle() {
+    public Pair<Integer, byte[]> pollDataToHandle() {
         synchronized (this) {
             return dataRead.poll();
         }
@@ -253,7 +270,7 @@ public class SocketServer {
                     }
                     SocketChannel channel = (SocketChannel) key.channel();
                     if (key.isWritable()) { // Write to client
-                        write(channel, UtilFunctions.intToBytes(DataProcessor.SERVER_CLOSED));
+                        write(channel, DataUtils.intToBytes(DataProcessor.SERVER_CLOSED));
                     }
                     channel.close();
                     key.cancel();

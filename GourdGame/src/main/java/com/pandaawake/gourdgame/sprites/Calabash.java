@@ -6,22 +6,12 @@ import com.mandas.tiled2d.utils.FloatPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 
-import java.util.HashSet;
-import java.util.Set;
+public class Calabash extends PlayableSprite {
 
-public class Calabash extends PlayableSprite implements HasBomb {
-
-    private int lives = Config.HumanPlayerLives;
-    private Set<Bomb> bombs = new HashSet<>();
-
-    public Calabash(Scene scene) {
-        super(true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
+    public Calabash(Scene scene, boolean cameraController) {
+        super(Config.HumanPlayerLives, Config.HumanPlayerBombs, true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
-        addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), true));
-    }
-
-    public int getLives() {
-        return lives;
+        addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), cameraController));
     }
 
     @Override
@@ -52,27 +42,14 @@ public class Calabash extends PlayableSprite implements HasBomb {
         return false;
     }
 
-    @Override
-    public Set<Bomb> getBombs() {
-        return bombs;
-    }
-
-    @Override
-    public boolean canSetBomb() {
-        return bombs.size() < Config.HumanPlayerBombs;
-    }
 
     @Override
     public void setNewBomb() {
         if (status == MovableSprite.Status.Ok && canSetBomb()) {
             Bomb bomb = new Bomb(scene, this, posX, posY);
             bombs.add(bomb);
-            scene.addSprite(bomb);
+            scene.getSceneUpdater().addSprite(bomb);
         }
     }
 
-    @Override
-    public void bombDestroyed(Bomb bomb) {
-        bombs.remove(bomb);
-    }
 }

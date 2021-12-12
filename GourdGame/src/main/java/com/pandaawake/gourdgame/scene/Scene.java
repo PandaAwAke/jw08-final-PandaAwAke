@@ -1,15 +1,16 @@
 package com.pandaawake.gourdgame.scene;
 
+import com.mandas.tiled2d.utils.IntPair;
 import com.pandaawake.gourdgame.render.RenderCommand;
+import com.pandaawake.gourdgame.scene.updater.SceneUpdater;
 import com.pandaawake.gourdgame.sprites.MovableSprite;
 import com.pandaawake.gourdgame.sprites.Sprite;
-import com.pandaawake.gourdgame.tiles.Floor;
 import com.pandaawake.gourdgame.tiles.Thing;
-import com.pandaawake.gourdgame.tiles.Tile;
-import com.mandas.tiled2d.utils.IntPair;
-import com.mandas.tiled2d.utils.Pair;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Scene extends com.mandas.tiled2d.scene.Scene {
     /**
@@ -18,93 +19,31 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
      *
      */
 
-    private final Set<Thing> things;
-    private final Set<Sprite> sprites;  // This will be sorted by Ypos, smaller Ypos == smaller index, for rendering
-    private final GameMap gameMap;
+    final Set<Thing> things;
+    final Set<Sprite> sprites;  // This will be sorted by Ypos, smaller Ypos == smaller index, for rendering
+    final GameMap gameMap;
+    final SceneUpdater sceneUpdater;
 
-    public Scene(GameMap gameMap) {
+    public Scene(GameMap gameMap, SceneUpdater sceneUpdater) {
         super();
         things = new HashSet<>();
         sprites = new HashSet<>();
         this.gameMap = gameMap;
+        this.sceneUpdater = sceneUpdater;
+        sceneUpdater.setScene(this);
     }
 
     public GameMap getGameMap() {
         return gameMap;
     }
-
-    /** Add and remove in update, to avoid the ConcurrentModificationException when iterating
-     * [things] and [sprites]
-     */
-    Set<Pair<Thing, ArrayList<Tile>>> thingsToAdd = new HashSet<>();
-    Set<Thing> thingsToRemove = new HashSet<>();
-    Set<Thing> thingsToRepaint = new HashSet<>();
-    Set<Sprite> spritesToAdd = new HashSet<>();
-    Set<Sprite> spritesToRemove = new HashSet<>();
-    Set<IntPair> positionsToRepaint = new TreeSet<>();
-    // ---------------------- Things ----------------------
-    public boolean addThing(Thing thing, ArrayList<Tile> tiles) {
-        synchronized (this) {
-            // Check every tile, avoiding conflict things
-            if (things.contains(thing)) {
-                return false;
-            }
-            for (Tile tile : tiles) {
-                if (tile.getThing() != null) {
-                    return false;
-                }
-            }
-            thingsToAdd.add(new Pair<>(thing, tiles));
-            return true;
-        }
-    }
-
-    public boolean addThing(Thing thing, Tile tile) {
-        ArrayList<Tile> tiles = new ArrayList<>();
-        tiles.add(tile);
-        return addThing(thing, tiles);
-    }
-
-    public boolean addThing(Thing thing) {
-        return addThing(thing, thing.getTiles());
-    }
-
-    public boolean addRepaintThing(Thing thing) {
-        synchronized (this) {
-            return thingsToRepaint.add(thing);
-        }
-    }
-
-    public Set<Thing> getThings() {
-        return things;
-    }
-
-    public boolean removeThing(Thing thing) {
-        synchronized (this) {
-            if (!things.contains(thing)) {
-                return false;
-            }
-            thingsToRemove.add(thing);
-            return true;
-        }
-    }
-
-
-    // ---------------------- Sprites ----------------------
-    public boolean addSprite(Sprite sprite) {
-        synchronized (this) {
-            return spritesToAdd.add(sprite);
-        }
-    }
-
     public Set<Sprite> getSprites() {
         return sprites;
     }
-
-    public boolean removeSprite(Sprite sprite) {
-        synchronized (this) {
-            return spritesToRemove.add(sprite);
-        }
+    public Set<Thing> getThings() {
+        return things;
+    }
+    public SceneUpdater getSceneUpdater() {
+        return sceneUpdater;
     }
 
 
@@ -206,12 +145,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
             things.clear();
             sprites.clear();
 
-            thingsToAdd.clear();
-            thingsToRemove.clear();
-            thingsToRepaint.clear();
-            spritesToAdd.clear();
-            spritesToRemove.clear();
-            positionsToRepaint.clear();
+            sceneUpdater.resetAll();
         }
     }
 
@@ -252,11 +186,8 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
             // Render GameMap
             RenderCommand.drawGameMap(gameMap);
 
-            // Repaint area
-            if (positionsToRepaint.size() > 0) {
-                RenderCommand.repaintPosition(positionsToRepaint);
-                positionsToRepaint.clear();
-            }
+            // Scene Updater
+            sceneUpdater.OnRender();
         }
     }
 
@@ -269,40 +200,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
                 thing.OnUpdate(timestep);
             }
 
-            for (Pair<Thing, ArrayList<Tile>> thingAndTiles : thingsToAdd) {
-                Thing thing = thingAndTiles.first;
-                ArrayList<Tile> tiles = thingAndTiles.second;
-                for (Tile tile : tiles) {
-                    thing.addTile(tile);
-                }
-                things.add(thing);
-            }
-
-            for (Thing thing : thingsToRemove) {
-                for (Tile tile : thing.getTiles()) {
-                    positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
-                    Floor floor = new Floor();
-                    floor.addTile(tile);
-                    addThing(floor);
-                }
-                thing.getTiles().clear();
-            }
-
-            for (Thing thing : thingsToRepaint) {
-                for (Tile tile : thing.getTiles()) {
-                    positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
-                }
-            }
-
-            things.removeAll(thingsToRemove);
-            sprites.addAll(spritesToAdd);
-            sprites.removeAll(spritesToRemove);
-
-            thingsToAdd.clear();
-            thingsToRemove.clear();
-            thingsToRepaint.clear();
-            spritesToAdd.clear();
-            spritesToRemove.clear();
+            sceneUpdater.OnUpdate(timestep);
         }
     }
 

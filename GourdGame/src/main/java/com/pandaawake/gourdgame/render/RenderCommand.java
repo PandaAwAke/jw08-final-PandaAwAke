@@ -21,7 +21,7 @@ public class RenderCommand {
     public static void Init(Scene scene) {
         emptyTexture = Config.TileParser.getEmptyTexture();
         camera = new Camera(Config.RenderWidth, Config.RenderHeight);
-        camera.setScale(1.1, 1.1);
+        camera.setScale(1.0, 1.0);
         //camera.setTranslation(0, 1);
 
         Renderer.Init(Config.MapWidth, Config.MapHeight, Config.TileSize, Config.TileSize,

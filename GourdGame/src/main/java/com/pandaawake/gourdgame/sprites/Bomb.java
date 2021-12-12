@@ -59,9 +59,9 @@ public class Bomb extends Sprite {
                     for (int y = Math.max(top, 0); y <= bottom && y < Config.MapHeight; y++) {
                         // Remove things which were exploded
                         Thing thing = scene.getGameMap().getTile(x, y).getThing();
-                        scene.addRepaintThing(thing);
+                        scene.getSceneUpdater().addRepaintThing(thing);
                         if (thing.OnExplode()) {
-                            scene.removeThing(thing);
+                            scene.getSceneUpdater().removeThing(thing);
                         }
 
                         // Remove sprites which were exploded
@@ -86,7 +86,7 @@ public class Bomb extends Sprite {
                 // Remove myself from scene
                 spritesToRemove.add(this);
                 for (Sprite sprite : spritesToRemove) {
-                    scene.removeSprite(sprite);
+                    scene.getSceneUpdater().removeSprite(sprite);
                 }
 
                 owner.bombDestroyed(this);

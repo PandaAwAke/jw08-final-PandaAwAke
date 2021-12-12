@@ -1,30 +1,16 @@
 package com.pandaawake.gourdgame.utils;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Random;
+import java.io.IOException;
 
-public class UtilFunctions {
-
-    private static Random random = new Random();
-
-    public static boolean getRandomResultByProbability(float probability) {
-        int number = random.nextInt(65536);
-        if (number <= probability * 65535) {
-            return true;
-        }
-        return false;
-    }
-    public static float getRandomProbability() {
-        int number = random.nextInt(65536);
-        return (float) number / 65535.0f;
-    }
+public class DataUtils {
 
     public static byte[] intToBytes(int num) {
         byte[] result = new byte[4];
         result[0] = (byte)((num >>> 24) & 0xff);
         result[1] = (byte)((num >>> 16) & 0xff);
         result[2] = (byte)((num >>> 8)  & 0xff);
-        result[3] = (byte)((num >>> 0)  & 0xff);
+        result[3] = (byte)((num)        & 0xff);
         return result;
     }
 
@@ -40,21 +26,33 @@ public class UtilFunctions {
         return result;
     }
 
+    public static byte[] floatToBytes(float f) {
+        int intBits = Float.floatToIntBits(f);
+        return intToBytes(intBits);
+    }
+
+    public static float bytesToFloat(byte[] bytes) {
+        int intBits = bytesToInt(bytes);
+        return Float.intBitsToFloat(intBits);
+    }
+
     public static int getHeaderNumber(byte[] bytes, int index) {
         byte[] numberBytes = new byte[4];
         System.arraycopy(bytes, index, numberBytes, 0, 4);
         return bytesToInt(numberBytes);
     }
 
-    public static byte[] concatBytes(byte[] data1, byte[] data2) {
+    public static byte[] concatBytes(byte[] data1, byte[] data2) throws IOException {
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-        int off = 0;
-        oStream.write(data1, off, data1.length);
-        off += data1.length;
+        oStream.write(data1);
+        oStream.write(data2);
+        return oStream.toByteArray();
+    }
 
-        oStream.write(data2, off, data2.length);
-        off += data2.length;
-
+    public static byte[] addLengthHeader(byte[] data) throws IOException {
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        oStream.write(intToBytes(data.length));
+        oStream.write(data);
         return oStream.toByteArray();
     }
 

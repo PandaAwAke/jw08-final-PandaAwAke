@@ -1,12 +1,14 @@
 package com.mandas.tiled2d.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class EventDispatcher
 {
-    static Map<Object, Consumer> callbackFunctions = new HashMap<>();
+    static Map<Object, List<Consumer>> callbackFunctions = new HashMap<>();
 
     // Dispatch JNativeEvents callback functions to registered Mandas Events callback functions
     public static void dispatch(Event e) {
@@ -72,15 +74,23 @@ public class EventDispatcher
                 eventClass = KeyEvents.Released.class;
                 break;
         }
-        Consumer callbackFunc = callbackFunctions.get(eventClass);
-        if (callbackFunc == null) {
+        List<Consumer> matchedCallbackFunctions = callbackFunctions.get(eventClass);
+        if (matchedCallbackFunctions == null) {
             return;
         }
-        callbackFunc.accept(eventClass.cast(e));
+        for (Consumer callbackFunc : matchedCallbackFunctions) {
+            callbackFunc.accept(eventClass.cast(e));
+        }
     }
 
     public static <T extends Event> void register(Class<T> eventClass, Consumer<T> callbackFunc) {
-        callbackFunctions.put(eventClass, callbackFunc);
+        if (callbackFunctions.keySet().contains(eventClass)) {
+            callbackFunctions.get(eventClass).add(callbackFunc);
+        } else {
+            List<Consumer> callbackFunctionList = new ArrayList<>();
+            callbackFunctionList.add(callbackFunc);
+            callbackFunctions.put(eventClass, callbackFunctionList);
+        }
     }
 
 }

@@ -2,17 +2,13 @@ package com.pandaawake.gourdgame.player;
 
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.sprites.Bomb;
-import com.pandaawake.gourdgame.sprites.Calabash;
+import com.pandaawake.gourdgame.sprites.PlayableSprite;
 import com.pandaawake.gourdgame.utils.Direction;
 
-public class HumanPlayer extends Player {
+public class OtherPlayer extends Player {
 
-    public HumanPlayer(Calabash calabash, int id, String name) {
-        super(calabash, id, name);
-    }
-
-    public Calabash getCalabash() {
-        return (Calabash) sprite;
+    public OtherPlayer(PlayableSprite sprite, int id, String name) {
+        super(sprite, id, name);
     }
 
     @Override
@@ -38,4 +34,5 @@ public class HumanPlayer extends Player {
             bomb.setExplodeImmediately();
         }
     }
+
 }

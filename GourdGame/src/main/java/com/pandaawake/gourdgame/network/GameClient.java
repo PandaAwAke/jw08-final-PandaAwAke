@@ -1,9 +1,13 @@
 package com.pandaawake.gourdgame.network;
 
-import com.pandaawake.gourdgame.network.data.data.ClientDataProcessor;
+import com.mandas.tiled2d.core.Log;
+import com.pandaawake.gourdgame.main.ClientGameApp;
 import com.pandaawake.gourdgame.network.data.action.Action;
+import com.pandaawake.gourdgame.network.data.data.ClientDataProcessor;
 import com.pandaawake.gourdgame.network.data.performer.ClientActionPerformer;
 import com.pandaawake.gourdgame.network.data.socket.SocketClient;
+
+import java.io.IOException;
 
 
 public class GameClient {
@@ -18,14 +22,14 @@ public class GameClient {
         running = false;
     }
 
-    private SocketClient socketClient;
+    private final SocketClient socketClient;
     private ClientDataProcessor dataProcessor;
     private ClientActionPerformer actionPerformer;
 
-    public GameClient(ClientActionPerformer actionPerformer) {
+    public GameClient(ClientGameApp app) {
         socketClient = new SocketClient();
-        dataProcessor = new ClientDataProcessor();
-        this.actionPerformer = actionPerformer;
+        dataProcessor = new ClientDataProcessor(app.getScene());
+        actionPerformer = new ClientActionPerformer(app);
         actionPerformer.setGameClient(this);
     }
 
@@ -33,12 +37,30 @@ public class GameClient {
         return socketClient;
     }
 
-    public void run() {
-        socketClient.run();
-        while (socketClient.hasDataToHandle()) {
-            byte[] data = socketClient.pollDataToHandle();
-            Action action = dataProcessor.dataToAction(data);
-            actionPerformer.performAction(action);
+
+    public void sendAction(Action action) {
+        synchronized (this) {
+            try {
+                byte[] data = dataProcessor.actionToData(action);
+                socketClient.writeData(data);
+            } catch (IOException e) {
+                Log.app().error(getClass().getName() + ": IOException when sendAction!");
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+    void run() {
+        synchronized (socketClient) {
+            socketClient.run();
+            while (socketClient.hasDataToHandle()) {
+                byte[] data = socketClient.pollDataToHandle();
+                Action action = dataProcessor.dataToAction(-1, data);
+                actionPerformer.performAction(action);
+            }
         }
     }
 
