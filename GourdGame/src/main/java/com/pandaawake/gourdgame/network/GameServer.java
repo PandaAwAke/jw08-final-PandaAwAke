@@ -36,10 +36,6 @@ public class GameServer {
         actionPerformer.setGameServer(this);
     }
 
-    public SocketServer getSocketServer() {
-        return socketServer;
-    }
-
     public Set<Integer> getClientIds() {
         synchronized (this) {
             return socketServer.getClientIds();
@@ -88,11 +84,8 @@ public class GameServer {
 
 
 
-
-
-
     void run() {
-        synchronized (socketServer) {
+        synchronized (this) {
             socketServer.run();
             while (socketServer.hasDataToHandle()) {
                 Pair<Integer, byte[]> data = socketServer.pollDataToHandle();

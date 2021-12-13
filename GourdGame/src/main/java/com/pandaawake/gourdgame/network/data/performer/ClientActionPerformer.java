@@ -8,6 +8,8 @@ import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.player.OtherPlayer;
 import com.pandaawake.gourdgame.player.Player;
+import com.pandaawake.gourdgame.sprites.Calabash;
+import com.pandaawake.gourdgame.utils.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +47,20 @@ public class ClientActionPerformer extends ActionPerformer {
                 return;
             }
             GameAction.GameInitialize initAction = (GameAction.GameInitialize) action;
-            app.getPlayers().clear();
+            
+            app.resetAll();
+
             app.getPlayers().addAll(initAction.players);
+            
             for (Player player : app.getPlayers()) {
                 app.getScene().getSceneUpdater().addSprite(player.sprite);
                 if (player.id == app.getMainPlayerId()) {
                     app.setMainPlayer((OtherPlayer) player);
+                    if (player.sprite instanceof Calabash) {
+                        ((Calabash) player.sprite).getCameraComponent().setRenderingCamera(true);
+                    } else {
+                        Log.app().error(this.getClass().getName() + ": Main player's sprite is not a calabash?!");
+                    }
                 }
             }
             Log.app().info(getClass().getName() + ": Initialized game players!");
@@ -95,14 +105,18 @@ public class ClientActionPerformer extends ActionPerformer {
             // Do nothing
 
         } else if (action instanceof PlayerAction.DoMove) {
-            if (((PlayerAction.DoMove) action).direction == null) {
+            Direction direction = ((PlayerAction.DoMove) action).direction;
+            if (direction == null) {
                 Log.app().error("Null direction?!");
             }
-            matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
+            matchedPlayer.doMove(direction);
+            Log.app().trace("Client: Player " + action.playerId + " DoMove " + direction.toString());
         } else if (action instanceof PlayerAction.SetBomb) {
             matchedPlayer.setBomb();
+            Log.app().trace("Client: Player " + action.playerId + " SetBomb");
         } else if (action instanceof PlayerAction.ExplodeBomb) {
             matchedPlayer.explodeBomb();
+            Log.app().trace("Client: Player " + action.playerId + " ExplodeBomb");
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }

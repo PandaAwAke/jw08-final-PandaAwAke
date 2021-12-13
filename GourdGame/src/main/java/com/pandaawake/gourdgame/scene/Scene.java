@@ -27,7 +27,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     public Scene(GameMap gameMap, SceneUpdater sceneUpdater) {
         super();
         things = new HashSet<>();
-        sprites = new HashSet<>();
+        sprites = new TreeSet<>();
         this.gameMap = gameMap;
         this.sceneUpdater = sceneUpdater;
         sceneUpdater.setScene(this);
@@ -153,36 +153,6 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     // ---------------------- Callback Functions ----------------------
     public void OnRender() {
         synchronized (this) {
-            /*
-             * Render sprites
-             * This will decide the sequence of rendering
-             */
-            Set<Sprite> spritesToRender = new TreeSet<>(new Comparator<Sprite>() {
-                @Override
-                public int compare(Sprite o1, Sprite o2) {
-                    if (o1 == o2) {
-                        return 0;
-                    }
-                    if (o1.getY() == o2.getY()) {
-                        if (o1.getX() == o2.getX()) {
-                            if (!o1.isBlocking()) {
-                                return -1;
-                            } else {
-                                return 1;
-                            }
-                        } else {
-                            return Float.compare(o1.getX(), o2.getX());
-                        }
-                    } else {
-                        return Float.compare(o1.getY(), o2.getY());
-                    }
-                }
-            });
-            spritesToRender.addAll(sprites);
-
-            // Set the sequence for render
-            super.setEntities(spritesToRender);
-
             // Render GameMap
             RenderCommand.drawGameMap(gameMap);
 
@@ -194,6 +164,9 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     @Override
     public void OnUpdate(float timestep) {
         synchronized (this) {
+            // Set the sequence for render
+            super.setEntities(sprites);
+
             super.OnUpdate(timestep);
 
             for (Thing thing : things) {

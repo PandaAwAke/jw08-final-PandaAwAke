@@ -61,7 +61,7 @@ public class PlayableSprite extends MovableSprite implements HasBomb {
                 sprite = new Snake(scene);
                 break;
             case CALABASH:
-                sprite = new Calabash(scene, false);
+                sprite = new Calabash(scene);
                 break;
         }
         iStream.read(subBytes); sprite.setX(DataUtils.bytesToFloat(subBytes));

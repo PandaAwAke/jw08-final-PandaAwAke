@@ -38,7 +38,7 @@ public abstract class SceneUpdater {
 
     // ---------------------- Things ----------------------
     public boolean addThing(Thing thing, ArrayList<Tile> tiles) {
-        synchronized (scene) {
+        synchronized (this) {
             // Check every tile, avoiding conflict things
             if (scene.getThings().contains(thing)) {
                 return false;
@@ -64,13 +64,13 @@ public abstract class SceneUpdater {
     }
 
     public boolean addRepaintThing(Thing thing) {
-        synchronized (scene) {
+        synchronized (this) {
             return thingsToRepaint.add(thing);
         }
     }
 
     public boolean removeThing(Thing thing) {
-        synchronized (scene) {
+        synchronized (this) {
             if (!scene.getThings().contains(thing)) {
                 return false;
             }
@@ -82,13 +82,13 @@ public abstract class SceneUpdater {
 
     // ---------------------- Sprites ----------------------
     public boolean addSprite(Sprite sprite) {
-        synchronized (scene) {
+        synchronized (this) {
             return spritesToAdd.add(sprite);
         }
     }
 
     public boolean removeSprite(Sprite sprite) {
-        synchronized (scene) {
+        synchronized (this) {
             return spritesToRemove.add(sprite);
         }
     }
@@ -96,7 +96,7 @@ public abstract class SceneUpdater {
 
     // ---------------------- Functions ----------------------
     public void resetAll() {
-        synchronized (scene) {
+        synchronized (this) {
             thingsToAdd.clear();
             thingsToRemove.clear();
             thingsToRepaint.clear();
@@ -107,7 +107,7 @@ public abstract class SceneUpdater {
     }
 
     public void OnRender() {
-        synchronized (scene) {
+        synchronized (this) {
             // Repaint area
             if (positionsToRepaint.size() > 0) {
                 RenderCommand.repaintPosition(positionsToRepaint);
@@ -117,7 +117,7 @@ public abstract class SceneUpdater {
     }
 
     public void OnUpdate(float timestep) {
-        synchronized (scene) {
+        synchronized (this) {
             for (Pair<Thing, ArrayList<Tile>> thingAndTiles : thingsToAdd) {
                 Thing thing = thingAndTiles.first;
                 ArrayList<Tile> tiles = thingAndTiles.second;

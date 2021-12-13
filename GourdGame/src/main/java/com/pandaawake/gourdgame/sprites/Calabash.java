@@ -8,10 +8,10 @@ import com.pandaawake.gourdgame.scene.Scene;
 
 public class Calabash extends PlayableSprite {
 
-    public Calabash(Scene scene, boolean cameraController) {
+    public Calabash(Scene scene) {
         super(Config.HumanPlayerLives, Config.HumanPlayerBombs, true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
-        addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), cameraController));
+        addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), false));
     }
 
     @Override

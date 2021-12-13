@@ -2,6 +2,8 @@ package com.pandaawake.gourdgame.player;
 
 import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.Config;
+import com.pandaawake.gourdgame.network.GameServer;
+import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.sprites.Snake;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.pandaawake.gourdgame.utils.RandomUtils;
@@ -16,8 +18,11 @@ public class ComputerPlayer extends Player {
     private float elapsedTime = 0.0f;
     private Direction direction;
 
-    public ComputerPlayer(Snake snake, Direction defaultDirection, int id, String name) {
+    private GameServer gameServer;
+
+    public ComputerPlayer(GameServer gameServer, Snake snake, Direction defaultDirection, int id, String name) {
         super(snake, id, name);
+        this.gameServer = gameServer;
         random = new Random();
         this.direction = defaultDirection;
     }
@@ -38,9 +43,8 @@ public class ComputerPlayer extends Player {
         float probability = RandomUtils.getRandomProbability();
         if (probability <= Config.DoNothingProbability) {
             // Do nothing
-            Log.file().trace(this.name + " NoAction");
         } else if (probability <= Config.DoNothingProbability + Config.SetBombProbability) {
-            Log.file().trace(this.name + " SetBomb");
+            gameServer.sendAction(new PlayerAction.SetBomb(-1, id));
             setBomb();
         } else {
             tryMove();
@@ -51,10 +55,10 @@ public class ComputerPlayer extends Player {
         if (RandomUtils.getRandomResultByProbability(Config.ChangeDirectionProbability)) {
             direction = directions[random.nextInt(4)];
         }
-        Log.file().trace(this.name + " DoMove " + direction.toString());
+        
         doMove(direction);
+        gameServer.sendAction(new PlayerAction.DoMove(-1, id, direction));
     }
-
 
 
     @Override

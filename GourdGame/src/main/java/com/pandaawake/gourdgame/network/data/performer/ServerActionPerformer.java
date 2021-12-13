@@ -10,6 +10,7 @@ import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
 import com.pandaawake.gourdgame.sprites.Calabash;
+import com.pandaawake.gourdgame.utils.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ServerActionPerformer extends ActionPerformer {
         if (action instanceof ConnectionAction.ClientEnter) {
             Log.app().info("Client Enter");
             // App: Allocate a Player for this client
-            Calabash humanCalabash = new Calabash(app.getScene(), false);
+            Calabash humanCalabash = new Calabash(app.getScene());
             humanCalabash.setPos(0, 1);
             app.getScene().getSceneUpdater().addSprite(humanCalabash);
             app.getPlayers().add(new HumanPlayer(humanCalabash, action.senderClientId, Config.names[action.senderClientId]));
@@ -67,14 +68,21 @@ public class ServerActionPerformer extends ActionPerformer {
         if (action instanceof PlayerAction.NoAction) {
             // Do nothing
         } else if (action instanceof PlayerAction.DoMove) {
-            if (((PlayerAction.DoMove) action).direction == null) {
+            Direction direction = ((PlayerAction.DoMove) action).direction;
+            if (direction == null) {
                 Log.app().error("Null direction?!");
             }
-            matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
+            matchedPlayer.doMove(direction);
+            Log.app().trace("Server: Player " + action.playerId + " DoMove " + direction.toString());
+            Log.file().trace(app.getPlayerById(action.playerId).name + " DoMove " + direction.toString());
         } else if (action instanceof PlayerAction.SetBomb) {
             matchedPlayer.setBomb();
+            Log.app().trace("Server: Player " + action.playerId + " SetBomb");
+            Log.file().trace(app.getPlayerById(action.playerId).name + " SetBomb");
         } else if (action instanceof PlayerAction.ExplodeBomb) {
             matchedPlayer.explodeBomb();
+            Log.app().trace("Server: Player " + action.playerId + " ExplodeBomb");
+            Log.file().trace(app.getPlayerById(action.playerId).name + " ExplodeBomb");
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }

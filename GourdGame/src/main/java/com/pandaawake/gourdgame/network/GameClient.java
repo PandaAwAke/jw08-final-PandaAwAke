@@ -33,10 +33,6 @@ public class GameClient {
         actionPerformer.setGameClient(this);
     }
 
-    public SocketClient getSocketClient() {
-        return socketClient;
-    }
-
 
     public void sendAction(Action action) {
         synchronized (this) {
@@ -54,7 +50,7 @@ public class GameClient {
 
 
     void run() {
-        synchronized (socketClient) {
+        synchronized (this) {
             socketClient.run();
             while (socketClient.hasDataToHandle()) {
                 byte[] data = socketClient.pollDataToHandle();

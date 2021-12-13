@@ -40,6 +40,7 @@ public abstract class PlayerAction extends Action {
         int playerId = DataUtils.getHeaderNumber(bytes, 0);
         int off = 4;
         int playerActionNumber = DataUtils.getHeaderNumber(bytes, off);
+        off += 4;
 
         switch (playerActionNumber) {
             case PLAYER_NO_ACTION:

@@ -111,6 +111,8 @@ public class ClientGameApp extends GameApp {
         // Reset players
         players.clear();
 
+        mainPlayer = null;
+
         initializeMapTileAndLevel();
     }
 
@@ -198,38 +200,26 @@ public class ClientGameApp extends GameApp {
         switch (e.getKeyCode()) {
             case KeyCodes.VC_A:
             case KeyCodes.VC_LEFT:
-                Log.file().trace(mainPlayer.name + " DoMove left");
-                //mainPlayer.doMove(Direction.left);
                 gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.left));
                 break;
             case KeyCodes.VC_W:
             case KeyCodes.VC_UP:
-                Log.file().trace(mainPlayer.name + " DoMove up");
-                //mainPlayer.doMove(Direction.up);
                 gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.up));
                 break;
             case KeyCodes.VC_D:
             case KeyCodes.VC_RIGHT:
-                Log.file().trace(mainPlayer.name + " DoMove right");
-                //mainPlayer.doMove(Direction.right);
                 gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.right));
                 break;
             case KeyCodes.VC_S:
             case KeyCodes.VC_DOWN:
-                Log.file().trace(mainPlayer.name + " DoMove down");
-                //mainPlayer.doMove(Direction.down);
                 gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.down));
                 break;
             case KeyCodes.VC_SPACE:
             case KeyCodes.VC_0:
-                Log.file().trace(mainPlayer.name + " ExplodeBomb");
-                //mainPlayer.explodeBomb();
                 gameClient.sendAction(new PlayerAction.ExplodeBomb(-1, mainPlayerId));
                 break;
             case KeyCodes.VC_J:
             case KeyCodes.VC_1:
-                Log.file().trace(mainPlayer.name + " SetBomb");
-                //mainPlayer.setBomb();
                 gameClient.sendAction(new PlayerAction.SetBomb(-1, mainPlayerId));
                 break;
         }

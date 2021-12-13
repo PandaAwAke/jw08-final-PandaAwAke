@@ -23,10 +23,12 @@ public class ServerSceneUpdater extends SceneUpdater {
 
 
     // ---------------------- Functions ----------------------
+    @Override
     public void OnRender() {
         // Do nothing
     }
 
+    @Override
     public void OnUpdate(float timestep) {
         synchronized (scene) {
             for (Pair<Thing, ArrayList<Tile>> thingAndTiles : thingsToAdd) {

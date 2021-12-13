@@ -48,6 +48,15 @@ public class ServerGameApp {
         return players;
     }
 
+    public Player getPlayerById(int playerId) {
+        for (Player player : players) {
+            if (player.id == playerId) {
+                return player;
+            }
+        }
+        return null;
+    }
+
 
     public ServerGameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
@@ -99,7 +108,7 @@ public class ServerGameApp {
         int index = 0;
         for (IntPair position : level.computerPlayerPositions) {
             Snake computerSnake = new Snake(scene);
-            ComputerPlayer computerSnakePlayer = new ComputerPlayer(computerSnake, Direction.down, index + 100, names[index++]);
+            ComputerPlayer computerSnakePlayer = new ComputerPlayer(gameServer, computerSnake, Direction.down, index + 100, names[index++]);
             computerSnake.setPos(position.first, position.second);
             scene.getSceneUpdater().addSprite(computerSnake);
 
@@ -152,6 +161,7 @@ public class ServerGameApp {
         checkGameEnds();
 
         scene.OnUpdate(timestep);
+        
         for (Player player : players) {
             player.OnUpdate(timestep);
         }

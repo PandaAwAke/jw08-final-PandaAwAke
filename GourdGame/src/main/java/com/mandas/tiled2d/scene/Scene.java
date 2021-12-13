@@ -22,8 +22,10 @@ public class Scene {
     }
 
     public <T extends Entity> void setEntities(Collection<T> entities) {
-        this.entities = new ArrayList<>();
-        this.entities.addAll(entities);
+        synchronized (this) {
+            this.entities = new ArrayList<>();
+            this.entities.addAll(entities);
+        }
     }
 
     public ArrayList<Entity> getEntities() {
