@@ -42,10 +42,11 @@ public class DataUtils {
         return bytesToInt(numberBytes);
     }
 
-    public static byte[] concatBytes(byte[] data1, byte[] data2) throws IOException {
+    public static byte[] concatBytes(byte[]... dataList) throws IOException {
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-        oStream.write(data1);
-        oStream.write(data2);
+        for (byte[] data: dataList) {
+            oStream.write(data);
+        }
         return oStream.toByteArray();
     }
 

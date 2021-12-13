@@ -1,5 +1,6 @@
 package com.mandas.tiled2d.utils;
 
+import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.renderer.Texture;
 
 import java.awt.image.BufferedImage;
@@ -46,7 +47,7 @@ public class TileFileParser {
         try {
             tileFileImg = ImageIO.read(new File(filename));
         } catch (IOException e) {
-            System.err.println("loadTileFile(): " + e.getMessage());
+            Log.mandas().error(this.getClass().getName() + ": loadTileFile(): " + e.getMessage());
         }
 
         for (int i = 0; i < fileWidthInTiles * fileHeightInTiles; i++) {

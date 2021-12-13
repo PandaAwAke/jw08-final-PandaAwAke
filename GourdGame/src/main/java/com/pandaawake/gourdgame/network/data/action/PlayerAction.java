@@ -4,7 +4,6 @@ import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -32,41 +31,15 @@ public abstract class PlayerAction extends Action {
     }
 
     public byte[] toBytes() throws IOException {
-        // [playerId] [type number (4)] [otherInfoNumbers (4)]
-        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-        oStream.write(DataUtils.intToBytes(playerId));
-        if (this instanceof NoAction) {
-            oStream.write(DataUtils.intToBytes(PLAYER_NO_ACTION));
-        } else if (this instanceof DoMove) {
-            oStream.write(DataUtils.intToBytes(PLAYER_DO_MOVE));
-            switch (((DoMove) this).direction) {
-                case left:
-                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_LEFT));
-                    break;
-                case up:
-                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_UP));
-                    break;
-                case right:
-                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_RIGHT));
-                    break;
-                case down:
-                    oStream.write(DataUtils.intToBytes(EXTRA_INFO_DIRECTION_DOWN));
-                    break;
-            }
-        } else if (this instanceof SetBomb) {
-            oStream.write(DataUtils.intToBytes(PLAYER_SET_BOMB));
-        } else if (this instanceof ExplodeBomb) {
-            oStream.write(DataUtils.intToBytes(PLAYER_EXPLODE_BOMB));
-        } else {
-            return null;
-        }
-        return oStream.toByteArray();
+        // [playerId] [this.toBytes()]
+        // this.toBytes() = [type number (4)] [otherInfoNumbers (0 or 4)]
+        return DataUtils.intToBytes(playerId);
     }
 
     public static PlayerAction parseBytes(int senderClientId, byte[] bytes) {
-        int playerActionNumber = DataUtils.getHeaderNumber(bytes, 0);
+        int playerId = DataUtils.getHeaderNumber(bytes, 0);
         int off = 4;
-        int playerId = DataUtils.getHeaderNumber(bytes, off);
+        int playerActionNumber = DataUtils.getHeaderNumber(bytes, off);
 
         switch (playerActionNumber) {
             case PLAYER_NO_ACTION:
@@ -90,8 +63,10 @@ public abstract class PlayerAction extends Action {
                         break;
                 }
                 return new DoMove(senderClientId, playerId, direction);
+
             case PLAYER_SET_BOMB:
                 return new SetBomb(senderClientId, playerId);
+                
             case PLAYER_EXPLODE_BOMB:
                 return new ExplodeBomb(senderClientId, playerId);
         }
@@ -171,6 +146,11 @@ public abstract class PlayerAction extends Action {
         public String toString() {
             return "" + playerId + " NoAction";
         }
+
+        @Override
+        public byte[] toBytes() throws IOException {
+            return DataUtils.concatBytes(super.toBytes(), DataUtils.intToBytes(PLAYER_NO_ACTION));
+        }
     }
 
     public static class DoMove extends PlayerAction {
@@ -184,6 +164,28 @@ public abstract class PlayerAction extends Action {
         public String toString() {
             return "" + playerId + " DoMove " + direction.toString();
         }
+
+        @Override
+        public byte[] toBytes() throws IOException {
+            byte[] data1 = super.toBytes();
+            byte[] data2 = DataUtils.intToBytes(PLAYER_DO_MOVE);
+            byte[] data3 = null;
+            switch (((DoMove) this).direction) {
+                case left:
+                    data3 = DataUtils.intToBytes(EXTRA_INFO_DIRECTION_LEFT);
+                    break;
+                case up:
+                    data3 = DataUtils.intToBytes(EXTRA_INFO_DIRECTION_UP);
+                    break;
+                case right:
+                    data3 = DataUtils.intToBytes(EXTRA_INFO_DIRECTION_RIGHT);
+                    break;
+                case down:
+                    data3 = DataUtils.intToBytes(EXTRA_INFO_DIRECTION_DOWN);
+                    break;
+            }
+            return DataUtils.concatBytes(data1, data2, data3);
+        }
     }
 
     public static class SetBomb extends PlayerAction {
@@ -195,6 +197,11 @@ public abstract class PlayerAction extends Action {
         public String toString() {
             return "" + playerId + " SetBomb";
         }
+
+        @Override
+        public byte[] toBytes() throws IOException {
+            return DataUtils.concatBytes(super.toBytes(), DataUtils.intToBytes(PLAYER_SET_BOMB));
+        }
     }
 
     public static class ExplodeBomb extends PlayerAction {
@@ -205,6 +212,11 @@ public abstract class PlayerAction extends Action {
         @Override
         public String toString() {
             return "" + playerId + " ExplodeBomb";
+        }
+
+        @Override
+        public byte[] toBytes() throws IOException {
+            return DataUtils.concatBytes(super.toBytes(), DataUtils.intToBytes(PLAYER_EXPLODE_BOMB));
         }
     }
     

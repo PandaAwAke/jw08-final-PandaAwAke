@@ -88,12 +88,7 @@ public class ClientGameApp extends GameApp {
     }
 
     protected void initializeEventDispatcher() {
-        EventDispatcher.register(KeyEvents.Pressed.class, e -> {
-            if (pause) {
-                return;
-            }
-            OnPlayerKeyPressed(e);
-        });
+        EventDispatcher.register(KeyEvents.Pressed.class, e -> OnPlayerKeyPressed(e));
     }
 
     protected void initializeMapTileAndLevel() {
@@ -191,6 +186,9 @@ public class ClientGameApp extends GameApp {
 
 
     public void OnPlayerKeyPressed(KeyEvents.Pressed e) {
+        if (pause) {
+            return;
+        }
         if (Config.ReplayMode) {
             return;
         }
