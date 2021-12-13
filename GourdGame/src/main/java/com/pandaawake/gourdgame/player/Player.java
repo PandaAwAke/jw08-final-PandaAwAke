@@ -33,9 +33,9 @@ public abstract class Player {
         this.name = name;
     }
 
-    public abstract void doMove(Direction direction);
-    public abstract void setBomb();
-    public abstract void explodeBomb();
+    public abstract boolean doMove(Direction direction);
+    public abstract boolean setBomb();
+    public abstract boolean explodeBomb();
 
     // ---------------------- Callback Functions ----------------------
     public abstract void OnUpdate(float timestep);

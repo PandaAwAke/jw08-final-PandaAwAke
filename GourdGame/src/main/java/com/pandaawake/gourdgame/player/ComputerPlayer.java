@@ -1,6 +1,5 @@
 package com.pandaawake.gourdgame.player;
 
-import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
@@ -62,18 +61,18 @@ public class ComputerPlayer extends Player {
 
 
     @Override
-    public void doMove(Direction direction) {
-        sprite.doMove(direction);
+    public boolean doMove(Direction direction) {
+        return sprite.doMove(direction);
     }
 
     @Override
-    public void setBomb() {
-        sprite.setNewBomb();
+    public boolean setBomb() {
+        return sprite.setNewBomb();
     }
 
     @Override
-    public void explodeBomb() {
-
+    public boolean explodeBomb() {
+        return false;
     }
 
 }

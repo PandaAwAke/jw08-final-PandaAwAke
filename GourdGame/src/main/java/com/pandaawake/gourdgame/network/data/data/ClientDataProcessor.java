@@ -8,7 +8,10 @@ import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ClientDataProcessor extends DataProcessor {
@@ -21,49 +24,78 @@ public class ClientDataProcessor extends DataProcessor {
 
     // ---------------------- Describes which data to handle ----------------------
     @Override
-    public Action dataToAction(int senderClientId, byte[] data) {
-        int number = DataUtils.getHeaderNumber(data, 0);
-
-        byte[] info = new byte[4096];
-        System.arraycopy(data, 4, info, 0, data.length - 4);
+    public List<Action> dataToActions(int senderClientId, byte[] data) {
+        List<Action> result = new ArrayList<>();
+        ByteArrayInputStream iStream = new ByteArrayInputStream(data);
 
         try {
-            switch (number) {
-                // Game Signals
-                case GAME_START:
-                    return new GameAction.GameStart(senderClientId);
-                case GAME_PAUSE:
-                    return new GameAction.GamePause(senderClientId);
-                case GAME_RESUME:
-                    return new GameAction.GameResume(senderClientId);
-                case GAME_END:
-                    return new GameAction.GameEnd(senderClientId);
-
-                // Connection Signals
-                case SERVER_CLIENT_SUCCESSFULLY_ACCEPTED:
-                    int playerId = DataUtils.getHeaderNumber(info, 0);
-                    return new ConnectionAction.ClientSuccessfullyAccepted(senderClientId, playerId);
-                case SERVER_CLIENT_UNSUCCESSFULLY_ACCEPTED:
-                    String errorReason = new String(info);
-                    return new ConnectionAction.ClientUnsuccessfullyAccepted(senderClientId, errorReason);
-                case SERVER_CLOSED:
-                    return new ConnectionAction.ServerClosed(senderClientId);
-
-                // Player Action Signals
-                case SERVER_GAME_INITIALIZE:
-                    return GameAction.GameInitialize.parseBytes(senderClientId, info, scene);
-                case SERVER_CLIENT_PLAYER_ACTION:
-                    return PlayerAction.parseBytes(senderClientId, info);
-                default:
-                    Log.app().error(this.getClass().getName() + ": Received some illegal data?");
+            while (true) {
+                byte[] fourBytes = new byte[4];
+                int numRead = iStream.read(fourBytes);
+                if (numRead == -1) {
                     break;
+                }
+                if (numRead != 4) {
+                    Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                }
+                int number = DataUtils.bytesToInt(fourBytes);
+                switch (number) {
+                    // Game Signals
+                    case GAME_START:
+                        result.add(new GameAction.GameStart(senderClientId));
+                        break;
+                    case GAME_PAUSE:
+                        result.add(new GameAction.GamePause(senderClientId));
+                        break;
+                    case GAME_RESUME:
+                        result.add(new GameAction.GameResume(senderClientId));
+                        break;
+                    case GAME_END:
+                        result.add(new GameAction.GameEnd(senderClientId));
+                        break;
+
+                    // Connection Signals
+                    case SERVER_CLIENT_SUCCESSFULLY_ACCEPTED:
+                        if (iStream.read(fourBytes) != 4) {
+                            Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                        }
+                        int playerId = DataUtils.bytesToInt(fourBytes);
+                        result.add(new ConnectionAction.ClientSuccessfullyAccepted(senderClientId, playerId));
+                        break;
+                    case SERVER_CLIENT_UNSUCCESSFULLY_ACCEPTED:
+                        if (iStream.read(fourBytes) != 4) {
+                            Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                        }
+                        int errorReasonBytesLen = DataUtils.bytesToInt(fourBytes);
+                        byte[] errorReasonBytes = new byte[errorReasonBytesLen];
+                        if (iStream.read(errorReasonBytes) != errorReasonBytesLen) {
+                            Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                        }
+                        String errorReason = new String(errorReasonBytes);
+                        result.add(new ConnectionAction.ClientUnsuccessfullyAccepted(senderClientId, errorReason));
+                        break;
+                    case SERVER_CLOSED:
+                        result.add(new ConnectionAction.ServerClosed(senderClientId));
+                        break;
+
+                    // Player Action Signals
+                    case SERVER_GAME_INITIALIZE:
+                        result.add(GameAction.GameInitialize.parseBytes(senderClientId, iStream, scene));
+                        break;
+                    case SERVER_CLIENT_PLAYER_ACTION:
+                        result.add(PlayerAction.parseBytes(senderClientId, iStream));
+                        break;
+                    default:
+                        Log.app().error(this.getClass().getName() + ": Received some illegal data?");
+                        break;
+                }
             }
         } catch (IOException e) {
-            Log.app().error(this.getClass().getName() + ": IOException when dataToAction!");
+            Log.app().error(this.getClass().getName() + ": IOException when dataToActions!");
             e.printStackTrace();
         }
 
-        return null;
+        return result;
     }
 
 

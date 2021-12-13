@@ -72,22 +72,28 @@ public class ServerActionPerformer extends ActionPerformer {
             if (direction == null) {
                 Log.app().error("Null direction?!");
             }
-            matchedPlayer.doMove(direction);
-            Log.app().trace("Server: Player " + action.playerId + " DoMove " + direction.toString());
-            Log.file().trace(app.getPlayerById(action.playerId).name + " DoMove " + direction.toString());
+            if (matchedPlayer.doMove(direction)) {
+                Log.app().trace("Server: Player " + action.playerId + " DoMove " + direction.toString());
+                Log.file().trace(app.getPlayerById(action.playerId).name + " DoMove " + direction.toString());
+                gameServer.sendAction(action);
+            }
         } else if (action instanceof PlayerAction.SetBomb) {
-            matchedPlayer.setBomb();
-            Log.app().trace("Server: Player " + action.playerId + " SetBomb");
-            Log.file().trace(app.getPlayerById(action.playerId).name + " SetBomb");
+            if (matchedPlayer.setBomb()) {
+                Log.app().trace("Server: Player " + action.playerId + " SetBomb");
+                Log.file().trace(app.getPlayerById(action.playerId).name + " SetBomb");
+                gameServer.sendAction(action);
+            }
         } else if (action instanceof PlayerAction.ExplodeBomb) {
-            matchedPlayer.explodeBomb();
-            Log.app().trace("Server: Player " + action.playerId + " ExplodeBomb");
-            Log.file().trace(app.getPlayerById(action.playerId).name + " ExplodeBomb");
+            if (matchedPlayer.explodeBomb()) {
+                Log.app().trace("Server: Player " + action.playerId + " ExplodeBomb");
+                Log.file().trace(app.getPlayerById(action.playerId).name + " ExplodeBomb");
+                gameServer.sendAction(action);
+            }
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }
 
-        gameServer.sendAction(action);
+
     }
 
 }

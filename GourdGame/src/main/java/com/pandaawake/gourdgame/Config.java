@@ -76,7 +76,7 @@ public class Config {
 
     // Game settings
     //      - AI settings
-    public static final float DecisionTime = 0.5f;  // The time(seconds) for AI to make a decision
+    public static final float DecisionTime = 0.2f;  // The time(seconds) for AI to make a decision
     public static final float SetBombProbability = 0.05f;    // The probability to set a bomb
     public static final float DoNothingProbability = 0.3f;  // The probability of do nothing
     public static final float ChangeDirectionProbability = 0.3f; // When try to move, the probability of changing direction

@@ -11,7 +11,7 @@ import com.pandaawake.gourdgame.scene.Scene;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class Sprite extends Entity implements Comparable<Sprite> {
+public abstract class Sprite extends Entity {
     /**
      * Sprite is a movable/interactive thing in the scene.
      * The rendering of the sprite should not cover the rendering of tiles.
@@ -130,30 +130,5 @@ public abstract class Sprite extends Entity implements Comparable<Sprite> {
         return false;
     }
 
-
-    @Override
-    public int compareTo(Sprite o) {
-        /*
-         * This will decide the sequence of rendering
-         */
-        if (this == o) {
-            return 0;
-        }
-        if (this.getY() == o.getY()) {
-            if (this.getX() == o.getX()) {
-                if (this.blocking && !o.blocking) {
-                    return -1;
-                } else if (!this.blocking && o.blocking) {
-                    return 1;
-                } else {
-                    return Integer.compare(this.hashCode(), o.hashCode());
-                }
-            } else {
-                return Float.compare(o.getX(), o.getX());
-            }
-        } else {
-            return Float.compare(o.getY(), o.getY());
-        }
-    }
 
 }

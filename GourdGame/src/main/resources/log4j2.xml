@@ -15,7 +15,7 @@
         <Logger name="MandasLogger" level="trace" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="AppLogger" level="trace" additivity="false">
+        <Logger name="AppLogger" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="FileLogger" level="trace" additivity="false">

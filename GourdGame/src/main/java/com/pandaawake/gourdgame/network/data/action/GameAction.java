@@ -1,9 +1,11 @@
 package com.pandaawake.gourdgame.network.data.action;
 
+import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.player.Player;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
@@ -70,16 +72,22 @@ public abstract class GameAction extends Action {
             return oStream.toByteArray();
         }
 
-        public static GameInitialize parseBytes(int senderClientId, byte[] bytes, Scene scene) throws IOException {
+        public static GameInitialize parseBytes(int senderClientId, ByteArrayInputStream iStream, Scene scene) throws IOException {
             Set<Player> players = new HashSet<>();
-            int playerCount = DataUtils.getHeaderNumber(bytes, 0);
-            int off = 4;
+            byte[] fourBytes = new byte[4];
+            if (iStream.read(fourBytes) != 4) {
+                Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
+            }
+            int playerCount = DataUtils.bytesToInt(fourBytes);
             for (int i = 0; i < playerCount; i++) {
-                int playerInfoBytesCount = DataUtils.getHeaderNumber(bytes, off);
-                off += 4;
-                byte[] playerInfoBytes = new byte[4096];
-                System.arraycopy(bytes, off, playerInfoBytes, 0, playerInfoBytesCount);
-                off += playerInfoBytesCount;
+                if (iStream.read(fourBytes) != 4) {
+                    Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
+                }
+                int playerInfoBytesCount = DataUtils.bytesToInt(fourBytes);
+                byte[] playerInfoBytes = new byte[playerInfoBytesCount];
+                if (iStream.read(playerInfoBytes) != playerInfoBytesCount) {
+                    Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
+                }
 
                 players.add(Player.parseBytes(playerInfoBytes, scene));
             }

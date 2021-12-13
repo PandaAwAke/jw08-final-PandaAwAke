@@ -57,7 +57,7 @@ public class SocketClient {
                 }
 
                 if (numRead == -1) {
-                    // TODO: Client exit
+                    // TODO: Server closed
                 }
 
                 if (oStream.size() > 0) {

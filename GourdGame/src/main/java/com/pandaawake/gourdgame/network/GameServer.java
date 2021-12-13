@@ -10,6 +10,7 @@ import com.pandaawake.gourdgame.network.data.socket.SocketServer;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -89,8 +90,10 @@ public class GameServer {
             socketServer.run();
             while (socketServer.hasDataToHandle()) {
                 Pair<Integer, byte[]> data = socketServer.pollDataToHandle();
-                Action action = dataProcessor.dataToAction(data.first, data.second);
-                actionPerformer.performAction(action);
+                List<Action> actions = dataProcessor.dataToActions(data.first, data.second);
+                for (Action action : actions) {
+                    actionPerformer.performAction(action);
+                }
             }
         }
     }

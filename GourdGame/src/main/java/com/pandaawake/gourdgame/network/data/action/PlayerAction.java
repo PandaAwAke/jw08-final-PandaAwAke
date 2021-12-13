@@ -4,6 +4,7 @@ import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -36,17 +37,26 @@ public abstract class PlayerAction extends Action {
         return DataUtils.intToBytes(playerId);
     }
 
-    public static PlayerAction parseBytes(int senderClientId, byte[] bytes) {
-        int playerId = DataUtils.getHeaderNumber(bytes, 0);
-        int off = 4;
-        int playerActionNumber = DataUtils.getHeaderNumber(bytes, off);
-        off += 4;
+    public static PlayerAction parseBytes(int senderClientId, ByteArrayInputStream iStream) throws IOException {
+
+        byte[] fourBytes = new byte[4];
+        if (iStream.read(fourBytes) != 4) {
+            Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
+        }
+        int playerId = DataUtils.bytesToInt(fourBytes);
+        if (iStream.read(fourBytes) != 4) {
+            Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
+        }
+        int playerActionNumber = DataUtils.bytesToInt(fourBytes);
 
         switch (playerActionNumber) {
             case PLAYER_NO_ACTION:
                 return new NoAction(senderClientId, playerId);
             case PLAYER_DO_MOVE:
-                int directionNumber = DataUtils.getHeaderNumber(bytes, off);
+                if (iStream.read(fourBytes) != 4) {
+                    Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
+                }
+                int directionNumber = DataUtils.bytesToInt(fourBytes);
                 Direction direction = null;
 
                 switch (directionNumber) {

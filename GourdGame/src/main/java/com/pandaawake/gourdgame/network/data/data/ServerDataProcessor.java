@@ -7,7 +7,10 @@ import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerDataProcessor extends DataProcessor {
 
@@ -17,27 +20,44 @@ public class ServerDataProcessor extends DataProcessor {
 
     // ---------------------- Describes which data to handle ----------------------
     @Override
-    public Action dataToAction(int senderClientId, byte[] data) {
-        int number = DataUtils.getHeaderNumber(data, 0);
+    public List<Action> dataToActions(int senderClientId, byte[] data) {
+        List<Action> result = new ArrayList<>();
+        ByteArrayInputStream iStream = new ByteArrayInputStream(data);
 
-        byte[] info = new byte[4096];
-        System.arraycopy(data, 4, info, 0, data.length - 4);
+        try {
+            while (true) {
+                byte[] fourBytes = new byte[4];
+                int numRead = iStream.read(fourBytes);
+                if (numRead == -1) {
+                    break;
+                }
+                if (numRead != 4) {
+                    Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                }
+                int number = DataUtils.bytesToInt(fourBytes);
+                switch (number) {
+                    // Connection Signals
+                    case CLIENT_ENTER:
+                        result.add(new ConnectionAction.ClientEnter(senderClientId));
+                        break;
+                    case CLIENT_EXIT:
+                        result.add(new ConnectionAction.ClientExit(senderClientId));
+                        break;
 
-        switch (number) {
-            // Connection Signals
-            case CLIENT_ENTER:
-                return new ConnectionAction.ClientEnter(senderClientId);
-            case CLIENT_EXIT:
-                return new ConnectionAction.ClientExit(senderClientId);
-                
-            // Player Action Signals
-            case CLIENT_SERVER_PLAYER_ACTION:
-                return PlayerAction.parseBytes(senderClientId, info);
-            default:
-                Log.app().error(this.getClass().getName() + ": Received some illegal data?");
-                break;
+                    // Player Action Signals
+                    case CLIENT_SERVER_PLAYER_ACTION:
+                        result.add(PlayerAction.parseBytes(senderClientId, iStream));
+                        break;
+                    default:
+                        Log.app().error(this.getClass().getName() + ": Received some illegal data?");
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            Log.app().error(this.getClass().getName() + ": IOException when dataToActions!");
+            e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
 
@@ -63,9 +83,17 @@ public class ServerDataProcessor extends DataProcessor {
     @Override
     protected byte[] actionToData(ConnectionAction action) throws IOException {
         if (action instanceof ConnectionAction.ClientSuccessfullyAccepted) {
-            return DataUtils.intToBytes(SERVER_CLIENT_SUCCESSFULLY_ACCEPTED);
+            return DataUtils.concatBytes(
+                    DataUtils.intToBytes(SERVER_CLIENT_SUCCESSFULLY_ACCEPTED),
+                    DataUtils.intToBytes(((ConnectionAction.ClientSuccessfullyAccepted) action).playerId)
+            );
         } else if (action instanceof ConnectionAction.ClientUnsuccessfullyAccepted) {
-            return DataUtils.intToBytes(SERVER_CLIENT_UNSUCCESSFULLY_ACCEPTED);
+            byte[] errorReasonBytes = ((ConnectionAction.ClientUnsuccessfullyAccepted) action).errorReason.getBytes();
+            return DataUtils.concatBytes(
+                    DataUtils.intToBytes(SERVER_CLIENT_UNSUCCESSFULLY_ACCEPTED),
+                    DataUtils.intToBytes(errorReasonBytes.length),
+                    errorReasonBytes
+            );
         } else if (action instanceof ConnectionAction.ServerClosed) {
             return DataUtils.intToBytes(SERVER_CLOSED);
         } else {

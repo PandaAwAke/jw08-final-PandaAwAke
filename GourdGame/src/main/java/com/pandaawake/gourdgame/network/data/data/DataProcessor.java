@@ -7,6 +7,7 @@ import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 
 import java.io.IOException;
+import java.util.List;
 
 public abstract class DataProcessor {
 
@@ -33,7 +34,7 @@ public abstract class DataProcessor {
     public static final int CLIENT_SERVER_PLAYER_ACTION = 401;
 
     // -------------- Functions --------------
-    public abstract Action dataToAction(int senderClientId, byte[] data);
+    public abstract List<Action> dataToActions(int senderClientId, byte[] data);
 
     protected abstract byte[] actionToData(GameAction action) throws IOException;
     protected abstract byte[] actionToData(ConnectionAction action) throws IOException;

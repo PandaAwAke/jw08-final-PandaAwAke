@@ -98,8 +98,8 @@ public class PlayableSprite extends MovableSprite implements HasBomb {
 
 
     @Override
-    public void setNewBomb() {
-
+    public boolean setNewBomb() {
+        return false;
     }
 
     @Override

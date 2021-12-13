@@ -7,7 +7,6 @@ import com.pandaawake.gourdgame.sprites.MovableSprite;
 import com.pandaawake.gourdgame.sprites.Sprite;
 import com.pandaawake.gourdgame.tiles.Thing;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,7 +26,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     public Scene(GameMap gameMap, SceneUpdater sceneUpdater) {
         super();
         things = new HashSet<>();
-        sprites = new TreeSet<>();
+        sprites = new HashSet<>();
         this.gameMap = gameMap;
         this.sceneUpdater = sceneUpdater;
         sceneUpdater.setScene(this);
@@ -158,6 +157,32 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
 
             // Scene Updater
             sceneUpdater.OnRender();
+
+//            @Override
+//            public int compareTo(Sprite o) {
+//                /*
+//                 * This will decide the sequence of rendering
+//                 */
+//                if (this == o) {
+//                    return 0;
+//                }
+//
+//                if (!this.blocking && o.blocking) {
+//                    return -1;
+//                } else if (this.blocking && !o.blocking) {
+//                    return 1;
+//                }
+//
+//                if (this.getY() == o.getY()) {
+//                    if (this.getX() == o.getX()) {
+//                        return Integer.compare(this.hashCode(), o.hashCode());
+//                    } else {
+//                        return Float.compare(this.getX(), o.getX());
+//                    }
+//                } else {
+//                    return Float.compare(this.getY(), o.getY());
+//                }
+//            }
         }
     }
 

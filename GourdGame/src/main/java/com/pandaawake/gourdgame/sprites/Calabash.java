@@ -44,12 +44,14 @@ public class Calabash extends PlayableSprite {
 
 
     @Override
-    public void setNewBomb() {
+    public boolean setNewBomb() {
         if (status == MovableSprite.Status.Ok && canSetBomb()) {
             Bomb bomb = new Bomb(scene, this, posX, posY);
             bombs.add(bomb);
             scene.getSceneUpdater().addSprite(bomb);
+            return true;
         }
+        return false;
     }
 
 }

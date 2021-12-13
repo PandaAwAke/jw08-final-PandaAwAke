@@ -8,6 +8,7 @@ import com.pandaawake.gourdgame.network.data.performer.ClientActionPerformer;
 import com.pandaawake.gourdgame.network.data.socket.SocketClient;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class GameClient {
@@ -54,8 +55,10 @@ public class GameClient {
             socketClient.run();
             while (socketClient.hasDataToHandle()) {
                 byte[] data = socketClient.pollDataToHandle();
-                Action action = dataProcessor.dataToAction(-1, data);
-                actionPerformer.performAction(action);
+                List<Action> actions = dataProcessor.dataToActions(-1, data);
+                for (Action action : actions) {
+                    actionPerformer.performAction(action);
+                }
             }
         }
     }

@@ -57,7 +57,7 @@ public class ClientActionPerformer extends ActionPerformer {
                 if (player.id == app.getMainPlayerId()) {
                     app.setMainPlayer((OtherPlayer) player);
                     if (player.sprite instanceof Calabash) {
-                        ((Calabash) player.sprite).getCameraComponent().setRenderingCamera(true);
+                        player.sprite.getCameraComponent().setRenderingCamera(true);
                     } else {
                         Log.app().error(this.getClass().getName() + ": Main player's sprite is not a calabash?!");
                     }
