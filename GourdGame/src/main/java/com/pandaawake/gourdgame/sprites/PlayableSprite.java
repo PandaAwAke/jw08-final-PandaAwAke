@@ -24,29 +24,20 @@ public class PlayableSprite extends MovableSprite implements HasBomb {
         this.maxBombs = maxBombs;
     }
 
+    @Override
     public byte[] toBytes() throws IOException {
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+
         if (this instanceof Snake) {
             oStream.write(DataUtils.intToBytes(SNAKE));
         } else {
             oStream.write(DataUtils.intToBytes(CALABASH));
         }
-        oStream.write(DataUtils.floatToBytes(posX));
-        oStream.write(DataUtils.floatToBytes(posY));
-        oStream.write(DataUtils.intToBytes(spriteWidth));
-        oStream.write(DataUtils.intToBytes(spriteHeight));
-        oStream.write(DataUtils.intToBytes(spriteRenderWidth));
-        oStream.write(DataUtils.intToBytes(spriteRenderHeight));
-        oStream.write(DataUtils.intToBytes((blocking ? 1 : 0)));
+        
+        oStream.write(super.toBytes());
 
-        oStream.write(DataUtils.floatToBytes(movingSpeed));
-        oStream.write(DataUtils.floatToBytes(targetDeltaPos.first));
-        oStream.write(DataUtils.floatToBytes(targetDeltaPos.second));
-        oStream.write(DataUtils.floatToBytes(targetPos.first));
-        oStream.write(DataUtils.floatToBytes(targetPos.second));
-        oStream.write(DataUtils.floatToBytes(movingTime));
-        oStream.write(DataUtils.intToBytes(status.number));
-
+        oStream.write(DataUtils.intToBytes(lives));
+        
         return oStream.toByteArray();
     }
 
@@ -78,6 +69,8 @@ public class PlayableSprite extends MovableSprite implements HasBomb {
         iStream.read(subBytes); sprite.targetPos.second = DataUtils.bytesToFloat(subBytes);
         iStream.read(subBytes); sprite.movingTime = DataUtils.bytesToFloat(subBytes);
         iStream.read(subBytes); sprite.status = Status.fromNumber(DataUtils.bytesToInt(subBytes));
+        
+        iStream.read(subBytes); sprite.lives = DataUtils.bytesToInt(subBytes);
 
         return sprite;
     }
@@ -93,7 +86,7 @@ public class PlayableSprite extends MovableSprite implements HasBomb {
 
     @Override
     public boolean canSetBomb() {
-        return bombs.size() < maxBombs;
+        return (status == MovableSprite.Status.Ok) && (bombs.size() < maxBombs);
     }
 
 

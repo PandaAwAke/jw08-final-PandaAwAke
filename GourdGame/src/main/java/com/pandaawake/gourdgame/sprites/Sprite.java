@@ -7,11 +7,15 @@ import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
+import com.pandaawake.gourdgame.utils.DataUtils;
+import com.pandaawake.gourdgame.utils.ToBytes;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class Sprite extends Entity {
+public abstract class Sprite extends Entity implements ToBytes {
     /**
      * Sprite is a movable/interactive thing in the scene.
      * The rendering of the sprite should not cover the rendering of tiles.
@@ -128,6 +132,18 @@ public abstract class Sprite extends Entity {
 
     public boolean OnExplode(Bomb bomb) {
         return false;
+    }
+
+    public byte[] toBytes() throws IOException {
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        oStream.write(DataUtils.floatToBytes(posX));
+        oStream.write(DataUtils.floatToBytes(posY));
+        oStream.write(DataUtils.intToBytes(spriteWidth));
+        oStream.write(DataUtils.intToBytes(spriteHeight));
+        oStream.write(DataUtils.intToBytes(spriteRenderWidth));
+        oStream.write(DataUtils.intToBytes(spriteRenderHeight));
+        oStream.write(DataUtils.intToBytes((blocking ? 1 : 0)));
+        return oStream.toByteArray();
     }
 
 

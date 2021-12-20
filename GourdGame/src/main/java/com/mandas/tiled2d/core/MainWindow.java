@@ -17,6 +17,7 @@ public class MainWindow extends JFrame {
         add(renderer);
         pack();
         addWindowListener(eventHandler);
+        addKeyListener(eventHandler);
         repaint();
     }
     

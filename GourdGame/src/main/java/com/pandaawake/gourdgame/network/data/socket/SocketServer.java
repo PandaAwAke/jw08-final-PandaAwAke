@@ -30,6 +30,7 @@ public class SocketServer {
 
     private final Map<Integer, SocketChannel> clientChannels;
     private final LinkedList<Pair<byte[], Set<SocketChannel>>> dataToWrite_SendedChannels;
+    private final LinkedList<Pair<byte[], Set<SocketChannel>>> dataToWrite_TargetChannels;
     private final LinkedList<Pair<Integer, byte[]>> dataRead;
     private int clientIdIter = 0;
 
@@ -45,6 +46,7 @@ public class SocketServer {
     public SocketServer() {
         clientChannels = new HashMap<>();
         dataToWrite_SendedChannels = new LinkedList<>();
+        dataToWrite_TargetChannels = new LinkedList<>();
         dataRead = new LinkedList<>();
 
         try {
@@ -130,6 +132,7 @@ public class SocketServer {
         synchronized (this) {
             SocketChannel channel = (SocketChannel) key.channel();
             Set<Pair<byte[], Set<SocketChannel>>> entriesToRemove = new HashSet<>();
+
             for (Pair<byte[], Set<SocketChannel>> entry : dataToWrite_SendedChannels) {
                 if (!entry.second.contains(channel)) {
                     write(channel, entry.first);
@@ -143,6 +146,22 @@ public class SocketServer {
             for (Pair<byte[], Set<SocketChannel>> entry : entriesToRemove) {
                 dataToWrite_SendedChannels.remove(entry);
             }
+            entriesToRemove.clear();
+
+            for (Pair<byte[], Set<SocketChannel>> entry : dataToWrite_TargetChannels) {
+                if (entry.second.contains(channel)) {
+                    write(channel, entry.first);
+                    entry.second.remove(channel);
+                    if (entry.second.size() == 0) {
+                        // Remove this entry
+                        entriesToRemove.add(entry);
+                    }
+                }
+            }
+            for (Pair<byte[], Set<SocketChannel>> entry : entriesToRemove) {
+                dataToWrite_TargetChannels.remove(entry);
+            }
+            entriesToRemove.clear();
         }
     }
 
@@ -192,10 +211,16 @@ public class SocketServer {
         }
     }
 
-    public void addDataToWrite(byte[] dataToWrite, int ignoreId) {
-        Collection<Integer> ignoreList = new HashSet<>();
-        ignoreList.add(ignoreId);
-        addDataToWrite(dataToWrite, ignoreList);
+    public void addDataToWrite(byte[] dataToWrite, int targetId) {
+        synchronized (this) {
+            Set<SocketChannel> targetSet = new HashSet<>();
+            SocketChannel channel = clientChannels.get(targetId);
+            if (channel == null) {
+                Log.app().error(getClass().getName() + ": wrong id of channel!");
+            }
+            targetSet.add(channel);
+            dataToWrite_TargetChannels.offer(new Pair<>(dataToWrite, targetSet));
+        }
     }
 
     public Set<Integer> getClientIds() {

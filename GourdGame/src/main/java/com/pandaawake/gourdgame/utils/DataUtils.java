@@ -1,7 +1,13 @@
 package com.pandaawake.gourdgame.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.mandas.tiled2d.core.Log;
 
 public class DataUtils {
 
@@ -55,6 +61,42 @@ public class DataUtils {
         oStream.write(intToBytes(data.length));
         oStream.write(data);
         return oStream.toByteArray();
+    }
+
+    public static <T extends ToBytes> byte[] collectionToBytes(Collection<T> collection) throws IOException {
+        // [size(4), T, T, ..., T]
+        // T = [length(4), content]
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        oStream.write(intToBytes(collection.size()));
+        for (T t : collection) {
+            oStream.write(addLengthHeader(t.toBytes()));
+        }
+        return oStream.toByteArray();
+    }
+
+    public static List<byte[]> parseCollectionBytes(byte[] data) throws IOException {
+        ByteArrayInputStream iStream = new ByteArrayInputStream(data);
+        byte[] fourBytes = new byte[4];
+        if (iStream.read(fourBytes) != 4) {
+            Log.app().error("DataUtils.parseCollectionBytes: Illegal data format!");
+            return null;
+        }
+        int size = bytesToInt(fourBytes);
+        List<byte[]> result = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            if (iStream.read(fourBytes) != 4) {
+                Log.app().error("DataUtils.parseCollectionBytes: Illegal data format!");
+                return null;
+            }
+            int length = bytesToInt(fourBytes);
+            byte[] infoBytes = new byte[length];
+            if (iStream.read(infoBytes) != length) {
+                Log.app().error("DataUtils.parseCollectionBytes: Illegal data format!");
+                return null;
+            }
+            result.add(infoBytes);
+        }
+        return result;
     }
 
 

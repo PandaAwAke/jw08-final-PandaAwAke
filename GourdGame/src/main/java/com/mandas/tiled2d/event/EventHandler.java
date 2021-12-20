@@ -3,8 +3,6 @@ package com.mandas.tiled2d.event;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.dispatcher.SwingDispatchService;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseWheelEvent;
@@ -12,12 +10,14 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseWheelListener;
 import com.mandas.tiled2d.core.Log;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class EventHandler implements
-        NativeKeyListener, NativeMouseInputListener,
-        NativeMouseWheelListener, WindowListener
+        NativeMouseInputListener, NativeMouseWheelListener,
+        WindowListener, KeyListener
 {
     public EventHandler() {
         try {
@@ -30,7 +30,7 @@ public class EventHandler implements
 
             
         }
-        GlobalScreen.addNativeKeyListener(this);
+        //GlobalScreen.addNativeKeyListener(this);
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
         GlobalScreen.addNativeMouseWheelListener(this);
@@ -123,20 +123,20 @@ public class EventHandler implements
         EventDispatcher.dispatch(new WindowEvents.Deactivated());
     }
 
-    @Override
-    public void nativeKeyTyped(NativeKeyEvent e) {
-        EventDispatcher.dispatch(new KeyEvents.Typed(e));
-    }
+    // @Override
+    // public void nativeKeyTyped(NativeKeyEvent e) {
+    //     EventDispatcher.dispatch(new KeyEvents.Typed(e));
+    // }
 
-    @Override
-    public void nativeKeyPressed(NativeKeyEvent e) {
-        EventDispatcher.dispatch(new KeyEvents.Pressed(e));
-    }
+    // @Override
+    // public void nativeKeyPressed(NativeKeyEvent e) {
+    //     EventDispatcher.dispatch(new KeyEvents.Pressed(e));
+    // }
 
-    @Override
-    public void nativeKeyReleased(NativeKeyEvent e) {
-        EventDispatcher.dispatch(new KeyEvents.Released(e));
-    }
+    // @Override
+    // public void nativeKeyReleased(NativeKeyEvent e) {
+    //     EventDispatcher.dispatch(new KeyEvents.Released(e));
+    // }
 
     @Override
     public void nativeMouseClicked(NativeMouseEvent e) {
@@ -166,5 +166,20 @@ public class EventHandler implements
     @Override
     public void nativeMouseWheelMoved(NativeMouseWheelEvent e) {
         EventDispatcher.dispatch(new MouseEvents.WheelMoved(e));
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        EventDispatcher.dispatch(new KeyEvents.Typed(e));
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        EventDispatcher.dispatch(new KeyEvents.Pressed(e));
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        EventDispatcher.dispatch(new KeyEvents.Released(e));
     }
 }

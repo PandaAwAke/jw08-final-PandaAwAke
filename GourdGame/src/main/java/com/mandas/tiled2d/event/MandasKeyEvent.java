@@ -1,11 +1,11 @@
 package com.mandas.tiled2d.event;
 
-import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import java.awt.event.KeyEvent;
 
-public class KeyEvent extends Event {
+public class MandasKeyEvent extends Event {
     protected int keyCode;
     protected char keyChar;
-    public KeyEvent(NativeKeyEvent keyEvent) {
+    public MandasKeyEvent(KeyEvent keyEvent) {
         keyCode = keyEvent.getKeyCode();
         keyChar = keyEvent.getKeyChar();
     }

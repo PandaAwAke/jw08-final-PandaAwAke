@@ -55,23 +55,23 @@ public class GameServer {
         }
     }
 
-    public void sendAction(Action action, Collection<Integer> ignoreList) {
-        synchronized (this) {
-            try {
-                byte[] data = dataProcessor.actionToData(action);
-                socketServer.addDataToWrite(data, ignoreList);
-            } catch (IOException e) {
-                Log.app().error(getClass().getName() + ": IOException when sendAction!");
-                e.printStackTrace();
-            }
-        }
-    }
+    // public void sendAction(Action action, Collection<Integer> ignoreList) {
+    //     synchronized (this) {
+    //         try {
+    //             byte[] data = dataProcessor.actionToData(action);
+    //             socketServer.addDataToWrite(data, ignoreList);
+    //         } catch (IOException e) {
+    //             Log.app().error(getClass().getName() + ": IOException when sendAction!");
+    //             e.printStackTrace();
+    //         }
+    //     }
+    // }
 
-    public void sendAction(Action action, int ignoreId) {
+    public void sendAction(Action action, int targetId) {
         synchronized (this) {
             try {
                 byte[] data = dataProcessor.actionToData(action);
-                socketServer.addDataToWrite(data, ignoreId);
+                socketServer.addDataToWrite(data, targetId);
             } catch (IOException e) {
                 Log.app().error(getClass().getName() + ": IOException when sendAction!");
                 e.printStackTrace();

@@ -36,13 +36,13 @@ public class ServerActionPerformer extends ActionPerformer {
     @Override
     protected void performAction(ConnectionAction action) {
         if (action instanceof ConnectionAction.ClientEnter) {
-            Log.app().info("Client Enter");
+            Log.app().info("Client " + action.senderClientId + " Enter");
             // App: Allocate a Player for this client
             Calabash humanCalabash = new Calabash(app.getScene());
-            humanCalabash.setPos(0, 1);
+            humanCalabash.setPos(Config.playerPositions[action.senderClientId].first, Config.playerPositions[action.senderClientId].second);
             app.getScene().getSceneUpdater().addSprite(humanCalabash);
-            app.getPlayers().add(new HumanPlayer(humanCalabash, action.senderClientId, Config.names[action.senderClientId]));
-            gameServer.sendAction(new ConnectionAction.ClientSuccessfullyAccepted(-1, action.senderClientId));
+            app.getPlayers().add(new HumanPlayer(humanCalabash, action.senderClientId, Config.playerNames[action.senderClientId]));
+            gameServer.sendAction(new ConnectionAction.ClientSuccessfullyAccepted(-1, action.senderClientId), action.senderClientId);
         } else if (action instanceof ConnectionAction.ClientExit) {
             // App: Remove this id and Player for this client
             //app.getPlayers().removeIf(player -> player.id == action.senderClientId);
@@ -62,6 +62,7 @@ public class ServerActionPerformer extends ActionPerformer {
 
         if (matchedPlayers.size() != 1) {
             Log.app().error("No matched player?");
+            return;
         }
         Player matchedPlayer = matchedPlayers.get(0);
 
@@ -78,7 +79,8 @@ public class ServerActionPerformer extends ActionPerformer {
                 gameServer.sendAction(action);
             }
         } else if (action instanceof PlayerAction.SetBomb) {
-            if (matchedPlayer.setBomb()) {
+            if (matchedPlayer.canSetBomb()) {
+                matchedPlayer.setBomb();
                 Log.app().trace("Server: Player " + action.playerId + " SetBomb");
                 Log.file().trace(app.getPlayerById(action.playerId).name + " SetBomb");
                 gameServer.sendAction(action);

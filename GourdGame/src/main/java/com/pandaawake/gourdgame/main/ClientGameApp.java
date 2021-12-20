@@ -1,6 +1,5 @@
 package com.pandaawake.gourdgame.main;
 
-import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.EventDispatcher;
 import com.mandas.tiled2d.event.KeyCodes;
 import com.mandas.tiled2d.event.KeyEvents;
@@ -197,31 +196,41 @@ public class ClientGameApp extends GameApp {
         if (mainPlayer == null) {
             return;
         }
+        Direction direction = null;
         switch (e.getKeyCode()) {
-            case KeyCodes.VC_A:
-            case KeyCodes.VC_LEFT:
-                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.left));
+            case KeyCodes.VK_A:
+            case KeyCodes.VK_LEFT:
+                direction = Direction.left;
                 break;
-            case KeyCodes.VC_W:
-            case KeyCodes.VC_UP:
-                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.up));
+            case KeyCodes.VK_W:
+            case KeyCodes.VK_UP:
+                direction = Direction.up;
                 break;
-            case KeyCodes.VC_D:
-            case KeyCodes.VC_RIGHT:
-                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.right));
+            case KeyCodes.VK_D:
+            case KeyCodes.VK_RIGHT:
+                direction = Direction.right;
                 break;
-            case KeyCodes.VC_S:
-            case KeyCodes.VC_DOWN:
-                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, Direction.down));
+            case KeyCodes.VK_S:
+            case KeyCodes.VK_DOWN:
+                direction = Direction.down;
                 break;
-            case KeyCodes.VC_SPACE:
-            case KeyCodes.VC_0:
+            case KeyCodes.VK_J:
+            case KeyCodes.VK_1:
+                if (mainPlayer.sprite.canSetBomb()) {
+                    gameClient.sendAction(new PlayerAction.SetBomb(-1, mainPlayerId));
+                }
+                break;
+            case KeyCodes.VK_SPACE:
+            case KeyCodes.VK_0:
                 gameClient.sendAction(new PlayerAction.ExplodeBomb(-1, mainPlayerId));
                 break;
-            case KeyCodes.VC_J:
-            case KeyCodes.VC_1:
-                gameClient.sendAction(new PlayerAction.SetBomb(-1, mainPlayerId));
-                break;
+            
+        }
+
+        if (direction != null) {
+            if (mainPlayer.sprite.canMove(direction)) {
+                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, direction));
+            }
         }
     }
 

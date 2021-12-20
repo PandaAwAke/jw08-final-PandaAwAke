@@ -2,10 +2,13 @@ package com.pandaawake.gourdgame.sprites;
 
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
+import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -100,6 +103,17 @@ public abstract class MovableSprite extends Sprite {
             targetPos.first = newPosition.first.floatValue();
             targetPos.second = newPosition.second.floatValue();
             movingTime = 0.0f;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canMove(Direction direction) {
+        if (status != Status.Ok) {
+            return false;
+        }
+        IntPair newPosition = tryMove(direction);
+        if (scene.spriteCanMoveTo(this, newPosition.first, newPosition.second)) {
             return true;
         }
         return false;
@@ -202,5 +216,22 @@ public abstract class MovableSprite extends Sprite {
             }
         }
         
+    }
+
+    @Override
+    public byte[] toBytes() throws IOException {
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        
+        oStream.write(super.toBytes());
+
+        oStream.write(DataUtils.floatToBytes(movingSpeed));
+        oStream.write(DataUtils.floatToBytes(targetDeltaPos.first));
+        oStream.write(DataUtils.floatToBytes(targetDeltaPos.second));
+        oStream.write(DataUtils.floatToBytes(targetPos.first));
+        oStream.write(DataUtils.floatToBytes(targetPos.second));
+        oStream.write(DataUtils.floatToBytes(movingTime));
+        oStream.write(DataUtils.intToBytes(status.number));
+
+        return oStream.toByteArray();
     }
 }

@@ -59,17 +59,6 @@ public class ComputerPlayer extends Player {
         gameServer.sendAction(new PlayerAction.DoMove(-1, id, direction));
     }
 
-
-    @Override
-    public boolean doMove(Direction direction) {
-        return sprite.doMove(direction);
-    }
-
-    @Override
-    public boolean setBomb() {
-        return sprite.setNewBomb();
-    }
-
     @Override
     public boolean explodeBomb() {
         return false;

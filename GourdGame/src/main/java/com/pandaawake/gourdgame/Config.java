@@ -1,6 +1,7 @@
 package com.pandaawake.gourdgame;
 
 import com.mandas.tiled2d.utils.TileFileParser;
+import com.mandas.tiled2d.utils.FloatPair;
 import com.mandas.tiled2d.utils.IntPair;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class Config {
             "11241111111111114211",
             "11221122213222112211",
             "11133112311133211333",
-            "11221121144432112211",
+            "11211121144432112211",
             "22113344411311122111",
             "11221123444322112211",
             "11113331131221133311",
@@ -69,8 +70,11 @@ public class Config {
         level1ComputerPlayerPositions.add(new IntPair(9, 3));
     }
 
-    // Player Name settings
-    public static final String[] names = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
+    // Player settings
+    public static final String[] playerNames = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
+    public static final FloatPair[] playerPositions = {
+        new FloatPair(0, 1), new FloatPair(4, 8), new FloatPair(7, 11), new FloatPair(11, 11), 
+    };
 
 
 

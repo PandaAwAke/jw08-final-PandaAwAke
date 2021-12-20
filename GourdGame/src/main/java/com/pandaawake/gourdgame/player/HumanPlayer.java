@@ -23,16 +23,6 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public boolean doMove(Direction direction) {
-        return sprite.doMove(direction);
-    }
-
-    @Override
-    public boolean setBomb() {
-        return sprite.setNewBomb();
-    }
-
-    @Override
     public boolean explodeBomb() {
         for (Bomb bomb : sprite.getBombs()) {
             bomb.setExplodeImmediately();

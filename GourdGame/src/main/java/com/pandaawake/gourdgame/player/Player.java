@@ -4,12 +4,13 @@ import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.PlayableSprite;
 import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
+import com.pandaawake.gourdgame.utils.ToBytes;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public abstract class Player {
+public abstract class Player implements ToBytes {
 
     public PlayableSprite sprite;
     public int id = 0;
@@ -33,13 +34,24 @@ public abstract class Player {
         this.name = name;
     }
 
-    public abstract boolean doMove(Direction direction);
-    public abstract boolean setBomb();
+    public boolean doMove(Direction direction) {
+        return sprite.doMove(direction);
+    }
+
+    public boolean setBomb() {
+        return sprite.setNewBomb();
+    }
+
     public abstract boolean explodeBomb();
+    
+    public boolean canSetBomb() {
+        return sprite.canSetBomb();
+    }
 
     // ---------------------- Callback Functions ----------------------
     public abstract void OnUpdate(float timestep);
 
+    @Override
     public byte[] toBytes() throws IOException {
         // [spriteBytesLen] [spriteBytes] [id (4)] [nameBytesLen] [nameBytes]
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();

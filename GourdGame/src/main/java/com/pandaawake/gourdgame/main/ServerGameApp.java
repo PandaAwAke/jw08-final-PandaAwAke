@@ -73,7 +73,7 @@ public class ServerGameApp {
 
     protected void initializeEventDispatcher() {
         EventDispatcher.register(KeyEvents.Pressed.class, e -> {
-            if (e.getKeyCode() == KeyCodes.VC_ESCAPE) {
+            if (e.getKeyCode() == KeyCodes.VK_ESCAPE) {
                 if (pause) {
                     pause = false;
                     gameServer.sendAction(new GameAction.GameResume(-1));
@@ -81,15 +81,15 @@ public class ServerGameApp {
                     pause = true;
                     gameServer.sendAction(new GameAction.GamePause(-1));
                 }
-            } else if (e.getKeyCode() == KeyCodes.VC_F5) {
+            } else if (e.getKeyCode() == KeyCodes.VK_F5) {
 //                resetAll();
 //                pause = false;
 //                return;
-            } else if (e.getKeyCode() == KeyCodes.VC_F1) {
+            } else if (e.getKeyCode() == KeyCodes.VK_F1) {
                 pause = false;
                 gameServer.sendAction(new GameAction.GameInitialize(-1, players));
                 gameServer.sendAction(new GameAction.GameStart(-1));
-            } else if (e.getKeyCode() == KeyCodes.VC_F2) {
+            } else if (e.getKeyCode() == KeyCodes.VK_F2) {
                 pause = true;
                 gameServer.sendAction(new GameAction.GameEnd(-1));
             }

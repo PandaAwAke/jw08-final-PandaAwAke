@@ -62,14 +62,7 @@ public abstract class GameAction extends Action {
         public byte[] toBytes() throws IOException {
             // [playerCount (4)] [player, player, ..., player]
             // [player] = [playerBytesCount(4)] [playerBytes (playerBytesCount)]
-            ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-
-            oStream.write(DataUtils.intToBytes(players.size()));
-            for (Player player : players) {
-                oStream.write(DataUtils.addLengthHeader(player.toBytes()));
-            }
-
-            return oStream.toByteArray();
+            return DataUtils.collectionToBytes(players);
         }
 
         public static GameInitialize parseBytes(int senderClientId, ByteArrayInputStream iStream, Scene scene) throws IOException {
@@ -94,7 +87,5 @@ public abstract class GameAction extends Action {
             return new GameInitialize(senderClientId, players);
         }
     }
-
-
 
 }
