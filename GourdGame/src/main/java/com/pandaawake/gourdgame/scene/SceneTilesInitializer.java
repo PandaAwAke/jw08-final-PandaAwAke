@@ -47,15 +47,15 @@ public class SceneTilesInitializer {
     private Thing getNewThing(char c) {
         switch (c) {
             case KIND_FLOOR:
-                return new Floor();
+                return new Floor(Scene.getNextThingId());
             case KIND_WALL:
-                return new Wall();
+                return new Wall(Scene.getNextThingId());
             case KIND_TREE:
-                return new Tree();
+                return new Tree(Scene.getNextThingId());
             case KIND_TWICE_BREAKABLE_WALL:
-                return new TwiceBreakableWall();
+                return new TwiceBreakableWall(Scene.getNextThingId(), scene);
             default:
-                return new Floor();
+                return new Floor(Scene.getNextThingId());
         }
     }
 

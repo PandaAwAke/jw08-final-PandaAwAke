@@ -2,6 +2,7 @@ package com.pandaawake.gourdgame.player;
 
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.PlayableSprite;
+import com.pandaawake.gourdgame.sprites.Sprite;
 import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.pandaawake.gourdgame.utils.ToBytes;
@@ -70,7 +71,7 @@ public abstract class Player implements ToBytes {
 
         byte[] spriteBytes = new byte[spriteDataLen];
         iStream.read(spriteBytes);
-        PlayableSprite sprite = PlayableSprite.parseBytes(spriteBytes, scene);
+        PlayableSprite sprite = (PlayableSprite) (Sprite.parseBytes(spriteBytes, scene));
 
         iStream.read(intBytes);
         int id = DataUtils.bytesToInt(intBytes);

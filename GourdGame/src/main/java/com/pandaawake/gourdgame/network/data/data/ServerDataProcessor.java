@@ -1,10 +1,7 @@
 package com.pandaawake.gourdgame.network.data.data;
 
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.network.data.action.Action;
-import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
-import com.pandaawake.gourdgame.network.data.action.GameAction;
-import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.action.*;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
 import java.io.ByteArrayInputStream;
@@ -71,7 +68,10 @@ public class ServerDataProcessor extends DataProcessor {
         } else if (action instanceof GameAction.GameResume) {
             return DataUtils.intToBytes(GAME_RESUME);
         } else if (action instanceof GameAction.GameEnd) {
-            return DataUtils.intToBytes(GAME_END);
+            return DataUtils.concatBytes(
+                    DataUtils.intToBytes(GAME_END),
+                    DataUtils.intToBytes(((GameAction.GameEnd) action).humanWins ? 1 : 0)
+            );
         } else if (action instanceof GameAction.GameInitialize) {
             byte[] number = DataUtils.intToBytes(SERVER_GAME_INITIALIZE);
             byte[] actionBytes = ((GameAction.GameInitialize) action).toBytes();
@@ -105,6 +105,13 @@ public class ServerDataProcessor extends DataProcessor {
     @Override
     protected byte[] actionToData(PlayerAction action) throws IOException {
         byte[] number = DataUtils.intToBytes(SERVER_CLIENT_PLAYER_ACTION);
+        byte[] actionBytes = action.toBytes();
+        return DataUtils.concatBytes(number, actionBytes);
+    }
+
+    @Override
+    protected byte[] actionToData(SceneAction action) throws IOException {
+        byte[] number = DataUtils.intToBytes(SERVER_SCENE_ACTION);
         byte[] actionBytes = action.toBytes();
         return DataUtils.concatBytes(number, actionBytes);
     }

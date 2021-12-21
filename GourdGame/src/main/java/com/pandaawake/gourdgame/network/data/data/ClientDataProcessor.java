@@ -1,10 +1,7 @@
 package com.pandaawake.gourdgame.network.data.data;
 
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.network.data.action.Action;
-import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
-import com.pandaawake.gourdgame.network.data.action.GameAction;
-import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.action.*;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
@@ -51,7 +48,11 @@ public class ClientDataProcessor extends DataProcessor {
                         result.add(new GameAction.GameResume(senderClientId));
                         break;
                     case GAME_END:
-                        result.add(new GameAction.GameEnd(senderClientId));
+                        if (iStream.read(fourBytes) != 4) {
+                            Log.app().error(this.getClass().getName() + "dataToActions: Illegal data format!");
+                        }
+                        boolean humanWins = (DataUtils.bytesToInt(fourBytes) == 1);
+                        result.add(new GameAction.GameEnd(senderClientId, humanWins));
                         break;
 
                     // Connection Signals
@@ -80,11 +81,17 @@ public class ClientDataProcessor extends DataProcessor {
 
                     // Player Action Signals
                     case SERVER_GAME_INITIALIZE:
-                        result.add(GameAction.GameInitialize.parseBytes(senderClientId, iStream, scene));
+                        result.add(GameAction.GameInitialize.parseBytes(senderClientId, iStream));
                         break;
                     case SERVER_CLIENT_PLAYER_ACTION:
                         result.add(PlayerAction.parseBytes(senderClientId, iStream));
                         break;
+
+                    // Scene Action Signals
+                    case SERVER_SCENE_ACTION:
+                        result.add(SceneAction.parseBytes(senderClientId, iStream, scene));
+                        break;
+
                     default:
                         Log.app().error(this.getClass().getName() + ": Received some illegal data?");
                         break;
@@ -122,6 +129,11 @@ public class ClientDataProcessor extends DataProcessor {
         byte[] number = DataUtils.intToBytes(CLIENT_SERVER_PLAYER_ACTION);
         byte[] actionBytes = action.toBytes();
         return DataUtils.concatBytes(number, actionBytes);
+    }
+
+    @Override
+    protected byte[] actionToData(SceneAction action) throws IOException {
+        return null;
     }
 
 }

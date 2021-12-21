@@ -24,8 +24,9 @@ public class GameClient {
     }
 
     private final SocketClient socketClient;
-    private ClientDataProcessor dataProcessor;
-    private ClientActionPerformer actionPerformer;
+    private final ClientDataProcessor dataProcessor;
+    private final ClientActionPerformer actionPerformer;
+
 
     public GameClient(ClientGameApp app) {
         socketClient = new SocketClient();
@@ -36,31 +37,30 @@ public class GameClient {
 
 
     public void sendAction(Action action) {
-        synchronized (this) {
-            try {
-                byte[] data = dataProcessor.actionToData(action);
-                socketClient.writeData(data);
-            } catch (IOException e) {
-                Log.app().error(getClass().getName() + ": IOException when sendAction!");
-                e.printStackTrace();
-            }
+        try {
+            byte[] data = dataProcessor.actionToData(action);
+            socketClient.writeData(data);
+        } catch (IOException e) {
+            Log.app().error(getClass().getName() + ": IOException when sendAction!");
+            e.printStackTrace();
         }
     }
 
 
 
 
+
+
     void run() {
-        synchronized (this) {
-            socketClient.run();
-            while (socketClient.hasDataToHandle()) {
-                byte[] data = socketClient.pollDataToHandle();
-                List<Action> actions = dataProcessor.dataToActions(-1, data);
-                for (Action action : actions) {
-                    actionPerformer.performAction(action);
-                }
+        socketClient.run();
+        while (socketClient.hasDataToHandle()) {
+            byte[] data = socketClient.pollDataToHandle();
+            List<Action> actions = dataProcessor.dataToActions(-1, data);
+            for (Action action : actions) {
+                actionPerformer.performAction(action);
             }
         }
+        actionPerformer.handleRemainActions();
     }
 
 

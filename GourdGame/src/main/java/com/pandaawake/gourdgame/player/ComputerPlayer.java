@@ -2,7 +2,6 @@ package com.pandaawake.gourdgame.player;
 
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.GameServer;
-import com.pandaawake.gourdgame.network.data.action.PlayerAction;
 import com.pandaawake.gourdgame.sprites.Snake;
 import com.pandaawake.gourdgame.utils.Direction;
 import com.pandaawake.gourdgame.utils.RandomUtils;
@@ -43,7 +42,7 @@ public class ComputerPlayer extends Player {
         if (probability <= Config.DoNothingProbability) {
             // Do nothing
         } else if (probability <= Config.DoNothingProbability + Config.SetBombProbability) {
-            gameServer.sendAction(new PlayerAction.SetBomb(-1, id));
+            //gameServer.sendAction(new PlayerAction.SetBomb(-1, sprite.getId()));
             setBomb();
         } else {
             tryMove();
@@ -56,7 +55,7 @@ public class ComputerPlayer extends Player {
         }
         
         doMove(direction);
-        gameServer.sendAction(new PlayerAction.DoMove(-1, id, direction));
+        //gameServer.sendAction(new PlayerAction.DoMove(-1, sprite.getId(), direction));
     }
 
     @Override

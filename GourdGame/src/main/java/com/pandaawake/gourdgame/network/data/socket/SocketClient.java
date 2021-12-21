@@ -47,12 +47,11 @@ public class SocketClient {
             try {
                 ByteBuffer buffer = ByteBuffer.allocate(4096);
                 ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-                int off = 0;
                 int numRead = channel.read(buffer);
 
                 while (numRead != 0 && numRead != -1) {
-                    oStream.write(buffer.array(), off, numRead);
-                    off += numRead;
+                    oStream.write(buffer.array(), 0, numRead);
+                    buffer.clear();
                     numRead = channel.read(buffer);
                 }
 

@@ -41,21 +41,21 @@ public abstract class MovableSprite extends Sprite {
         }
     }
 
-    public MovableSprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
-        super(blocking, scene, spriteWidth, spriteHeight);
+    public MovableSprite(int id, boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
+        super(id, blocking, scene, spriteWidth, spriteHeight);
     }
 
-    public MovableSprite(boolean blocking, Scene scene, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
-        super(blocking, scene, spriteWidth, spriteHeight, spriteRenderWidth, spriteRenderHeight);
+    public MovableSprite(int id, boolean blocking, Scene scene, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
+        super(id, blocking, scene, spriteWidth, spriteHeight, spriteRenderWidth, spriteRenderHeight);
     }
 
-    public MovableSprite(boolean blocking, Scene scene, float movingSpeed, int spriteWidth, int spriteHeight) {
-        super(blocking, scene, spriteWidth, spriteHeight);
+    public MovableSprite(int id, boolean blocking, Scene scene, float movingSpeed, int spriteWidth, int spriteHeight) {
+        super(id, blocking, scene, spriteWidth, spriteHeight);
         this.movingSpeed = movingSpeed;
     }
 
-    public MovableSprite(boolean blocking, Scene scene, float movingSpeed, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
-        super(blocking, scene, spriteWidth, spriteHeight, spriteRenderWidth, spriteRenderHeight);
+    public MovableSprite(int id, boolean blocking, Scene scene, float movingSpeed, int spriteWidth, int spriteHeight, int spriteRenderWidth, int spriteRenderHeight) {
+        super(id, blocking, scene, spriteWidth, spriteHeight, spriteRenderWidth, spriteRenderHeight);
         this.movingSpeed = movingSpeed;
     }
 
@@ -233,5 +233,17 @@ public abstract class MovableSprite extends Sprite {
         oStream.write(DataUtils.intToBytes(status.number));
 
         return oStream.toByteArray();
+    }
+
+    @Override
+    public void updateFromAnotherSprite(Sprite sprite) {
+        super.updateFromAnotherSprite(sprite);
+        this.movingSpeed = ((MovableSprite) sprite).movingSpeed;
+        this.targetDeltaPos.first = ((MovableSprite) sprite).targetDeltaPos.first;
+        this.targetDeltaPos.second = ((MovableSprite) sprite).targetDeltaPos.second;
+        this.targetPos.first = ((MovableSprite) sprite).targetPos.first;
+        this.targetPos.second = ((MovableSprite) sprite).targetPos.second;
+        this.movingTime = ((MovableSprite) sprite).movingTime;
+        this.status = ((MovableSprite) sprite).status;
     }
 }

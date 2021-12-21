@@ -1,13 +1,13 @@
 package com.pandaawake.gourdgame.utils;
 
+import com.mandas.tiled2d.core.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.mandas.tiled2d.core.Log;
 
 public class DataUtils {
 
@@ -76,6 +76,10 @@ public class DataUtils {
 
     public static List<byte[]> parseCollectionBytes(byte[] data) throws IOException {
         ByteArrayInputStream iStream = new ByteArrayInputStream(data);
+        return parseCollectionBytes(iStream);
+    }
+
+    public static List<byte[]> parseCollectionBytes(ByteArrayInputStream iStream) throws IOException {
         byte[] fourBytes = new byte[4];
         if (iStream.read(fourBytes) != 4) {
             Log.app().error("DataUtils.parseCollectionBytes: Illegal data format!");
@@ -90,7 +94,8 @@ public class DataUtils {
             }
             int length = bytesToInt(fourBytes);
             byte[] infoBytes = new byte[length];
-            if (iStream.read(infoBytes) != length) {
+            int t = iStream.read(infoBytes);
+            if (t != length) {
                 Log.app().error("DataUtils.parseCollectionBytes: Illegal data format!");
                 return null;
             }

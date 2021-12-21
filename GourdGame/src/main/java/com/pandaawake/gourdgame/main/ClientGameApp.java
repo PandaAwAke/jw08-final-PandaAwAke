@@ -1,5 +1,6 @@
 package com.pandaawake.gourdgame.main;
 
+import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.EventDispatcher;
 import com.mandas.tiled2d.event.KeyCodes;
 import com.mandas.tiled2d.event.KeyEvents;
@@ -7,8 +8,7 @@ import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.GameClient;
 import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
-import com.pandaawake.gourdgame.player.OtherPlayer;
-import com.pandaawake.gourdgame.player.Player;
+import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Replayer;
 import com.pandaawake.gourdgame.render.RenderCommand;
 import com.pandaawake.gourdgame.scene.GameMap;
@@ -16,12 +16,10 @@ import com.pandaawake.gourdgame.scene.Level;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.scene.SceneTilesInitializer;
 import com.pandaawake.gourdgame.scene.updater.ClientSceneUpdater;
+import com.pandaawake.gourdgame.sprites.Calabash;
 import com.pandaawake.gourdgame.sprites.Snake;
 import com.pandaawake.gourdgame.sprites.Sprite;
 import com.pandaawake.gourdgame.utils.Direction;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ClientGameApp extends GameApp {
 
@@ -29,9 +27,11 @@ public class ClientGameApp extends GameApp {
     protected Scene scene;
     protected Level level;
     protected SceneTilesInitializer sceneTilesInitializer;
-    protected Set<Player> players;
-    protected OtherPlayer mainPlayer;
-    protected int mainPlayerId = -1;
+    protected HumanPlayer mainPlayer = null;
+    protected String mainPlayerName = "";
+    protected int mainPlayerSpriteId = -1;
+
+    protected int clientId = -1;
 
     protected Replayer replayer = null;
 
@@ -49,24 +49,37 @@ public class ClientGameApp extends GameApp {
         return scene;
     }
 
-    public OtherPlayer getMainPlayer() {
+    public HumanPlayer getMainPlayer() {
         return mainPlayer;
     }
 
-    public void setMainPlayer(OtherPlayer mainPlayer) {
+    public void setMainPlayer(HumanPlayer mainPlayer) {
         this.mainPlayer = mainPlayer;
     }
 
-    public Set<Player> getPlayers() {
-        return players;
+    public int getMainPlayerSpriteId() {
+        Log.app().error(this.getClass().getName() + ": Main player's sprite is not a calabash?!");
+        return mainPlayerSpriteId;
     }
 
-    public int getMainPlayerId() {
-        return mainPlayerId;
+    public String getMainPlayerName() {
+        return mainPlayerName;
     }
 
-    public void setMainPlayerId(int mainPlayerId) {
-        this.mainPlayerId = mainPlayerId;
+    public void setMainPlayerName(String mainPlayerName) {
+        this.mainPlayerName = mainPlayerName;
+    }
+
+    public void setMainPlayerSpriteId(int mainPlayerSpriteId) {
+        this.mainPlayerSpriteId = mainPlayerSpriteId;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
 
@@ -74,8 +87,7 @@ public class ClientGameApp extends GameApp {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
         scene = new Scene(gameMap, new ClientSceneUpdater());
         level = new Level(Config.level1TileMap, null, null);
-        sceneTilesInitializer = new SceneTilesInitializer(scene);
-        players = new HashSet<>();
+        //sceneTilesInitializer = new SceneTilesInitializer(scene);
         if (Config.ReplayMode) {
             replayer = new Replayer(this);
         }
@@ -92,8 +104,8 @@ public class ClientGameApp extends GameApp {
 
     protected void initializeMapTileAndLevel() {
         // ------ Initialize tiles ------
-        sceneTilesInitializer.initializeTiles(level);
-        scene.OnUpdate(0.0f);
+        //sceneTilesInitializer.initializeTiles(level);
+        //scene.OnUpdate(0.0f);
     }
 
     protected void initializeClient() {
@@ -107,10 +119,9 @@ public class ClientGameApp extends GameApp {
         gameMap.resetAll();
         scene.resetAll();
 
-        // Reset players
-        players.clear();
-
         mainPlayer = null;
+        mainPlayerSpriteId = -1;
+        mainPlayerName = "";
 
         initializeMapTileAndLevel();
     }
@@ -168,12 +179,20 @@ public class ClientGameApp extends GameApp {
             return;
         }
 
+        if (mainPlayerSpriteId != -1 && mainPlayer == null) {
+            for (Sprite sprite : scene.getSprites()) {
+                if (sprite.getId() == mainPlayerSpriteId) {
+                    mainPlayer = new HumanPlayer((Calabash) sprite, clientId, mainPlayerName);
+                    sprite.getCameraComponent().setRenderingCamera(true);
+                }
+            }
+        }
+
         checkGameEnds();
 
-        scene.OnUpdate(timestep);
-        for (Player player : players) {
-            player.OnUpdate(timestep);
-        }
+        //scene.OnUpdate(timestep);
+        scene.setEntities(scene.getSprites());
+        scene.getSceneUpdater().OnUpdate(timestep);
 
         if (replayer != null) {
             replayer.OnUpdate(timestep);
@@ -217,20 +236,18 @@ public class ClientGameApp extends GameApp {
             case KeyCodes.VK_J:
             case KeyCodes.VK_1:
                 if (mainPlayer.sprite.canSetBomb()) {
-                    gameClient.sendAction(new PlayerAction.SetBomb(-1, mainPlayerId));
+                    gameClient.sendAction(new PlayerAction.SetBomb(-1, mainPlayerSpriteId));
                 }
                 break;
             case KeyCodes.VK_SPACE:
             case KeyCodes.VK_0:
-                gameClient.sendAction(new PlayerAction.ExplodeBomb(-1, mainPlayerId));
+                gameClient.sendAction(new PlayerAction.ExplodeBomb(-1, mainPlayerSpriteId));
                 break;
             
         }
 
         if (direction != null) {
-            if (mainPlayer.sprite.canMove(direction)) {
-                gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerId, direction));
-            }
+            gameClient.sendAction(new PlayerAction.DoMove(-1, mainPlayerSpriteId, direction));
         }
     }
 

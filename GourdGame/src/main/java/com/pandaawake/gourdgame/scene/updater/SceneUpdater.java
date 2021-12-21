@@ -31,9 +31,10 @@ public abstract class SceneUpdater {
      */
     protected Set<Pair<Thing, ArrayList<Tile>>> thingsToAdd = new HashSet<>();
     protected Set<Thing> thingsToRemove = new HashSet<>();
-    protected Set<Thing> thingsToRepaint = new HashSet<>();
+    protected Set<Thing> thingsToUpdate = new HashSet<>();
     protected Set<Sprite> spritesToAdd = new HashSet<>();
     protected Set<Sprite> spritesToRemove = new HashSet<>();
+    protected Set<Sprite> spritesToUpdate = new HashSet<>();
     protected Set<IntPair> positionsToRepaint = new TreeSet<>();
 
     // ---------------------- Things ----------------------
@@ -63,9 +64,15 @@ public abstract class SceneUpdater {
         return addThing(thing, thing.getTiles());
     }
 
-    public boolean addRepaintThing(Thing thing) {
+    public boolean addUpdateThing(Thing thing) {
         synchronized (this) {
-            return thingsToRepaint.add(thing);
+            return thingsToUpdate.add(thing);
+        }
+    }
+
+    public boolean updateThings(Set<Thing> things) {
+        synchronized (this) {
+            return thingsToUpdate.addAll(things);
         }
     }
 
@@ -76,6 +83,18 @@ public abstract class SceneUpdater {
             }
             thingsToRemove.add(thing);
             return true;
+        }
+    }
+
+    public boolean removeThingById(int id) {
+        synchronized (this) {
+            for (Thing thing : scene.getThings()) {
+                if (thing.getId() == id) {
+                    thingsToRemove.add(thing);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -93,15 +112,36 @@ public abstract class SceneUpdater {
         }
     }
 
+    public boolean removeSpriteById(int id) {
+        synchronized (this) {
+            for (Sprite sprite : scene.getSprites()) {
+                if (sprite.getId() == id) {
+                    spritesToRemove.add(sprite);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+
+
+    public boolean updateSprites(Set<Sprite> sprites) {
+        synchronized (this) {
+            return spritesToUpdate.addAll(sprites);
+        }
+    }
+
 
     // ---------------------- Functions ----------------------
     public void resetAll() {
         synchronized (this) {
-            thingsToAdd.clear();
-            thingsToRemove.clear();
-            thingsToRepaint.clear();
             spritesToAdd.clear();
             spritesToRemove.clear();
+            spritesToUpdate.clear();
+            thingsToAdd.clear();
+            thingsToRemove.clear();
+            thingsToUpdate.clear();
             positionsToRepaint.clear();
         }
     }
@@ -118,42 +158,76 @@ public abstract class SceneUpdater {
 
     public void OnUpdate(float timestep) {
         synchronized (this) {
+            Set<Thing> addedThings = new HashSet<>();
+            Set<Thing> floors = new HashSet<>();
+
             for (Pair<Thing, ArrayList<Tile>> thingAndTiles : thingsToAdd) {
                 Thing thing = thingAndTiles.first;
                 ArrayList<Tile> tiles = thingAndTiles.second;
                 for (Tile tile : tiles) {
                     thing.addTile(tile);
                 }
-                scene.getThings().add(thing);
+                addedThings.add(thing);
             }
 
             for (Thing thing : thingsToRemove) {
                 for (Tile tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
-                    Floor floor = new Floor();
+                    Floor floor = new Floor(Scene.getNextThingId());
                     floor.addTile(tile);
-                    addThing(floor);
+                    floors.add(floor);
                 }
                 thing.getTiles().clear();
             }
 
-            for (Thing thing : thingsToRepaint) {
+            for (Thing thing : thingsToUpdate) {
                 for (Tile tile : thing.getTiles()) {
                     positionsToRepaint.add(new IntPair(tile.getxPos(), tile.getyPos()));
                 }
             }
 
+            scene.getThings().addAll(addedThings);
             scene.getThings().removeAll(thingsToRemove);
+            scene.getThings().addAll(floors);
             scene.getSprites().addAll(spritesToAdd);
             scene.getSprites().removeAll(spritesToRemove);
 
-            thingsToAdd.clear();
-            thingsToRemove.clear();
-            thingsToRepaint.clear();
+            for (Sprite sprite : spritesToUpdate) {
+                Sprite matchedSprite = null;
+                for (Sprite sceneSprite : scene.getSprites()) {
+                    if (sprite.getId() == sceneSprite.getId()) {
+                        matchedSprite = sceneSprite;
+                        break;
+                    }
+                }
+                if (matchedSprite != null) {
+                    matchedSprite.updateFromAnotherSprite(sprite);
+                }
+            }
+
+            for (Thing thing : thingsToUpdate) {
+                Thing matchedThing = null;
+                for (Thing sceneThing : scene.getThings()) {
+                    if (thing.getId() == sceneThing.getId()) {
+                        matchedThing = sceneThing;
+                        break;
+                    }
+                }
+                if (matchedThing != null) {
+                    matchedThing.updateFromAnotherThing(thing);
+                }
+            }
+
             spritesToAdd.clear();
             spritesToRemove.clear();
+            spritesToUpdate.clear();
+            thingsToAdd.clear();
+            thingsToRemove.clear();
+            thingsToUpdate.clear();
+
         }
     }
+
 
 
 }

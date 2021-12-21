@@ -23,18 +23,18 @@ public abstract class PlayerAction extends Action {
     public static final int EXTRA_INFO_DIRECTION_DOWN = 4;
 
     public Date time = null;
-    public int playerId;
+    public int spriteId;
 
-    public PlayerAction(int senderClientId, int playerId) {
+    public PlayerAction(int senderClientId, int spriteId) {
         super(senderClientId);
-        this.playerId = playerId;
+        this.spriteId = spriteId;
         time = new Date();
     }
 
     public byte[] toBytes() throws IOException {
-        // [playerId] [this.toBytes()]
+        // [spriteId] [this.toBytes()]
         // this.toBytes() = [type number (4)] [otherInfoNumbers (0 or 4)]
-        return DataUtils.intToBytes(playerId);
+        return DataUtils.intToBytes(spriteId);
     }
 
     public static PlayerAction parseBytes(int senderClientId, ByteArrayInputStream iStream) throws IOException {
@@ -43,7 +43,7 @@ public abstract class PlayerAction extends Action {
         if (iStream.read(fourBytes) != 4) {
             Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
         }
-        int playerId = DataUtils.bytesToInt(fourBytes);
+        int spriteId = DataUtils.bytesToInt(fourBytes);
         if (iStream.read(fourBytes) != 4) {
             Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
         }
@@ -51,7 +51,7 @@ public abstract class PlayerAction extends Action {
 
         switch (playerActionNumber) {
             case PLAYER_NO_ACTION:
-                return new NoAction(senderClientId, playerId);
+                return new NoAction(senderClientId, spriteId);
             case PLAYER_DO_MOVE:
                 if (iStream.read(fourBytes) != 4) {
                     Log.app().error("PlayerAction.parseBytes() : Illegal data format!");
@@ -73,13 +73,13 @@ public abstract class PlayerAction extends Action {
                         direction = Direction.down;
                         break;
                 }
-                return new DoMove(senderClientId, playerId, direction);
+                return new DoMove(senderClientId, spriteId, direction);
 
             case PLAYER_SET_BOMB:
-                return new SetBomb(senderClientId, playerId);
+                return new SetBomb(senderClientId, spriteId);
                 
             case PLAYER_EXPLODE_BOMB:
-                return new ExplodeBomb(senderClientId, playerId);
+                return new ExplodeBomb(senderClientId, spriteId);
         }
         return null;
     }
@@ -91,8 +91,8 @@ public abstract class PlayerAction extends Action {
             Log.app().error("Illegal params length!");
         }
 
-        // Player id
-        int playerId = Integer.parseInt(params[0]);
+        // Sprite id
+        int spriteId = Integer.parseInt(params[0]);
 
         // Action kind
         String actionKind = params[1];
@@ -101,7 +101,7 @@ public abstract class PlayerAction extends Action {
 
         switch (actionKind) {
             case "NoAction":
-                action = new PlayerAction.NoAction(playerId, playerId);
+                action = new PlayerAction.NoAction(-1, spriteId);
                 break;
             case "DoMove":
                 if (params.length != 3) {
@@ -123,20 +123,20 @@ public abstract class PlayerAction extends Action {
                         direction = Direction.down;
                         break;
                 }
-                action = new PlayerAction.DoMove(playerId, playerId, direction);
+                action = new PlayerAction.DoMove(-1, spriteId, direction);
                 break;
             case "ExplodeBomb":
-                action = new PlayerAction.ExplodeBomb(playerId, playerId);
+                action = new PlayerAction.ExplodeBomb(-1, spriteId);
                 break;
             case "SetBomb":
-                action = new PlayerAction.SetBomb(playerId, playerId);
+                action = new PlayerAction.SetBomb(-1, spriteId);
                 break;
             default:
                 Log.app().error("Illegal action kind!");
                 return null;
         }
 
-        action.playerId = playerId;
+        action.spriteId = spriteId;
         action.time = time;
 
         return action;
@@ -149,13 +149,13 @@ public abstract class PlayerAction extends Action {
 
     // Player Actions
     public static class NoAction extends PlayerAction {
-        public NoAction(int senderClientId, int playerId) {
-            super(senderClientId, playerId);
+        public NoAction(int senderClientId, int spriteId) {
+            super(senderClientId, spriteId);
         }
 
         @Override
         public String toString() {
-            return "" + playerId + " NoAction";
+            return "" + spriteId + " NoAction";
         }
 
         @Override
@@ -166,14 +166,14 @@ public abstract class PlayerAction extends Action {
 
     public static class DoMove extends PlayerAction {
         public Direction direction;
-        public DoMove(int senderClientId, int playerId, Direction direction) {
-            super(senderClientId, playerId);
+        public DoMove(int senderClientId, int spriteId, Direction direction) {
+            super(senderClientId, spriteId);
             this.direction = direction;
         }
 
         @Override
         public String toString() {
-            return "" + playerId + " DoMove " + direction.toString();
+            return "" + spriteId + " DoMove " + direction.toString();
         }
 
         @Override
@@ -200,13 +200,13 @@ public abstract class PlayerAction extends Action {
     }
 
     public static class SetBomb extends PlayerAction {
-        public SetBomb(int senderClientId, int playerId) {
-            super(senderClientId, playerId);
+        public SetBomb(int senderClientId, int spriteId) {
+            super(senderClientId, spriteId);
         }
 
         @Override
         public String toString() {
-            return "" + playerId + " SetBomb";
+            return "" + spriteId + " SetBomb";
         }
 
         @Override
@@ -216,13 +216,13 @@ public abstract class PlayerAction extends Action {
     }
 
     public static class ExplodeBomb extends PlayerAction {
-        public ExplodeBomb(int senderClientId, int playerId) {
-            super(senderClientId, playerId);
+        public ExplodeBomb(int senderClientId, int spriteId) {
+            super(senderClientId, spriteId);
         }
 
         @Override
         public String toString() {
-            return "" + playerId + " ExplodeBomb";
+            return "" + spriteId + " ExplodeBomb";
         }
 
         @Override

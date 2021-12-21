@@ -6,8 +6,8 @@ import com.pandaawake.gourdgame.scene.Scene;
 
 public class Snake extends PlayableSprite {
 
-    public Snake(Scene scene) {
-        super(Config.ComputerPlayerLives, Config.ComputerPlayerBombs, true, scene, Config.ComputerPlayerMovingSpeed, 1, 1);
+    public Snake(int id, Scene scene) {
+        super(id, Config.ComputerPlayerLives, Config.ComputerPlayerBombs, true, scene, Config.ComputerPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 9));
     }
 
@@ -27,7 +27,7 @@ public class Snake extends PlayableSprite {
     @Override
     public boolean setNewBomb() {
         if (canSetBomb()) {
-            Bomb bomb = new Bomb2(scene, this, posX, posY);
+            Bomb bomb = new Bomb2(Scene.getNextSpriteId(), scene, id, posX, posY);
             bombs.add(bomb);
             scene.getSceneUpdater().addSprite(bomb);
             return true;

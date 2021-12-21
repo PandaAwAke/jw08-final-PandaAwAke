@@ -8,8 +8,8 @@ import com.pandaawake.gourdgame.scene.Scene;
 
 public class Calabash extends PlayableSprite {
 
-    public Calabash(Scene scene) {
-        super(Config.HumanPlayerLives, Config.HumanPlayerBombs, true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
+    public Calabash(int id, Scene scene) {
+        super(id, Config.HumanPlayerLives, Config.HumanPlayerBombs, true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
         addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), false));
     }
@@ -46,7 +46,7 @@ public class Calabash extends PlayableSprite {
     @Override
     public boolean setNewBomb() {
         if (canSetBomb()) {
-            Bomb bomb = new Bomb(scene, this, posX, posY);
+            Bomb bomb = new Bomb(Scene.getNextSpriteId(), scene, id, posX, posY);
             bombs.add(bomb);
             scene.getSceneUpdater().addSprite(bomb);
             return true;

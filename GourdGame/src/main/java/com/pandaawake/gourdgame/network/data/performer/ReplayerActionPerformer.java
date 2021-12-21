@@ -1,14 +1,10 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
-import com.mandas.tiled2d.core.Log;
 import com.pandaawake.gourdgame.main.ClientGameApp;
 import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
-import com.pandaawake.gourdgame.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.pandaawake.gourdgame.network.data.action.SceneAction;
 
 public class ReplayerActionPerformer extends ActionPerformer {
 
@@ -44,35 +40,40 @@ public class ReplayerActionPerformer extends ActionPerformer {
 
     @Override
     protected void performAction(PlayerAction action) {
-        List<Player> matchedPlayers = new ArrayList<>();
-        for (Player player : app.getPlayers()) {
-            if (player.id == action.playerId) {
-                matchedPlayers.add(player);
-            }
-        }
+//        List<Player> matchedPlayers = new ArrayList<>();
+//        for (Player player : app.getPlayers()) {
+//            if (player.id == action.playerId) {
+//                matchedPlayers.add(player);
+//            }
+//        }
+//
+//        if (matchedPlayers.size() > 1) {
+//            Log.app().warn(getClass().getName() + ": Multiple players have the same id!");
+//        }
+//
+//        if (matchedPlayers.size() == 0) {
+//            Log.app().error(getClass().getName() + ": No player has id " + action.playerId + "!");
+//        }
+//
+//        Player matchedPlayer = matchedPlayers.get(0);
+//
+//        if (action instanceof PlayerAction.NoAction) {
+//            // Do nothing
+//        } else if (action instanceof PlayerAction.DoMove) {
+//            if (((PlayerAction.DoMove) action).direction == null) {
+//                Log.app().error("Null direction?!");
+//            }
+//            matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
+//        } else if (action instanceof PlayerAction.SetBomb) {
+//            matchedPlayer.setBomb();
+//        } else if (action instanceof PlayerAction.ExplodeBomb) {
+//            matchedPlayer.explodeBomb();
+//        }
+    }
 
-        if (matchedPlayers.size() > 1) {
-            Log.app().warn(getClass().getName() + ": Multiple players have the same id!");
-        }
+    @Override
+    protected void performAction(SceneAction action) {
 
-        if (matchedPlayers.size() == 0) {
-            Log.app().error(getClass().getName() + ": No player has id " + action.playerId + "!");
-        }
-
-        Player matchedPlayer = matchedPlayers.get(0);
-
-        if (action instanceof PlayerAction.NoAction) {
-            // Do nothing
-        } else if (action instanceof PlayerAction.DoMove) {
-            if (((PlayerAction.DoMove) action).direction == null) {
-                Log.app().error("Null direction?!");
-            }
-            matchedPlayer.doMove(((PlayerAction.DoMove) action).direction);
-        } else if (action instanceof PlayerAction.SetBomb) {
-            matchedPlayer.setBomb();
-        } else if (action instanceof PlayerAction.ExplodeBomb) {
-            matchedPlayer.explodeBomb();
-        }
     }
 
 }

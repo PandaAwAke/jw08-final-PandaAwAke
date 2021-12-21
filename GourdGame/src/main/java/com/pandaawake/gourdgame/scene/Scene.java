@@ -30,6 +30,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
         this.gameMap = gameMap;
         this.sceneUpdater = sceneUpdater;
         sceneUpdater.setScene(this);
+        setEntities(sprites);
     }
 
     public GameMap getGameMap() {
@@ -43,6 +44,15 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
     }
     public SceneUpdater getSceneUpdater() {
         return sceneUpdater;
+    }
+
+
+    private static int spriteId = 0, thingId = 0;
+    public static int getNextSpriteId() {
+        return spriteId++;
+    }
+    public static int getNextThingId() {
+        return thingId++;
     }
 
 
@@ -75,7 +85,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
             // Consider other sprites, get their collision boxes first
             Set<IntPair> unreachablePositions = new TreeSet<>();
             for (Sprite otherSprite : sprites) {
-                if (sprite == otherSprite) {
+                if (sprite.getId() == otherSprite.getId()) {
                     continue;
                 }
                 if (!otherSprite.isBlocking()) {
@@ -119,7 +129,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
             // Consider other sprites, get their collision boxes first
             Set<IntPair> unreachablePositions = new TreeSet<>();
             for (Sprite otherSprite : sprites) {
-                if (sprite == otherSprite) {
+                if (sprite.getId() == otherSprite.getId()) {
                     continue;
                 }
                 if (!otherSprite.isBlocking()) {
@@ -163,7 +173,7 @@ public class Scene extends com.mandas.tiled2d.scene.Scene {
 //                /*
 //                 * This will decide the sequence of rendering
 //                 */
-//                if (this == o) {
+//                if (this.getId() == o.getId()) {
 //                    return 0;
 //                }
 //

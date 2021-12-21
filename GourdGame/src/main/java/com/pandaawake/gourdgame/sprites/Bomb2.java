@@ -11,12 +11,12 @@ public class Bomb2 extends Bomb {
      * Bomb is a 3x3 destroyer!
      *
      * @param scene
-     * @param owner
+     * @param ownerId
      * @param posX
      * @param posY
      */
-    public Bomb2(Scene scene, HasBomb owner, float posX, float posY) {
-        super(scene, owner, posX, posY);
+    public Bomb2(int id, Scene scene, int ownerId, float posX, float posY) {
+        super(id, scene, ownerId, posX, posY);
         getTileTextureRenderComponent().getPositionsAndTextures().clear();
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 6));
     }

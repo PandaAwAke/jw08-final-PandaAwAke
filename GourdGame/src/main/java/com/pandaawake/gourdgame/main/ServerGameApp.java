@@ -4,22 +4,25 @@ import com.mandas.tiled2d.event.EventDispatcher;
 import com.mandas.tiled2d.event.KeyCodes;
 import com.mandas.tiled2d.event.KeyEvents;
 import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.Pair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.player.ComputerPlayer;
-import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
-import com.pandaawake.gourdgame.render.RenderCommand;
 import com.pandaawake.gourdgame.scene.GameMap;
 import com.pandaawake.gourdgame.scene.Level;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.scene.SceneTilesInitializer;
 import com.pandaawake.gourdgame.scene.updater.ServerSceneUpdater;
+import com.pandaawake.gourdgame.sprites.Calabash;
 import com.pandaawake.gourdgame.sprites.Snake;
+import com.pandaawake.gourdgame.sprites.Sprite;
 import com.pandaawake.gourdgame.utils.Direction;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ServerGameApp {
@@ -29,6 +32,12 @@ public class ServerGameApp {
     protected Level level;
     protected SceneTilesInitializer sceneTilesInitializer;
     protected Set<Player> players;
+
+    protected Map<Integer, Pair<Integer, String>> clientIdsAndSpriteIdsNames;
+
+    public Map<Integer, Pair<Integer, String>> getClientIdsAndSpriteIdsNames() {
+        return clientIdsAndSpriteIdsNames;
+    }
 
     protected GameServer gameServer;
 
@@ -60,11 +69,13 @@ public class ServerGameApp {
 
     public ServerGameApp() {
         gameMap = new GameMap(Config.MapWidth, Config.MapHeight);
-        scene = new Scene(gameMap, new ServerSceneUpdater());
+        gameServer = new GameServer(this);
+        scene = new Scene(gameMap, new ServerSceneUpdater(gameServer));
         level = new Level(Config.level1TileMap, Config.level1HumanPlayerPositions, Config.level1ComputerPlayerPositions);
         sceneTilesInitializer = new SceneTilesInitializer(scene);
+        clientIdsAndSpriteIdsNames = new HashMap<>();
         players = new HashSet<>();
-        gameServer = new GameServer(this);
+
 
         initializeEventDispatcher();
         initializeMapTileAndLevel();
@@ -87,12 +98,17 @@ public class ServerGameApp {
 //                return;
             } else if (e.getKeyCode() == KeyCodes.VK_F1) {
                 pause = false;
-                gameServer.sendAction(new GameAction.GameInitialize(-1, players));
+                for (int clientId : clientIdsAndSpriteIdsNames.keySet()) {
+                    gameServer.sendAction(
+                            new GameAction.GameInitialize(-1, clientIdsAndSpriteIdsNames.get(clientId).first, clientIdsAndSpriteIdsNames.get(clientId).second),
+                            clientId);
+                }
                 gameServer.sendAction(new GameAction.GameStart(-1));
-            } else if (e.getKeyCode() == KeyCodes.VK_F2) {
-                pause = true;
-                gameServer.sendAction(new GameAction.GameEnd(-1));
             }
+//            else if (e.getKeyCode() == KeyCodes.VK_F2) {
+//                pause = true;
+//                gameServer.sendAction(new GameAction.GameEnd(-1));
+//            }
             if (pause) {
                 return;
             }
@@ -107,7 +123,7 @@ public class ServerGameApp {
         String[] names = {"Alice", "Bob", "Tom", "Jerry"};
         int index = 0;
         for (IntPair position : level.computerPlayerPositions) {
-            Snake computerSnake = new Snake(scene);
+            Snake computerSnake = new Snake(Scene.getNextSpriteId(), scene);
             ComputerPlayer computerSnakePlayer = new ComputerPlayer(gameServer, computerSnake, Direction.down, index + 100, names[index++]);
             computerSnake.setPos(position.first, position.second);
             scene.getSceneUpdater().addSprite(computerSnake);
@@ -121,7 +137,6 @@ public class ServerGameApp {
     }
 
     public void resetAll() {
-        RenderCommand.clear();
         gameMap.resetAll();
         scene.resetAll();
 
@@ -134,20 +149,25 @@ public class ServerGameApp {
     protected void checkGameEnds() {
         boolean noHumanPlayers = true;
         boolean noComputerPlayers = true;
-        for (Player player : players) {
-            if (player instanceof HumanPlayer) {
+        if (scene.getSprites().size() == 0) {
+            return;
+        }
+        for (Sprite sprite : scene.getSprites()) {
+            if (sprite instanceof Calabash) {
                 noHumanPlayers = false;
-            } else {
+            } else if (sprite instanceof Snake) {
                 noComputerPlayers = false;
             }
         }
 
         if (noHumanPlayers) {
             // Game over
+            gameServer.sendAction(new GameAction.GameEnd(-1, false));
             pause = true;
 
         } else if (noComputerPlayers) {
             // Game over
+            gameServer.sendAction(new GameAction.GameEnd(-1, true));
             pause = true;
 
         }

@@ -1,16 +1,10 @@
 package com.pandaawake.gourdgame.network.data.action;
 
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.player.Player;
-import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 public abstract class GameAction extends Action {
 
@@ -46,45 +40,45 @@ public abstract class GameAction extends Action {
 
     public static class GameEnd extends GameAction {
 
-        public GameEnd(int senderClientId) {
+        public boolean humanWins = false;
+
+        public GameEnd(int senderClientId, boolean humanWins) {
             super(senderClientId);
+            this.humanWins = humanWins;
         }
 
     }
 
     public static class GameInitialize extends GameAction {
-        public Collection<Player> players;
-        public GameInitialize(int senderClientId, Collection<Player> players) {
+        public int spriteId;
+        public String playerName;
+
+        public GameInitialize(int senderClientId, int spriteId, String playerName) {
             super(senderClientId);
-            this.players = players;
+            this.spriteId = spriteId;
+            this.playerName = playerName;
         }
 
         public byte[] toBytes() throws IOException {
-            // [playerCount (4)] [player, player, ..., player]
-            // [player] = [playerBytesCount(4)] [playerBytes (playerBytesCount)]
-            return DataUtils.collectionToBytes(players);
+            return DataUtils.concatBytes(DataUtils.intToBytes(spriteId), DataUtils.addLengthHeader(playerName.getBytes()));
         }
 
-        public static GameInitialize parseBytes(int senderClientId, ByteArrayInputStream iStream, Scene scene) throws IOException {
-            Set<Player> players = new HashSet<>();
+        public static GameInitialize parseBytes(int senderClientId, ByteArrayInputStream iStream) throws IOException {
             byte[] fourBytes = new byte[4];
             if (iStream.read(fourBytes) != 4) {
                 Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
             }
-            int playerCount = DataUtils.bytesToInt(fourBytes);
-            for (int i = 0; i < playerCount; i++) {
-                if (iStream.read(fourBytes) != 4) {
-                    Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
-                }
-                int playerInfoBytesCount = DataUtils.bytesToInt(fourBytes);
-                byte[] playerInfoBytes = new byte[playerInfoBytesCount];
-                if (iStream.read(playerInfoBytes) != playerInfoBytesCount) {
-                    Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
-                }
-
-                players.add(Player.parseBytes(playerInfoBytes, scene));
+            int spriteId = DataUtils.bytesToInt(fourBytes);
+            if (iStream.read(fourBytes) != 4) {
+                Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
             }
-            return new GameInitialize(senderClientId, players);
+            int strBytesLen = DataUtils.bytesToInt(fourBytes);
+            byte[] strBytes = new byte[strBytesLen];
+            if (iStream.read(strBytes) != strBytesLen) {
+                Log.app().error("GameInitialize.parseBytes() : Illegal data format!");
+            }
+            String playerName = new String(strBytes);
+            return new GameInitialize(senderClientId, spriteId, playerName);
         }
     }
 

@@ -94,12 +94,11 @@ public class SocketServer {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
 
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-            int off = 0;
             int numRead = channel.read(buffer);
 
             while (numRead != 0 && numRead != -1) {
-                oStream.write(buffer.array(), off, numRead);
-                off += numRead;
+                oStream.write(buffer.array(), 0, numRead);
+                buffer.clear();
                 numRead = channel.read(buffer);
             }
 
@@ -115,16 +114,11 @@ public class SocketServer {
 
     void write(SocketChannel channel, byte[] data) throws IOException {
         synchronized (this) {
-            int numWrite = 0;
-            while (numWrite < data.length) {
-                ByteBuffer buffer = ByteBuffer.allocate(4096);
-                int writeLen = Math.min(4096, data.length - numWrite);
-                buffer.put(data, numWrite, writeLen);
-                numWrite += writeLen;
-                buffer.flip();
-                channel.write(buffer);
-                buffer.clear();
-            }
+            ByteBuffer buffer = ByteBuffer.allocate(data.length);
+            buffer.put(data, 0, data.length);
+            buffer.flip();
+            channel.write(buffer);
+            buffer.clear();
         }
     }
 

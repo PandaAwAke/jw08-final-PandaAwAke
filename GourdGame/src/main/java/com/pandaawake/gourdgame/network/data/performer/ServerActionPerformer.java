@@ -1,14 +1,17 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
 import com.mandas.tiled2d.core.Log;
+import com.mandas.tiled2d.utils.Pair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.main.ServerGameApp;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.action.SceneAction;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.Player;
+import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.Calabash;
 import com.pandaawake.gourdgame.utils.Direction;
 
@@ -38,8 +41,11 @@ public class ServerActionPerformer extends ActionPerformer {
         if (action instanceof ConnectionAction.ClientEnter) {
             Log.app().info("Client " + action.senderClientId + " Enter");
             // App: Allocate a Player for this client
-            Calabash humanCalabash = new Calabash(app.getScene());
-            humanCalabash.setPos(Config.playerPositions[action.senderClientId].first, Config.playerPositions[action.senderClientId].second);
+            int spriteId = Scene.getNextSpriteId();
+            app.getClientIdsAndSpriteIdsNames().put(action.senderClientId, new Pair<>(spriteId, Config.playerNames[action.senderClientId]));
+            Calabash humanCalabash = new Calabash(spriteId, app.getScene());
+            humanCalabash.setPos(Config.level1HumanPlayerPositions.get(action.senderClientId).first,
+                    Config.level1HumanPlayerPositions.get(action.senderClientId).second);
             app.getScene().getSceneUpdater().addSprite(humanCalabash);
             app.getPlayers().add(new HumanPlayer(humanCalabash, action.senderClientId, Config.playerNames[action.senderClientId]));
             gameServer.sendAction(new ConnectionAction.ClientSuccessfullyAccepted(-1, action.senderClientId), action.senderClientId);
@@ -55,7 +61,7 @@ public class ServerActionPerformer extends ActionPerformer {
     protected void performAction(PlayerAction action) {
         List<Player> matchedPlayers = new ArrayList<>();
         for (Player player : app.getPlayers()) {
-            if (player.id == action.playerId) {
+            if (player.sprite.getId() == action.spriteId) {
                 matchedPlayers.add(player);
             }
         }
@@ -64,6 +70,7 @@ public class ServerActionPerformer extends ActionPerformer {
             Log.app().error("No matched player?");
             return;
         }
+
         Player matchedPlayer = matchedPlayers.get(0);
 
         if (action instanceof PlayerAction.NoAction) {
@@ -74,28 +81,33 @@ public class ServerActionPerformer extends ActionPerformer {
                 Log.app().error("Null direction?!");
             }
             if (matchedPlayer.doMove(direction)) {
-                Log.app().trace("Server: Player " + action.playerId + " DoMove " + direction.toString());
-                Log.file().trace(app.getPlayerById(action.playerId).name + " DoMove " + direction.toString());
-                gameServer.sendAction(action);
+                Log.app().trace("Server: Player " + matchedPlayer.id + " DoMove " + direction.toString());
+                Log.file().trace(matchedPlayer.name + " DoMove " + direction.toString());
+                //gameServer.sendAction(action);
             }
         } else if (action instanceof PlayerAction.SetBomb) {
             if (matchedPlayer.canSetBomb()) {
                 matchedPlayer.setBomb();
-                Log.app().trace("Server: Player " + action.playerId + " SetBomb");
-                Log.file().trace(app.getPlayerById(action.playerId).name + " SetBomb");
-                gameServer.sendAction(action);
+                Log.app().trace("Server: Player " + matchedPlayer.id + " SetBomb");
+                Log.file().trace(matchedPlayer.name + " SetBomb");
+                //gameServer.sendAction(action);
             }
         } else if (action instanceof PlayerAction.ExplodeBomb) {
             if (matchedPlayer.explodeBomb()) {
-                Log.app().trace("Server: Player " + action.playerId + " ExplodeBomb");
-                Log.file().trace(app.getPlayerById(action.playerId).name + " ExplodeBomb");
-                gameServer.sendAction(action);
+                Log.app().trace("Server: Player " + matchedPlayer.id + " ExplodeBomb");
+                Log.file().trace(matchedPlayer.name + " ExplodeBomb");
+                //gameServer.sendAction(action);
             }
         } else {
             Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
         }
 
 
+    }
+
+    @Override
+    protected void performAction(SceneAction action) {
+        Log.app().error(getClass().getName() + ": Null action or illegal/unsupported action!");
     }
 
 }

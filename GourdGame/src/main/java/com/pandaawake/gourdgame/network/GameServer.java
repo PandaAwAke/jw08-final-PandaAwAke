@@ -9,9 +9,7 @@ import com.pandaawake.gourdgame.network.data.performer.ServerActionPerformer;
 import com.pandaawake.gourdgame.network.data.socket.SocketServer;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 
 public class GameServer {
@@ -27,8 +25,8 @@ public class GameServer {
     }
 
     private final SocketServer socketServer;
-    private ServerDataProcessor dataProcessor;
-    private ServerActionPerformer actionPerformer;
+    private final ServerDataProcessor dataProcessor;
+    private final ServerActionPerformer actionPerformer;
 
     public GameServer(ServerGameApp app) {
         socketServer = new SocketServer();
@@ -37,21 +35,13 @@ public class GameServer {
         actionPerformer.setGameServer(this);
     }
 
-    public Set<Integer> getClientIds() {
-        synchronized (this) {
-            return socketServer.getClientIds();
-        }
-    }
-
     public void sendAction(Action action) {
-        synchronized (this) {
-            try {
-                byte[] data = dataProcessor.actionToData(action);
-                socketServer.addDataToWrite(data);
-            } catch (IOException e) {
-                Log.app().error(getClass().getName() + ": IOException when sendAction!");
-                e.printStackTrace();
-            }
+        try {
+            byte[] data = dataProcessor.actionToData(action);
+            socketServer.addDataToWrite(data);
+        } catch (IOException e) {
+            Log.app().error(getClass().getName() + ": IOException when sendAction!");
+            e.printStackTrace();
         }
     }
 
@@ -68,14 +58,12 @@ public class GameServer {
     // }
 
     public void sendAction(Action action, int targetId) {
-        synchronized (this) {
-            try {
-                byte[] data = dataProcessor.actionToData(action);
-                socketServer.addDataToWrite(data, targetId);
-            } catch (IOException e) {
-                Log.app().error(getClass().getName() + ": IOException when sendAction!");
-                e.printStackTrace();
-            }
+        try {
+            byte[] data = dataProcessor.actionToData(action);
+            socketServer.addDataToWrite(data, targetId);
+        } catch (IOException e) {
+            Log.app().error(getClass().getName() + ": IOException when sendAction!");
+            e.printStackTrace();
         }
     }
 
@@ -86,14 +74,12 @@ public class GameServer {
 
 
     void run() {
-        synchronized (this) {
-            socketServer.run();
-            while (socketServer.hasDataToHandle()) {
-                Pair<Integer, byte[]> data = socketServer.pollDataToHandle();
-                List<Action> actions = dataProcessor.dataToActions(data.first, data.second);
-                for (Action action : actions) {
-                    actionPerformer.performAction(action);
-                }
+        socketServer.run();
+        while (socketServer.hasDataToHandle()) {
+            Pair<Integer, byte[]> data = socketServer.pollDataToHandle();
+            List<Action> actions = dataProcessor.dataToActions(data.first, data.second);
+            for (Action action : actions) {
+                actionPerformer.performAction(action);
             }
         }
     }

@@ -1,10 +1,7 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.network.data.action.Action;
-import com.pandaawake.gourdgame.network.data.action.ConnectionAction;
-import com.pandaawake.gourdgame.network.data.action.GameAction;
-import com.pandaawake.gourdgame.network.data.action.PlayerAction;
+import com.pandaawake.gourdgame.network.data.action.*;
 
 public abstract class ActionPerformer {
     
@@ -15,6 +12,8 @@ public abstract class ActionPerformer {
             performAction((ConnectionAction) action);
         } else if (action instanceof PlayerAction) {
             performAction((PlayerAction) action);
+        } else if (action instanceof SceneAction) {
+            performAction((SceneAction) action);
         } else {
             Log.app().error(getClass().getName() + ": Null action or unsupported action!");
         }
@@ -23,5 +22,6 @@ public abstract class ActionPerformer {
     abstract protected void performAction(GameAction action);
     abstract protected void performAction(ConnectionAction action);
     abstract protected void performAction(PlayerAction action);
+    abstract protected void performAction(SceneAction action);
 
 }

@@ -1,8 +1,15 @@
 package com.pandaawake.gourdgame.tiles;
 
 import com.mandas.tiled2d.utils.IntPair;
+import com.pandaawake.gourdgame.scene.Scene;
+import com.pandaawake.gourdgame.utils.DataUtils;
+import com.pandaawake.gourdgame.utils.ToBytes;
 
-public class Tile {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+public class Tile implements ToBytes {
 
     private Thing thing;
     private int xPos;
@@ -48,4 +55,21 @@ public class Tile {
         return thing;
     }
 
+    @Override
+    public byte[] toBytes() throws IOException {
+        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+        oStream.write(DataUtils.intToBytes(xPos));
+        oStream.write(DataUtils.intToBytes(yPos));
+        return oStream.toByteArray();
+    }
+
+    public static Tile parseBytes(byte[] data, Scene scene) throws IOException {
+        ByteArrayInputStream iStream = new ByteArrayInputStream(data);
+
+        byte[] fourBytes = new byte[4];
+        iStream.read(fourBytes); int xPos = DataUtils.bytesToInt(fourBytes);
+        iStream.read(fourBytes); int yPos = DataUtils.bytesToInt(fourBytes);
+
+        return scene.getGameMap().getTile(xPos, yPos);
+    }
 }
