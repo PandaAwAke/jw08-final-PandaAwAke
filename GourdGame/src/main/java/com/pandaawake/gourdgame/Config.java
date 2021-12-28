@@ -1,9 +1,7 @@
 package com.pandaawake.gourdgame;
 
-import com.mandas.tiled2d.utils.IntPair;
 import com.mandas.tiled2d.utils.TileFileParser;
-
-import java.util.ArrayList;
+import com.pandaawake.gourdgame.scene.Level;
 
 public class Config {
     // Core settings
@@ -40,41 +38,7 @@ public class Config {
      * 3: Tree
      * 4: TwiceBreakableWall
      */
-    public static final String[] level1TileMap = {
-            "22222222222222222222",
-            "11133321113111211111",
-            "11211222211222211211",
-            "11241111111111114211",
-            "11221122213222112211",
-            "11133112311133211333",
-            "11211121144432112211",
-            "22113344411311122111",
-            "11211123444322112211",
-            "11113331131221133311",
-            "12221122212221112231",
-            "32111111111111111123",
-            "22142322211222224211",
-            "11113211113322113111",
-            "22222222222222222222"
-    };
-    public static final ArrayList<IntPair> level1HumanPlayerPositions = new ArrayList<>();
-    public static final ArrayList<IntPair> level1ComputerPlayerPositions = new ArrayList<>();
-
-    static {
-        level1HumanPlayerPositions.add(new IntPair(0, 1));
-        level1HumanPlayerPositions.add(new IntPair(4, 8));
-        level1HumanPlayerPositions.add(new IntPair(7, 11));
-        level1HumanPlayerPositions.add(new IntPair(11, 11));
-
-        level1ComputerPlayerPositions.add(new IntPair(0, 13));
-        level1ComputerPlayerPositions.add(new IntPair(19, 13));
-        level1ComputerPlayerPositions.add(new IntPair(19, 1));
-        level1ComputerPlayerPositions.add(new IntPair(9, 3));
-    }
-
-    // Player settings
-    public static final String[] playerNames = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
-
+    public static final Level level = new Level("src/main/resources/level.txt");
 
     // Game settings
     //      - AI settings
