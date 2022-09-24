@@ -6,7 +6,7 @@ import com.pandaawake.gourdgame.scene.Level;
 public class Config {
     // Core settings
     public static final String Version = "v2.0";
-    public static final String WindowTitle = "葫芦娃泡泡堂 By MYS, Java Hw05 " + Version;
+    public static final String WindowTitle = "葫芦娃泡泡堂 By MYS - " + Version;
 
     public static final boolean ReplayMode = false; // Replay a play by log file
     public static final boolean ServerMode = true; // Open a server
