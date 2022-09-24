@@ -1,3 +1,5 @@
+// ICSTP Assignment 1: Code Review
+
 package com.pandaawake.gourdgame.sprites;
 
 import com.mandas.tiled2d.core.Log;
