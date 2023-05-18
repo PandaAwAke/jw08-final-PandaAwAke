@@ -1,11 +1,11 @@
-package com.pandaawake.gourdgame.main;
+package com.pandaawake.gourdgame.main.replay;
 
 import com.mandas.tiled2d.utils.pair.IntPair;
 import com.pandaawake.gourdgame.Config;
+import com.pandaawake.gourdgame.main.GameApp;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.OtherPlayer;
 import com.pandaawake.gourdgame.player.Player;
-import com.pandaawake.gourdgame.player.Replayer;
 import com.pandaawake.gourdgame.render.RenderCommand;
 import com.pandaawake.gourdgame.scene.GameMap;
 import com.pandaawake.gourdgame.scene.Scene;

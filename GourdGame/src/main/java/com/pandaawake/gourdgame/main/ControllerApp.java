@@ -4,6 +4,7 @@ import com.mandas.tiled2d.core.GameApplication;
 import com.mandas.tiled2d.event.EventDispatcher;
 import com.mandas.tiled2d.event.events.WindowEvents;
 import com.pandaawake.gourdgame.Config;
+import com.pandaawake.gourdgame.main.replay.ReplayerApp;
 
 public class ControllerApp implements GameApplication {
 

@@ -1,8 +1,8 @@
-package com.pandaawake.gourdgame.player;
+package com.pandaawake.gourdgame.main.replay;
 
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.core.Log;
-import com.pandaawake.gourdgame.main.ReplayerApp;
+import com.pandaawake.gourdgame.main.replay.ReplayerApp;
 import com.pandaawake.gourdgame.network.data.action.Action;
 import com.pandaawake.gourdgame.network.data.action.GameAction;
 import com.pandaawake.gourdgame.network.data.action.PlayerAction;
