@@ -14,11 +14,25 @@ import java.util.List;
 
 public class ClientActionPerformer extends ActionPerformer {
 
+    private static ClientActionPerformer singleton = null;
+    private static ClientGameApp staticApp = null;
+    public static synchronized void initApp(ClientGameApp app) {
+        ClientActionPerformer.staticApp = app;
+    }
+    public static synchronized ClientActionPerformer getInstance() {
+        if (singleton == null && staticApp != null) {
+            singleton = new ClientActionPerformer(staticApp);
+        }
+        return singleton;
+    }
+
+
+
     private ClientGameApp app;
     private GameClient gameClient;
     private final List<Action> actionsRemaining;
 
-    public ClientActionPerformer(ClientGameApp app) {
+    private ClientActionPerformer(ClientGameApp app) {
         this.app = app;
         actionsRemaining = new ArrayList<>();
     }

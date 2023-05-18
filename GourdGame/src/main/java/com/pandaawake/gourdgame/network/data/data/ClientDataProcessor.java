@@ -13,9 +13,22 @@ import java.util.List;
 
 public class ClientDataProcessor extends DataProcessor {
 
+    private static ClientDataProcessor singleton = null;
+    private static Scene staticScene = null;
+    public static synchronized void initScene(Scene scene) {
+        ClientDataProcessor.staticScene = scene;
+    }
+    public static synchronized ClientDataProcessor getInstance() {
+        if (singleton == null && staticScene != null) {
+            singleton = new ClientDataProcessor(staticScene);
+        }
+        return singleton;
+    }
+
+
     private final Scene scene;
 
-    public ClientDataProcessor(Scene scene) {
+    private ClientDataProcessor(Scene scene) {
         this.scene = scene;
     }
 

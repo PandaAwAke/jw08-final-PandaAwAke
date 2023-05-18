@@ -30,8 +30,13 @@ public class GameClient {
 
     public GameClient(ClientGameApp app) {
         socketClient = new SocketClient();
-        dataProcessor = new ClientDataProcessor(app.getScene());
-        actionPerformer = new ClientActionPerformer(app);
+
+        ClientDataProcessor.initScene(app.getScene());
+        dataProcessor = ClientDataProcessor.getInstance();
+
+        ClientActionPerformer.initApp(app);
+        actionPerformer = ClientActionPerformer.getInstance();
+
         actionPerformer.setGameClient(this);
     }
 

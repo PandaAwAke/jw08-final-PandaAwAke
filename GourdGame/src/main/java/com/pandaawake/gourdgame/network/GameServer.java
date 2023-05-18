@@ -34,8 +34,12 @@ public class GameServer {
 
     public GameServer(ServerGameApp app) {
         socketServer = new SocketServer();
-        dataProcessor = new ServerDataProcessor();
-        actionPerformer = new ServerActionPerformer(app);
+
+        dataProcessor = ServerDataProcessor.getInstance();
+
+        ServerActionPerformer.initApp(app);
+        actionPerformer = ServerActionPerformer.getInstance();
+
         actionPerformer.setGameServer(this);
     }
 

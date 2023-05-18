@@ -11,9 +11,15 @@ import java.util.List;
 
 public class ServerDataProcessor extends DataProcessor {
 
-    public ServerDataProcessor() {
-        
+    private static ServerDataProcessor singleton = null;
+    public static synchronized ServerDataProcessor getInstance() {
+        if (singleton == null) {
+            singleton = new ServerDataProcessor();
+        }
+        return singleton;
     }
+
+    private ServerDataProcessor() {}
 
     // ---------------------- Describes which data to handle ----------------------
     @Override

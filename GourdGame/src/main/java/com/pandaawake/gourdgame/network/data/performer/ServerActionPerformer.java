@@ -20,10 +20,23 @@ import java.util.List;
 
 public class ServerActionPerformer extends ActionPerformer {
 
+    private static ServerActionPerformer singleton = null;
+    private static ServerGameApp staticApp = null;
+    public static synchronized void initApp(ServerGameApp app) {
+        ServerActionPerformer.staticApp = app;
+    }
+    public static synchronized ServerActionPerformer getInstance() {
+        if (singleton == null && staticApp != null) {
+            singleton = new ServerActionPerformer(staticApp);
+        }
+        return singleton;
+    }
+
+
     private ServerGameApp app;
     private GameServer gameServer = null;
 
-    public ServerActionPerformer(ServerGameApp app) {
+    private ServerActionPerformer(ServerGameApp app) {
         this.app = app;
     }
 
