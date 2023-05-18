@@ -29,7 +29,7 @@ public class TileTextureRenderComponent implements Component {
      */
     private ArrayList<Pair<FloatPair, Texture>> positionsAndTextures;
 
-    public TileTextureRenderComponent() {
+    TileTextureRenderComponent() {
         positionsAndTextures = new ArrayList<>();
     }
 

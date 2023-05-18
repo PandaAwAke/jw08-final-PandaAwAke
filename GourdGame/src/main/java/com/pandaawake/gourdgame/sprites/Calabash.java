@@ -2,6 +2,7 @@ package com.pandaawake.gourdgame.sprites;
 
 import com.mandas.tiled2d.renderer.Camera;
 import com.mandas.tiled2d.scene.component.CameraComponent;
+import com.mandas.tiled2d.scene.component.ComponentFactory;
 import com.mandas.tiled2d.utils.pair.FloatPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
@@ -11,7 +12,8 @@ public class Calabash extends PlayableSprite {
     public Calabash(int id, Scene scene) {
         super(id, Config.HumanPlayerLives, Config.HumanPlayerBombs, true, scene, Config.HumanPlayerMovingSpeed, 1, 1);
         getTileTextureRenderComponent().addPositionAndTexture(new FloatPair(0, 0), Config.TileParser.getTile(6, 8));
-        addComponent(new CameraComponent(new Camera(Config.RenderWidth, Config.RenderHeight), false));
+        addComponent(ComponentFactory.createComponent(CameraComponent.class,
+                new Camera(Config.RenderWidth, Config.RenderHeight), false));
     }
 
     @Override

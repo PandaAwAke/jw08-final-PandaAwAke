@@ -14,8 +14,7 @@ public class TransformComponent implements Component {
     private double translationX = 0.0, translationY = 0.0;
     private double scaleX = 1.0, scaleY = 1.0;
 
-    public TransformComponent() {
-    }
+    TransformComponent() {}
 
     // Disabled now
 //    private void setRotation(double rotation) {

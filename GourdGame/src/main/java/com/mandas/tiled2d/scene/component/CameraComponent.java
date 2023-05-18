@@ -12,7 +12,7 @@ public class CameraComponent implements Component {
     private final Camera camera;
     private boolean renderingCamera = false;
 
-    public CameraComponent(Camera camera, boolean renderingCamera) {
+    CameraComponent(Camera camera, boolean renderingCamera) {
         this.camera = camera;
         this.renderingCamera = renderingCamera;
     }

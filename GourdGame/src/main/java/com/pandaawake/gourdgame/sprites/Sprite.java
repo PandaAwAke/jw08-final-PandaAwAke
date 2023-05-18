@@ -4,6 +4,7 @@ package com.pandaawake.gourdgame.sprites;
 
 import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.scene.Entity;
+import com.mandas.tiled2d.scene.component.ComponentFactory;
 import com.mandas.tiled2d.scene.component.TileTextureRenderComponent;
 import com.mandas.tiled2d.scene.component.TransformComponent;
 import com.mandas.tiled2d.utils.pair.FloatPair;
@@ -53,8 +54,8 @@ public abstract class Sprite extends Entity implements ToBytes {
         //this.tileTextures = new TileTextures();
 
         // Components
-        this.addComponent(new TileTextureRenderComponent());
-        this.addComponent(new TransformComponent());
+        this.addComponent(ComponentFactory.createComponent(TileTextureRenderComponent.class));
+        this.addComponent(ComponentFactory.createComponent(TransformComponent.class));
     }
 
     public Sprite(int id, boolean blocking, Scene scene, int spriteWidth, int spriteHeight) {
