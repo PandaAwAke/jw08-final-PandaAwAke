@@ -1,6 +1,6 @@
 package com.pandaawake.gourdgame.main;
 
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.player.HumanPlayer;
 import com.pandaawake.gourdgame.player.OtherPlayer;

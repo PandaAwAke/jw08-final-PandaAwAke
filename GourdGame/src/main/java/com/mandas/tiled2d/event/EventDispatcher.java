@@ -1,5 +1,9 @@
 package com.mandas.tiled2d.event;
 
+import com.mandas.tiled2d.event.events.KeyEvents;
+import com.mandas.tiled2d.event.events.MouseEvents;
+import com.mandas.tiled2d.event.events.WindowEvents;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

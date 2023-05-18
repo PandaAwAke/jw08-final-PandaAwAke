@@ -1,4 +1,6 @@
-package com.mandas.tiled2d.event;
+package com.mandas.tiled2d.event.events;
+
+import com.mandas.tiled2d.event.MandasKeyEvent;
 
 import java.awt.event.KeyEvent;
 

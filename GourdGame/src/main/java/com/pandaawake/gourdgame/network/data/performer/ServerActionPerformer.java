@@ -1,7 +1,7 @@
 package com.pandaawake.gourdgame.network.data.performer;
 
 import com.mandas.tiled2d.core.Log;
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.utils.pair.Pair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.main.ServerGameApp;
 import com.pandaawake.gourdgame.network.GameServer;

@@ -1,11 +1,11 @@
 package com.pandaawake.gourdgame.sprites;
 
 import com.mandas.tiled2d.core.Log;
-import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.utils.pair.FloatPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.tiles.Thing;
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 import com.pandaawake.gourdgame.utils.DataUtils;
 
 import java.io.ByteArrayOutputStream;

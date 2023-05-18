@@ -8,6 +8,9 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseWheelEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseWheelListener;
 import com.mandas.tiled2d.core.Log;
+import com.mandas.tiled2d.event.events.KeyEvents;
+import com.mandas.tiled2d.event.events.MouseEvents;
+import com.mandas.tiled2d.event.events.WindowEvents;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -30,7 +33,7 @@ public class EventHandler implements
 
             
         }
-        //GlobalScreen.addNativeKeyListener(this);
+//        GlobalScreen.addNativeKeyListener(this);  // Key Listener is in MainWindow
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
         GlobalScreen.addNativeMouseWheelListener(this);

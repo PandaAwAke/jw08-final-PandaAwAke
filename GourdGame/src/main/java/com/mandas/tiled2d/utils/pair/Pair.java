@@ -1,4 +1,4 @@
-package com.mandas.tiled2d.utils;
+package com.mandas.tiled2d.utils.pair;
 
 public class Pair<A, B> {
     public A first;

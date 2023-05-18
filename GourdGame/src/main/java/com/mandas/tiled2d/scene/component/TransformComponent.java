@@ -1,4 +1,6 @@
-package com.mandas.tiled2d.scene;
+package com.mandas.tiled2d.scene.component;
+
+import com.mandas.tiled2d.scene.component.Component;
 
 public class TransformComponent implements Component {
 

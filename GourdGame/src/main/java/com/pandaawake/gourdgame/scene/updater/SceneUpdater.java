@@ -1,7 +1,7 @@
 package com.pandaawake.gourdgame.scene.updater;
 
-import com.mandas.tiled2d.utils.IntPair;
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.utils.pair.IntPair;
+import com.mandas.tiled2d.utils.pair.Pair;
 import com.pandaawake.gourdgame.render.RenderCommand;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.sprites.Sprite;

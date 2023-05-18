@@ -1,6 +1,6 @@
 package com.mandas.tiled2d.renderer;
 
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

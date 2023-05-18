@@ -8,7 +8,7 @@ import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.GameMap;
 import com.pandaawake.gourdgame.tiles.Thing;
 import com.pandaawake.gourdgame.tiles.Tile;
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 
 import java.util.Set;
 

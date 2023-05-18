@@ -1,8 +1,8 @@
 package com.pandaawake.gourdgame.sprites;
 
 import com.mandas.tiled2d.renderer.Camera;
-import com.mandas.tiled2d.scene.CameraComponent;
-import com.mandas.tiled2d.utils.FloatPair;
+import com.mandas.tiled2d.scene.component.CameraComponent;
+import com.mandas.tiled2d.utils.pair.FloatPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 

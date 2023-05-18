@@ -2,9 +2,12 @@ package com.mandas.tiled2d.renderer;
 
 import com.mandas.tiled2d.Config;
 import com.mandas.tiled2d.scene.*;
-import com.mandas.tiled2d.utils.FloatPair;
-import com.mandas.tiled2d.utils.IntPair;
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.scene.component.CameraComponent;
+import com.mandas.tiled2d.scene.component.TileTextureRenderComponent;
+import com.mandas.tiled2d.scene.component.TransformComponent;
+import com.mandas.tiled2d.utils.pair.FloatPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
+import com.mandas.tiled2d.utils.pair.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

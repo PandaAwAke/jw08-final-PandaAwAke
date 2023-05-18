@@ -4,8 +4,8 @@ import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.scene.Scene;
 import com.pandaawake.gourdgame.utils.DataUtils;
 import com.pandaawake.gourdgame.utils.Direction;
-import com.mandas.tiled2d.utils.FloatPair;
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.FloatPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

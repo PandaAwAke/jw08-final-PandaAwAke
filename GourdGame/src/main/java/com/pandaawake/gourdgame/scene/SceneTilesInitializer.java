@@ -1,6 +1,6 @@
 package com.pandaawake.gourdgame.scene;
 
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.sprites.MovableSprite;
 import com.pandaawake.gourdgame.tiles.*;

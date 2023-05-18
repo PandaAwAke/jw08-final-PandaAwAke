@@ -1,7 +1,7 @@
 package com.pandaawake.gourdgame.scene;
 
 import com.mandas.tiled2d.core.Log;
-import com.mandas.tiled2d.utils.IntPair;
+import com.mandas.tiled2d.utils.pair.IntPair;
 
 import java.io.*;
 import java.util.ArrayList;

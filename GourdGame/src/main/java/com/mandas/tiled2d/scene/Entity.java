@@ -1,5 +1,10 @@
 package com.mandas.tiled2d.scene;
 
+import com.mandas.tiled2d.scene.component.CameraComponent;
+import com.mandas.tiled2d.scene.component.Component;
+import com.mandas.tiled2d.scene.component.TileTextureRenderComponent;
+import com.mandas.tiled2d.scene.component.TransformComponent;
+
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,6 +1,6 @@
 package com.pandaawake.gourdgame.scene.updater;
 
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.utils.pair.Pair;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.SceneAction;
 import com.pandaawake.gourdgame.scene.Scene;

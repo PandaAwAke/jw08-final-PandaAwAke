@@ -2,10 +2,10 @@ package com.pandaawake.gourdgame.main;
 
 import com.mandas.tiled2d.core.Log;
 import com.mandas.tiled2d.event.EventDispatcher;
-import com.mandas.tiled2d.event.KeyCodes;
-import com.mandas.tiled2d.event.KeyEvents;
-import com.mandas.tiled2d.utils.IntPair;
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.event.codes.KeyCodes;
+import com.mandas.tiled2d.event.events.KeyEvents;
+import com.mandas.tiled2d.utils.pair.IntPair;
+import com.mandas.tiled2d.utils.pair.Pair;
 import com.pandaawake.gourdgame.Config;
 import com.pandaawake.gourdgame.network.GameServer;
 import com.pandaawake.gourdgame.network.data.action.GameAction;

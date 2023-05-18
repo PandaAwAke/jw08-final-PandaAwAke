@@ -1,8 +1,9 @@
-package com.mandas.tiled2d.scene;
+package com.mandas.tiled2d.scene.component;
 
 import com.mandas.tiled2d.renderer.Texture;
-import com.mandas.tiled2d.utils.FloatPair;
-import com.mandas.tiled2d.utils.Pair;
+import com.mandas.tiled2d.scene.component.Component;
+import com.mandas.tiled2d.utils.pair.FloatPair;
+import com.mandas.tiled2d.utils.pair.Pair;
 
 import java.util.ArrayList;
 

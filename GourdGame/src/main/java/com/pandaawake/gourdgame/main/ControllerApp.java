@@ -2,7 +2,7 @@ package com.pandaawake.gourdgame.main;
 
 import com.mandas.tiled2d.core.GameApplication;
 import com.mandas.tiled2d.event.EventDispatcher;
-import com.mandas.tiled2d.event.WindowEvents;
+import com.mandas.tiled2d.event.events.WindowEvents;
 import com.pandaawake.gourdgame.Config;
 
 public class ControllerApp implements GameApplication {

@@ -1,4 +1,4 @@
-package com.mandas.tiled2d.event;
+package com.mandas.tiled2d.event.codes;
 
 public class KeyCodes {
     // Copied from KeyEvent.class
