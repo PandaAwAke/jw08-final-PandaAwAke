@@ -201,7 +201,7 @@ public class SceneUpdater {
                     }
                 }
                 if (matchedSprite != null) {
-                    matchedSprite.updateFromAnotherSprite(sprite);
+                    matchedSprite.reload(sprite);
                 }
             }
 

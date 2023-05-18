@@ -55,9 +55,12 @@ public abstract class PlayableSprite extends MovableSprite {
 
 
     @Override
-    public void updateFromAnotherSprite(Sprite sprite) {
-        super.updateFromAnotherSprite(sprite);
-        this.lives = ((PlayableSprite) sprite).lives;
+    public void reload(Reloadable reloadable) {
+        assert reloadable instanceof PlayableSprite;
+        PlayableSprite sprite = (PlayableSprite) reloadable;
+
+        super.reload(sprite);
+        this.lives = sprite.lives;
     }
 
 }

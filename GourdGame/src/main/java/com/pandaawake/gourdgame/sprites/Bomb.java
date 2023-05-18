@@ -128,12 +128,15 @@ public class Bomb extends Sprite {
     }
 
     @Override
-    public void updateFromAnotherSprite(Sprite sprite) {
-        super.updateFromAnotherSprite(sprite);
-        this.elapsedTime = ((Bomb) sprite).elapsedTime;
-        this.ownerId = ((Bomb) sprite).ownerId;
-        this.explodeImmediately = ((Bomb) sprite).explodeImmediately;
-        this.exploded = ((Bomb) sprite).exploded;
+    public void reload(Reloadable reloadable) {
+        assert reloadable instanceof Bomb;
+        Bomb sprite = (Bomb) reloadable;
+
+        super.reload(sprite);
+        this.elapsedTime = sprite.elapsedTime;
+        this.ownerId = sprite.ownerId;
+        this.explodeImmediately = sprite.explodeImmediately;
+        this.exploded = sprite.exploded;
     }
 
 }

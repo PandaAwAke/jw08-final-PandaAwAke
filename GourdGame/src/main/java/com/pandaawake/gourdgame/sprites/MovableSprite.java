@@ -236,14 +236,17 @@ public abstract class MovableSprite extends Sprite {
     }
 
     @Override
-    public void updateFromAnotherSprite(Sprite sprite) {
-        super.updateFromAnotherSprite(sprite);
-        this.movingSpeed = ((MovableSprite) sprite).movingSpeed;
-        this.targetDeltaPos.first = ((MovableSprite) sprite).targetDeltaPos.first;
-        this.targetDeltaPos.second = ((MovableSprite) sprite).targetDeltaPos.second;
-        this.targetPos.first = ((MovableSprite) sprite).targetPos.first;
-        this.targetPos.second = ((MovableSprite) sprite).targetPos.second;
-        this.movingTime = ((MovableSprite) sprite).movingTime;
-        this.status = ((MovableSprite) sprite).status;
+    public void reload(Reloadable reloadable) {
+        assert reloadable instanceof MovableSprite;
+        MovableSprite sprite = (MovableSprite) reloadable;
+
+        super.reload(sprite);
+        this.movingSpeed = sprite.movingSpeed;
+        this.targetDeltaPos.first = sprite.targetDeltaPos.first;
+        this.targetDeltaPos.second = sprite.targetDeltaPos.second;
+        this.targetPos.first = sprite.targetPos.first;
+        this.targetPos.second = sprite.targetPos.second;
+        this.movingTime = sprite.movingTime;
+        this.status = sprite.status;
     }
 }

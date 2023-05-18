@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class Sprite extends Entity implements ToBytes {
+public abstract class Sprite extends Entity implements ToBytes, Reloadable {
 
     public static final int SNAKE = 1;
     public static final int CALABASH = 2;
@@ -240,7 +240,11 @@ public abstract class Sprite extends Entity implements ToBytes {
         return sprite;
     }
 
-    public void updateFromAnotherSprite(Sprite sprite) {
+    @Override
+    public void reload(Reloadable reloadable) {
+        assert reloadable instanceof Sprite;
+        Sprite sprite = (Sprite) reloadable;
+
         this.setPos(sprite.posX, sprite.posY);
         this.spriteWidth = sprite.spriteWidth;
         this.spriteHeight = sprite.spriteHeight;
